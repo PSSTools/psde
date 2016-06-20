@@ -121,17 +121,29 @@ public class DocBuilder {
 			
 			if (ln.getText() != null && ln.getText().trim().startsWith("/*")) {
 				List<String> lines = processComment(ln.getText());
+				String str;
 				
-				if (lines.size() > 0 && lines.get(0).trim().startsWith("Heading:")) {
-					int heading_idx = lines.get(0).indexOf("Heading:");
-					String text = lines.get(0).substring(heading_idx+"Heading:".length()).trim();
+				if (lines.size() > 0 && 
+						((str = lines.get(0).trim()) != null) &&
+						(str.startsWith("H1:") ||
+						 str.startsWith("H2:") ||
+						 str.startsWith("H3:"))) {
+					int heading_idx = 0; // str.indexOf("H1:");
+					int heading_level = 1;
+					try {
+						heading_level = Integer.parseInt(str.substring(1,2));
+					} catch (NumberFormatException e) {
+						e.printStackTrace();
+					}
+					
+					String text = str.substring("H1:".length()).trim();
 //					fRenderer.setFont(fHeaderFont);
 //					fRenderer.append("\n");
 //					fRenderer.append(text);
 //					fRenderer.append("\n");
 //					fRenderer.clrFont();
 //					fRenderer.append("\n");
-					fRenderer.header(1, text);
+					fRenderer.header(heading_level, text);
 				} else if (lines.size() > 0 && lines.get(0).trim().startsWith("BNF:")) {
 					int heading_idx = lines.get(0).indexOf("BNF:");
 					String text = lines.get(0).substring(heading_idx+"BNF:".length()).trim();

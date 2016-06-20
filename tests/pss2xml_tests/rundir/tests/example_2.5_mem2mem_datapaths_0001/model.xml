@@ -1,0 +1,16 @@
+<model>
+    <struct name="mem_segment_s">
+    </struct>
+    <struct name="mem_buff_s">
+    </struct>
+    <struct name="core_s">
+    </struct>
+    <component name="cpu_ops_c">
+    </component>
+    <component name="dma_c">
+    </component>
+    <component name="dev_A_c">
+    </component>
+    <component name="pss_top">
+    </component>
+</model>

@@ -1,0 +1,168 @@
+// ------------------------------------
+// Generic memory to memory definitions
+// ------------------------------------
+
+enum mem_block_tag_e {};
+
+struct mem_segment_s {
+  rand int size;
+  rand bit[63:0] addr;
+  rand mem_block_tag_e block_tag;
+};
+
+memory struct mem_buff_s {
+  rand mem_segment_s seg;
+};
+
+resource struct core_s {};
+
+abstract action move_data_a {
+  input mem_buff_s src_buff;
+  output mem_buff_s dst_buff;
+  constraint src_buff.seg.size == dst_buff.seg.size;
+};
+
+// ------------------------------------
+// SoC configurations
+// ------------------------------------
+
+// ------------------------------------
+// Address space definition
+// ------------------------------------
+extend enum mem_block_tag_e {SYS_MEM, A_MEM, B_MEM, DDR_0, DDR_1};
+extend struct mem_segment_s {
+  constraint block_tag == SYS_MEM -> addr inside [0x00100000..0x001FFFFF];
+  constraint block_tag == A_MEM   -> addr inside [0x0001C000..0x000FFFFF];
+  constraint block_tag == B_MEM   -> addr inside [0x00002000..0x0007FFFF];
+  constraint block_tag == DDR_0   -> addr inside [0x10000000..0xBFFFFFFF];
+  constraint block_tag == DDR_1   -> addr inside [0xC0000000..0xCFFFFFFF];
+};
+
+// ------------------------------------
+// CPU subsystem configuration
+// ------------------------------------
+extend struct core_s {
+  constraint instance_id inside [0..3];
+};
+
+extend struct mem_buff_s {
+  bool encrypted;
+};
+
+extend action move_data_a {
+  constraint src_buff.encrypted == dst_buff.encrypted;
+};
+
+// ------------------------------------
+// CPU data-move actions
+// ------------------------------------
+component cpu_ops_c {
+  action write_data_a {
+    output mem_buff_s out_buff;
+    constraint out_buff.seg.block_tag inside [DDR_0, DDR_1];
+    constraint out_buff.seg.size inside [256, 512, 1024];
+
+    lock core_s core;
+  };
+
+  action copy_data_a : move_data_a {
+    lock core_s core;
+  };
+
+  action check_data_a {
+    input mem_buff_s in_buff;
+    constraint in_buff.seg.block_tag inside [DDR_0, DDR_1];
+
+    lock core_s core;
+  };
+};
+
+// ------------------------------------
+// IO device mem2mem move 
+// ------------------------------------
+component dma_c {    
+  resource struct channel_s {
+    constraint instance_id inside [0..3];
+  };
+    
+  action mem2mem_xfer_a : move_data_a {
+    constraint !(src_buff.seg.block_tag inside [A_MEM, B_MEM]);
+    constraint !(dst_buff.seg.block_tag inside [A_MEM, B_MEM]);
+
+    lock channel_s channel;
+    share core_s ctrl_core;
+  };    
+};
+
+component dev_A_c {
+  resource[1] struct engine_s {};
+
+  action mem2mem_move_a : move_data_a {
+    constraint !(src_buff.seg.block_tag inside [B_MEM]);
+    constraint !(dst_buff.seg.block_tag inside [B_MEM]);
+    constraint !src_buff.encrypted;
+
+    lock engine_s engine;
+    share core_s ctrl_core;
+  };
+};
+
+
+// ------------------------------------
+// Abstract tests
+// ------------------------------------
+component pss_top {
+  action chain1 {
+    graph {
+      write_data_a c1_w;
+      mem2mem_xfer_a c1_m1;
+      copy_data_a c1_m2;
+      mem2mem_move_a c1_m3;
+      check_data_a c1_c;
+      bind c1_w.out_buff c1_m1.src_buff;
+      bind c1_m1.dst_buff c1_m2.src_buff;
+      bind c1_m2.dst_buff c1_m3.src_buff;
+      bind c1_m3.dst_buff c1_c.in_buff;
+    };
+  };
+
+  action chain2 {
+    graph {
+      write_data_a c1_w;
+      mem2mem_xfer_a c1_m1;
+      copy_data_a c1_m2;
+      mem2mem_move_a c1_m3;
+      check_data_a c1_c;
+      bind c1_w.out_buff c1_m1.src_buff;
+      bind c1_m1.dst_buff c1_m2.src_buff;
+      bind c1_m2.dst_buff c1_m3.src_buff;
+      bind c1_m3.dst_buff c1_c.in_buff;
+    };
+  };
+
+  action multi_chain {
+    graph {
+      chain1 c1;
+      chain2 c2;
+    };
+  };
+  
+};
+
+// ------------------------------------
+// Environment instantiation
+// ------------------------------------
+extend component pss_top { 
+    cpu_ops_c cpu;
+    dma_c dma;
+    dev_A_c dev_A;
+    pool data_buff_s sysmem;
+    bind sysmem {*};
+    pool core_s core_pool;
+    bind core_pool {*};
+};
+
+extend struct core_s {
+  constraint instance_id inside [0..3]; // overall 4 CPU cores
+};
+

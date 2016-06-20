@@ -1,4 +1,9 @@
 
+-- 0.0.6 Release --
+
+- #(enh) - Add DPI method declaration and usage to the grammar
+
+------------------------------------------------------------------------------
 -- 0.0.5 Release --
 
 - #(nobug) - Add 'bool' type to the grammar

@@ -4,4 +4,5 @@ buildResult/
 bin/
 generated/
 packages
+build/
 

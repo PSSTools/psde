@@ -22,11 +22,13 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.xtext.ui.editor.folding.IFoldingRegionProvider;
 import org.eclipse.xtext.ui.editor.folding.IFoldingStructureProvider;
+import org.eclipse.xtext.ui.editor.hover.IEObjectHoverProvider;
 import org.eclipse.xtext.ui.editor.outline.impl.OutlinePage;
 
 import net.sf.psstools.lang.ui.editor.PSSFoldingRegionProvider;
 import net.sf.psstools.lang.ui.editor.PSSFoldingStructureProvider;
 import net.sf.psstools.lang.ui.editor.PSSOutlinePage;
+import net.sf.psstools.lang.ui.editor.hover.PSSHoverProvider;
 import net.sf.psstools.lang.ui.internal.PSSActivator;
 
 /**
@@ -73,5 +75,9 @@ public class PSSUiModule extends net.sf.psstools.lang.ui.AbstractPSSUiModule {
 	// contributed by org.eclipse.xtext.ui.generator.labeling.LabelProviderFragment
 	public Class<? extends org.eclipse.jface.viewers.ILabelProvider> bindILabelProvider() {
 		return net.sf.psstools.lang.ui.labeling.PSSDecoratingLabelProvider.class;
+	}
+	
+	public Class<? extends IEObjectHoverProvider> bindIEObjectHoverProvider() {
+		return PSSHoverProvider.class;
 	}
 }

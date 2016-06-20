@@ -45,6 +45,10 @@ Workflow {
     	encoding = encoding
     	language = auto-inject {
     		uri = grammarURI
+    		
+			fragment = generator.GeneratorFragment {
+			  generateJavaMain = true
+			}    		
     
     		// Java API to access grammar elements (required by several other fragments)
     		fragment = grammarAccess.GrammarAccessFragment auto-inject {}

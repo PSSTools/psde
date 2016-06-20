@@ -1,0 +1,240 @@
+<project default="build">
+	
+	<property environment="env"/>
+	<property name="version" value="0.0.1"/>
+	<property name="feature.version" value="${version}"/>
+	<property name="buildDirectory" value="${basedir}/build"/>
+	
+	<property file="${basedir}/build.properties"/>
+	
+	<path id="wme2-classpath">
+		<fileset dir="${env.ECLIPSE_HOME}/plugins" 
+			includes="org.eclipse.runtime*.jar,org.eclipse.emf.*.jar,
+			org.apache.*.jar,org.eclipse.equinox.*.jar,
+			org.eclipse.xtext_*.jar,org.eclipse.xtext.common*.jar,
+			org.eclipse.xtext.generator*.jar,org.eclipse.xtext.xbase*.jar,
+			org.eclipse.xpand*.jar,org.eclipse.xtend*.jar,
+			org.eclipse.xtext.util*.jar,org.antlr.runtime_*.jar,
+			com.google*.jar,javax.inject_*.jar,org.objectweb.asm*.jar,
+			com.ibm.icu*.jar"/>
+		<pathelement path="${buildDirectory}/src"/>
+		<fileset dir="${basedir}/../psstools/plugins/net.sf.psstools.lang"
+			includes=".*.jar"/>
+	</path>
+	
+	<path id="classpath">
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.eclipse.emf.*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.apache.commons.*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.apache.log4j*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.eclipse.equinox.common*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.eclipse.xtext*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="com.google*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="javax.inject*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.antlr.runtime*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.eclipse.xpand*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.eclipse.xtend*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="com.ibm.icu*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.objectweb.asm*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.eclipse.jdt.core_*.jar"/>		
+		<fileset dir="${buildDirectory}/plugins/net.sf.psstools.lang"
+			includes=".antlr-generator-3.2.0-patch.jar"/>
+		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang/src"/>
+	</path>	
+	
+	<path id="classpath_a">
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="
+			org.eclipse.jface.text_*.jar,
+			org.eclipse.jface.text.source_*.jar,
+			org.eclipse.xtext_*.jar,
+			org.eclipse.emf.ecore_*.jar,
+			org.eclipse.xtext.xbase.lib_*.jar,
+			org.eclipse.equinox.common_*.jar,
+			org.eclipse.emf.common_*.jar,
+			org.eclipse.emf.ecore.xmi_*.jar,
+			org.eclipse.emf.edit.ui_*.jar,
+			org.eclipse.xtext.common.types_*.jar,
+			org.eclipse.xtext.util_*.jar,
+			org.eclipse.xtext.ui_*.jar,
+			com.google.inject_*.jar,
+			com.google.guava_*.jar,
+			javax.inject_*.jar,
+			org.apache.log4j_*.jar,
+			org.antlr.runtime_*.jar
+			"/>
+	</path>
+	
+	<property name="classpath_arg" refid="classpath_a"/>
+
+	<target name="build" depends="init,mwe2,javac,jar"/>
+	<!--
+	<target name="all" depends="javac"/>
+	-->
+	
+	<target name="init">
+		<delete dir="${buildDirectory}"/>
+		<mkdir dir="${buildDirectory}"/>
+		
+		<copy todir="${buildDirectory}">
+			<fileset dir="${basedir}/../psstools/"
+				includes="plugins/**,features/**"
+				excludes="bin,src-gen,xtend-gen"/>
+		</copy>
+		<copy todir="${buildDirectory}" overwrite="true">
+			<fileset dir="${basedir}/../psstools/"
+				includes="plugins/**/*.xml,
+				features/**/*.xml
+				plugins/**/*.MF,
+				plugins/**/*.properties"/>
+			<filterset begintoken="1" endtoken="3">
+				<filter token=".2." value="${version}"/>
+			</filterset>
+		</copy>
+	</target>
+
+	<target name="mwe2">
+    	<java fork="true" failonerror="true"
+    		classpathref="classpath"
+    		classname="org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher"
+	    	dir="${buildDirectory}/plugins/net.sf.psstools.lang">
+    		<arg value="src/net/sf/psstools/lang/GeneratePSS.mwe2"/>
+    	</java>
+		
+	</target>
+
+	<property name="core_plugin_b" 
+		value="${buildDirectory}/plugins/net.sf.psstools.lang"/>
+	<property name="xtend_core_path" 
+		value="${core_plugin_b}/src${path.separator}${core_plugin_b}/src-gen"/>
+
+	<target name="javac">
+		<echo message="==&gt; Running xtend compiler on Core"/>
+    	<java fork="true" failonerror="true"
+    		classpathref="classpath"
+    		classname="org.eclipse.xtend.core.compiler.batch.Main"
+	    	dir="${buildDirectory}/plugins/net.sf.psstools.lang">
+    		<arg value="-d"/>
+    		<arg value="${buildDirectory}/plugins/net.sf.psstools.lang/xtend-gen"/>
+    		<arg value="-cp"/>
+    		<arg value="${classpath_arg}"/>
+    		<arg value="${buildDirectory}/plugins/net.sf.psstools.lang/src-gen"/>
+    		<arg value="${buildDirectory}/plugins/net.sf.psstools.lang/src"/>
+    	</java>
+		<echo message="&lt;== Running xtend compiler on Core"/>
+		
+		<echo message="==&gt; Running xtend compiler on UI"/>
+    	<java fork="true" failonerror="true"
+    		classpathref="classpath"
+    		classname="org.eclipse.xtend.core.compiler.batch.Main"
+	    	dir="${buildDirectory}/plugins/net.sf.psstools.lang.ui">
+    		<arg value="-d"/>
+    		<arg value="${buildDirectory}/plugins/net.sf.psstools.lang.ui/xtend-gen"/>
+    		<arg value="-cp"/>
+    		<!--
+    		<arg value="${classpath_arg}"/>
+    		  -->
+    		<arg value="${classpath_arg};${path.separator}${xtend_core_path}"/>
+    		<arg value="${buildDirectory}/plugins/net.sf.psstools.lang.ui/src-gen"/>
+    		<arg value="${buildDirectory}/plugins/net.sf.psstools.lang.ui/src"/>
+    	</java>
+		<echo message="&lt;== Running xtend compiler on UI"/>
+		
+		<echo message="==&gt; Creating plug-in build scripts"/>
+		<eclipse.buildScript
+			elements="${type}@${feature.id}"
+			buildDirectory="${buildDirectory}"
+			baseLocation="${eclipse.home}"
+			configInfo="${os},${ws},${arch}"
+			forceContextQualifier="${forceContextQualifier}"
+			generateFeatureVersionSuffix="true"/>
+		<echo message="&lt;== Creating plug-in build scripts"/>
+
+		<echo message="==&gt; Running plug-in build"/>
+        <ant antfile="${buildDirectory}/features/${feature.id}/build.xml"
+            dir="${buildDirectory}/features/${feature.id}"
+            target="build.jars"/>
+        <ant antfile="${buildDirectory}/assemble.${feature.id}.${os}.${ws}.${arch}.xml"
+             dir="${buildDirectory}"/>
+		<echo message="&lt;== Running plug-in build"/>
+	
+		<!--
+   		<copy tofile="${buildDirectory}/psstools-feature-${feature.version}.zip"
+   			file="${buildDirectory}/${feature.id}-${feature.version}-${os}.${ws}.${arch}.zip"/>		
+   		  -->
+		<mkdir dir="${buildDirectory}/unpack"/>
+		<unzip dest="${buildDirectory}/unpack" 
+			src="${buildDirectory}/${feature.id}-${buildId}-${os}.${ws}.${arch}.zip"/>
+		
+		<!--
+		<java fork="true" failonerror="true"
+			classpathref="classpath"
+			classname="org.eclipse.jdt.internal.compiler.batch.Main"
+			dir="${buildDirectory}/plugins/net.sf.psstools.lang">
+			<arg value="-d"/>
+			<arg value="bin"/>
+			<arg value="-cp"/>
+			<arg value="${classpath_arg}"/>
+            <arg value="-source"/>
+            <arg value="1.7"/>
+		    <arg value="-sourcepath"/>
+		    <arg value="src${path.separator}src-gen${path.separator}xtend-gen"/>
+		    <arg value="src/net/sf/psstools/lang/pssc/PSSC.java"/>
+		</java>
+		-->
+		
+	</target>
+
+	<target name="jar">
+		<mkdir dir="${buildDirectory}/pssc"/>
+		<mkdir dir="${buildDirectory}/pssc/libs"/>
+		
+		<copy todir="${buildDirectory}/pssc/libs" 
+			file="${buildDirectory}/unpack/plugins/net.sf.psstools.lang_${feature.version}.jar"/>
+		
+		<copy todir="${buildDirectory}/pssc/libs">
+			<fileset dir="${eclipse.home}/plugins"
+				includes="
+					org.eclipse.equinox.common_*.jar,
+					org.eclipse.emf.ecore_*.jar,
+					org.eclipse.emf.common_*.jar,
+					org.eclipse.emf.ecore.xmi_*.jar,
+					org.eclipse.xtext_*.jar,
+					org.eclipse.xtext.common.types_*.jar,
+					org.eclipse.xtext.util_*.jar,
+					com.google.inject_*.jar,
+					com.google.guava_*.jar,
+					javax.inject_*.jar,
+					org.apache.log4j_*.jar,
+					org.antlr.runtime_*.jar"/>
+		</copy>
+	
+		<mkdir dir="${buildDirectory}/ext"/>
+		<unjar dest="${buildDirectory}/ext">
+			<fileset dir="${buildDirectory}/pssc/libs"
+				includes="*.jar"/>
+		</unjar>
+		
+		<delete dir="${buildDirectory}/ext/META-INF"/>
+		
+		<jar destfile="${buildDirectory}/pss2xml.jar">
+			<fileset dir="${buildDirectory}/ext"
+				includes="**/*"/>
+		</jar>
+	</target>
+		
+
+</project>
+	

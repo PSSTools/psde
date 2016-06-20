@@ -64,6 +64,7 @@
 			includes="com.ibm.icu*.jar"/>
 		<fileset dir="${eclipse.home}/plugins" 
 			includes="org.objectweb.asm*.jar"/>
+
 		<fileset dir="${srcdir}/plugins/net.sf.psstools.lang"
 			includes=".antlr-generator-3.2.0-patch.jar"/>
 		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang/src"/>

@@ -6,6 +6,7 @@ package net.sf.psstools.lang.ui.labeling
 import com.google.inject.Inject
 import net.sf.psstools.lang.pSS.Model
 import net.sf.psstools.lang.pSS.action_declaration
+import net.sf.psstools.lang.pSS.bool_type
 import net.sf.psstools.lang.pSS.component_declaration
 import net.sf.psstools.lang.pSS.component_field_declaration
 import net.sf.psstools.lang.pSS.data_declaration
@@ -84,9 +85,13 @@ class PSSLabelProvider extends DefaultEObjectLabelProvider {
 			return i_t.typename;
 		} else if (dd.type instanceof string_type) {
 			return "string";
-		} else {
+		} else if (dd.type instanceof bool_type) {
+			return "bool";
+		} else if (dd.type instanceof user_defined_type) {
 			var ud_t = dd.type as user_defined_type;
 			return tid2string(ud_t.typename);
+		} else {
+			return "unknown";
 		}
 	}
 	

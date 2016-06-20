@@ -18,18 +18,6 @@
      </participant>
   </extension>
   <extension
-        id="pssc"
-        point="org.eclipse.core.runtime.applications">
-     <application
-           cardinality="singleton-global"
-           thread="main"
-           visible="true">
-        <run
-              class="net.sf.psstools.lang.compiler.PSSC">
-        </run>
-     </application>
-  </extension>
-  <extension
         id="html.docbuilder"
         name="PSS HTML Doc Builder"
         point="org.eclipse.core.runtime.applications">

@@ -7,6 +7,7 @@ public class HTMLDocRenderer implements IDocRenderer {
 	private PrintStream				fPS;
 	private boolean					fWSInserted;
 	private int						fLen;
+	private int						fHeadBase = 1;
 	
 	public HTMLDocRenderer(OutputStream os) {
 		fPS = new PrintStream(os);
@@ -60,6 +61,7 @@ public class HTMLDocRenderer implements IDocRenderer {
 	public void header(int level, String text) {
 		fWSInserted = false;
 		fLen += text.length();
+		level += fHeadBase;
 	
 		fPS.println("</pre>");
 		fPS.println("<h" + level + ">" + text + "</h" + level + ">");

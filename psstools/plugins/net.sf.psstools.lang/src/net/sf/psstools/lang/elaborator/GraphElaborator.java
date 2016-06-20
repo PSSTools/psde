@@ -8,6 +8,7 @@ import java.util.Stack;
 
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.ecore.EObject;
 
 import net.sf.psstools.lang.elaborator.processor.GraphProcDirective;
 import net.sf.psstools.lang.elaborator.processor.GraphProcDirectiveDumper;
@@ -16,21 +17,13 @@ import net.sf.psstools.lang.elaborator.processor.GraphProcessingStrategy;
 import net.sf.psstools.lang.elaborator.rules.RuleBlockProduction;
 import net.sf.psstools.lang.elaborator.rules.RuleProduction;
 import net.sf.psstools.lang.elaborator.rules.RuleRepeatProduction;
-import net.sf.psstools.lang.elaborator.rules.RuleStmtProduction;
-import net.sf.psstools.lang.elaborator.rules.RuleStmtType;
 import net.sf.psstools.lang.pSS.Model;
 import net.sf.psstools.lang.pSS.data_declaration;
 import net.sf.psstools.lang.pSS.data_instantiation;
 import net.sf.psstools.lang.pSS.data_type;
 import net.sf.psstools.lang.pSS.graph_block_stmt;
-import net.sf.psstools.lang.pSS.graph_parallel_production;
-import net.sf.psstools.lang.pSS.graph_parallel_stmt;
 import net.sf.psstools.lang.pSS.graph_production;
 import net.sf.psstools.lang.pSS.graph_repeat_stmt;
-import net.sf.psstools.lang.pSS.graph_select_parallel_block;
-import net.sf.psstools.lang.pSS.graph_select_parallel_schedule_production;
-import net.sf.psstools.lang.pSS.graph_select_production;
-import net.sf.psstools.lang.pSS.graph_select_stmt;
 import net.sf.psstools.lang.pSS.integer_type;
 import net.sf.psstools.lang.pSS.portable_stimulus_description;
 import net.sf.psstools.lang.pSS.struct_body_item;
@@ -267,7 +260,7 @@ public class GraphElaborator {
 		return dts;
 	}
 	
-	private DataType elaborate_data_type(data_type dt) throws ElabException {
+	private DataType elaborate_data_type(EObject dt) throws ElabException {
 		DataType type = null;
 		
 		if (dt instanceof user_defined_type) {
@@ -331,28 +324,28 @@ public class GraphElaborator {
 				block.addChild(buildRuleProduction(rp, resolve));
 			}
 			ret = block;
-		} else if (production instanceof graph_select_parallel_block) {
-			graph_select_parallel_block block_stmt = (graph_select_parallel_block)production;
-			RuleBlockProduction block = new RuleBlockProduction();
-		
-			for (graph_select_parallel_schedule_production p : block_stmt.getProductions()) {
-				block.addChild(buildRuleProduction(p, resolve));
-			}
-			ret = block;
-		} else if (production instanceof graph_select_stmt) {
-			graph_select_stmt select = (graph_select_stmt)production;
-			RuleStmtProduction stmt_ret = new RuleStmtProduction(RuleStmtType.Alternative);
-			for (graph_select_production p : select.getProductions()) {
-				stmt_ret.addChild(buildRuleProduction(p.getProduction(), resolve));
-			}
-			ret = stmt_ret;
-		} else if (production instanceof graph_parallel_production) {
-			graph_parallel_stmt fork = (graph_parallel_stmt)production;
-			RuleStmtProduction stmt_ret = new RuleStmtProduction(RuleStmtType.Parallel);
-			for (graph_parallel_production p : fork.getProductions()) {
-				stmt_ret.addChild(buildRuleProduction(p.getProduction(), resolve));
-			}
-			ret = stmt_ret;
+//		} else if (production instanceof graph_select_parallel_block) {
+//			graph_select_parallel_block block_stmt = (graph_select_parallel_block)production;
+//			RuleBlockProduction block = new RuleBlockProduction();
+//		
+//			for (graph_select_parallel_schedule_production p : block_stmt.getProductions()) {
+//				block.addChild(buildRuleProduction(p, resolve));
+//			}
+//			ret = block;
+//		} else if (production instanceof graph_select_stmt) {
+//			graph_select_stmt select = (graph_select_stmt)production;
+//			RuleStmtProduction stmt_ret = new RuleStmtProduction(RuleStmtType.Alternative);
+//			for (graph_select_production p : select.getProductions()) {
+//				stmt_ret.addChild(buildRuleProduction(p.getProduction(), resolve));
+//			}
+//			ret = stmt_ret;
+//		} else if (production instanceof graph_parallel_production) {
+//			graph_parallel_stmt fork = (graph_parallel_stmt)production;
+//			RuleStmtProduction stmt_ret = new RuleStmtProduction(RuleStmtType.Parallel);
+//			for (graph_parallel_production p : fork.getProductions()) {
+//				stmt_ret.addChild(buildRuleProduction(p.getProduction(), resolve));
+//			}
+//			ret = stmt_ret;
 		} else {
 			debug("unknown graph_production: " + production);
 		}
