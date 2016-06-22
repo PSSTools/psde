@@ -40,6 +40,10 @@ import net.sf.psstools.lang.PSSStandaloneSetup;
 import net.sf.psstools.lang.pSS.Model;
 
 public class PSS2XML {
+	
+	public PSS2XML() {
+		// TODO Auto-generated constructor stub
+	}
 
 	//
 	// - root action
@@ -101,10 +105,6 @@ public class PSS2XML {
 			Notifier n = all_contents.next();
 			if (n instanceof Model) {
 				elab.elaborate((Model)n);
-//				Model m = (Model)n;
-//				for (portable_stimulus_description d : m.getRoot()) {
-//					model.add(d);
-//				}
 			}
 		}
 		

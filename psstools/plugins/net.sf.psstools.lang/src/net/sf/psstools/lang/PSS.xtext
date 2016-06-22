@@ -189,7 +189,7 @@ struct_declaration:
 ;
 
 struct_qualifier:
-	{struct_qualifier} ('memory' | 'stream' | 'state' | ('resource' ('[' n_resource=constant_expression ']')?))
+	{struct_qualifier} (type='memory' | type='stream' | type='state' | (type='resource' ('[' n_resource=constant_expression ']')?))
 ;
 
 struct_body_item:

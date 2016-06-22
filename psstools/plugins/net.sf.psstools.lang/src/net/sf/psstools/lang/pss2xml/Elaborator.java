@@ -3,14 +3,38 @@ package net.sf.psstools.lang.pss2xml;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 
 import net.sf.psstools.lang.pSS.Model;
+import net.sf.psstools.lang.pSS.action_body_item;
 import net.sf.psstools.lang.pSS.action_declaration;
+import net.sf.psstools.lang.pSS.component_body_item;
 import net.sf.psstools.lang.pSS.component_declaration;
+import net.sf.psstools.lang.pSS.constraint_declaration;
+import net.sf.psstools.lang.pSS.data_declaration;
+import net.sf.psstools.lang.pSS.data_instantiation;
+import net.sf.psstools.lang.pSS.dec_number;
+import net.sf.psstools.lang.pSS.enum_declaration;
+import net.sf.psstools.lang.pSS.enum_item;
+import net.sf.psstools.lang.pSS.expression;
+import net.sf.psstools.lang.pSS.hex_number;
 import net.sf.psstools.lang.pSS.hierarchical_id;
+import net.sf.psstools.lang.pSS.integer_type;
+import net.sf.psstools.lang.pSS.logical_equality_expr;
+import net.sf.psstools.lang.pSS.logical_inequality_expr;
+import net.sf.psstools.lang.pSS.number;
+import net.sf.psstools.lang.pSS.oct_number;
+import net.sf.psstools.lang.pSS.open_range_list;
+import net.sf.psstools.lang.pSS.open_range_value;
+import net.sf.psstools.lang.pSS.package_body_item;
 import net.sf.psstools.lang.pSS.package_declaration;
+import net.sf.psstools.lang.pSS.package_identifier;
+import net.sf.psstools.lang.pSS.struct_body_item;
 import net.sf.psstools.lang.pSS.struct_declaration;
+import net.sf.psstools.lang.pSS.struct_field_declaration;
+import net.sf.psstools.lang.pSS.struct_field_modifier;
+import net.sf.psstools.lang.pSS.variable_ref;
 
 public class Elaborator {
 	private PrintStream			fPS;
@@ -52,11 +76,19 @@ public class Elaborator {
 		String tag = "<action name=\"" + a.getName() + "\"";
 		
 		if (a.getSuper_spec() != null) {
-			// TODO:
+			tag += " super=\"" + a.getSuper_spec().getSuper().getName() + "\"";
 		}
 		tag += ">";
 		println(tag);
 		inc_indent();
+		
+		for (action_body_item it : a.getBody()) {
+			if (it instanceof constraint_declaration) {
+				elaborate_constraint((constraint_declaration)it);
+			} else {
+				println("<unknown_item class=\"" + it.getClass() + "\"/>");
+			}
+		}
 		
 		dec_indent();
 		println("</action>");
@@ -66,21 +98,193 @@ public class Elaborator {
 		String tag = "<component name=\"" + c.getName() + "\"";
 		
 		if (c.getSuper() != null) {
-			// TODO:
+			tag += " super=\"" + c.getSuper().getName() + "\"";
 		}
 		
 		tag += ">";
 		println(tag);
 		inc_indent();
 		
+		for (component_body_item it : c.getBody()) {
+			if (it instanceof action_declaration) {
+				elaborate_action((action_declaration)it);
+			} else if (it instanceof struct_declaration) {
+				elaborate_struct((struct_declaration)it);
+			} else {
+				println("<unknown_item class=\"" + it.getClass() + "\"/>");
+			}
+		}
+		
 		dec_indent();
 		println("</component>");
 	}
 	
-	private void elaborate_package(package_declaration p) {
-		String tag = "<package name=\"" + p.getName() + "\">";
+	private void elaborate_constraint(constraint_declaration c) {
+		String tag = "<constraint";
+		
+		if (c.getName() != null && !c.getName().equals("")) {
+			tag += " name=\"" + c.getName() + "\"";
+		}
+		tag += ">";
 		println(tag);
 		inc_indent();
+		for (EObject it : c.getBody()) {
+			if (it instanceof expression) {
+				elaborate_expr((expression)it);
+			} else {
+				println("<unknown_item class=\"" + it.getClass() + "\"/>");
+			}
+		}
+		
+		dec_indent();
+		println("</constraint>");
+	}
+	
+	private void elaborate_expr(EObject obj) {
+		if (obj instanceof expression) {
+			elaborate_expr((expression)obj);
+		} else if (obj instanceof open_range_list) {
+			open_range_list r = (open_range_list)obj;
+			
+			println("<rangelist>");
+			inc_indent();
+			
+			for (open_range_value v : r.getRanges()) {
+				println("<rangelist-item>");
+				inc_indent();
+				elaborate_expr(v.getLhs());
+				if (v.getRhs() != null) {
+					elaborate_expr(v.getRhs());
+				}
+				dec_indent();
+				println("</rangelist-item>");
+			}
+			
+			dec_indent();
+			println("</rangelist>");
+		}
+	}
+	
+	private void elaborate_expr(expression expr) {
+		if (expr instanceof logical_inequality_expr) {
+			logical_inequality_expr li = (logical_inequality_expr)expr;
+			
+			if (li.getOp().equals("inside")) {
+				println("<inside>");
+				inc_indent();
+				elaborate_expr(li.getLeft());
+				elaborate_expr(li.getRight());
+				dec_indent();
+				println("</inside>");
+			} else {
+				String tag = "<binexpr op=\"";
+
+				if (li.getOp().equals("<")) {
+					tag += "LT";
+				} else if (li.getOp().equals(">")) {
+					tag += "GT";
+				} else if (li.getOp().equals(">=")) {
+					tag += "GE";
+				} else if (li.getOp().equals("<=")) {
+					tag += "LE";
+				} else {
+					tag += "Unknown:" + li.getOp();
+				}
+				tag += "/>";
+
+				println(tag);
+
+				inc_indent();
+				elaborate_expr(li.getLeft());
+				elaborate_expr(li.getRight());
+				dec_indent();
+				println("</binexpr>");
+			}
+		} else if (expr instanceof logical_equality_expr) {
+			logical_equality_expr le = (logical_equality_expr)expr;
+			String tag = "<binexpr op=\"";
+
+			if (le.getOp().equals("==")) {
+				tag += "EqEq";
+			} else if (le.getOp().equals("!=")) {
+				tag += "NotEq";
+			} else {
+				tag += "Unknown:" + le.getOp();
+			}
+			tag += "/>";
+
+			println(tag);
+
+			inc_indent();
+			elaborate_expr(le.getLeft());
+			elaborate_expr(le.getRight());
+			dec_indent();
+			println("</binexpr>");			
+		} else if (expr instanceof number) {
+			number n = (number)expr;
+			EObject v = n.getValue();
+			
+			if (v instanceof dec_number) {
+				println("<literal type=\"int\" value=\"" + 
+						((dec_number)v).getValue() + "\"/>");
+			} else if (v instanceof oct_number) {
+				println("<literal type=\"int\" value=\"" + 
+						((oct_number)v).getValue() + "\"/>");
+			} else if (v instanceof hex_number) {
+				println("<literal type=\"int\" value=\"" + 
+						((hex_number)v).getValue() + "\"/>");
+			} else {
+				println("<unknown_literal class=\"" + v.getClass() + "\"/>");
+			}
+		} else if (expr instanceof variable_ref) {
+			variable_ref v = (variable_ref)expr;
+			EList<String> path = v.getExpr().getPath();
+			
+			for (int i=0; i<path.size(); i++) {
+				if (i+1 < path.size()) {
+					println("<fieldref name=\"" + path.get(i) + "\">");
+					inc_indent();
+				} else {
+					println("<fieldref name=\"" + path.get(i) + "\"/>");
+				}
+			}
+			
+			for (int i=0; path.size()>0 && i<path.size()-1; i++) {
+				dec_indent();
+				println("</fieldref>");
+			}
+		} else {
+			println("<unknown_expr class=\"" + expr.getClass() + "\"/>");
+		}
+	}
+	
+	private void elaborate_enum(enum_declaration enum_t) {
+		println("<enum name=\"" + enum_t.getName() + "\">");
+		inc_indent();
+		
+		for (enum_item it : enum_t.getItems()) {
+			// TODO specific values
+			println("<enumerator name=\"" + it.getName() + "\"/>");
+		}
+		
+		dec_indent();
+		println("</enum>");
+	}
+	
+	private void elaborate_package(package_declaration p) {
+		String tag = "<package name=\"" + hid2string(p.getName()) + "\">";
+		println(tag);
+		inc_indent();
+		
+		for (package_body_item it : p.getBody()) {
+			if (it instanceof struct_declaration) {
+				elaborate_struct((struct_declaration)it);
+			} else if (it instanceof enum_declaration) {
+				elaborate_enum((enum_declaration)it);
+			} else {
+				println("<unknown_item class=\"" + it.getClass() + "\"/>");
+			}
+		}
 	
 		dec_indent();
 		println("</package>");
@@ -90,13 +294,107 @@ public class Elaborator {
 		String tag = "<struct name=\"" + s.getName() + "\"";
 		
 		if (s.getSuper() != null) {
-			// TODO:
+			tag += "super=\"" + s.getSuper().getName() + "\"";
+		}
+		
+		if (s.getQualifier() != null) {
+			tag += " type=\"" + s.getQualifier().getType() + "\"";
 		}
 		
 		tag += ">";
 		println(tag);
+	
+		inc_indent();
+		
+		for (struct_body_item it : s.getBody()) {
+			if (it instanceof struct_field_declaration) {
+				elaborate_struct_field((struct_field_declaration)it);
+			} else if (it instanceof constraint_declaration) {
+				elaborate_constraint((constraint_declaration)it);
+			} else {
+				println("<unknown_item class=\"" + it.getClass() + "\"/>");
+			}
+			
+		}
+		
+		dec_indent();
 		
 		println("</struct>");
+	}
+	
+	private void elaborate_struct_field(struct_field_declaration f) {
+		
+		data_declaration decl = f.getDeclaration();
+		
+		for (data_instantiation inst : decl.getInstances()) {
+			String tag = "<field name=\"" + inst.getName() + "\"";
+		
+			if (f instanceof struct_field_modifier) {
+				struct_field_modifier m = (struct_field_modifier)f;
+				if (m.isRand()) {
+					tag += " type=\"rand\"";
+				}
+			}
+			
+			tag += ">";
+			println(tag);
+			
+			inc_indent();
+			elaborate_type(decl.getType());
+			dec_indent();
+			
+			println("</field>");
+		}
+	}
+
+	/**
+	 * Elaborate a data type
+	 * @param type
+	 */
+	private void elaborate_type(EObject type) {
+		
+		if (type instanceof integer_type) {
+			integer_type t = (integer_type)type;
+			String tag;
+			if (t.getTypename().equals("int")) {
+				tag = "<int ";
+			} else {
+				tag = "<bit ";
+			}
+			
+			tag += "msb=\"" + expr2string(t.getLhs()) + "\" ";
+			tag += "lsb=\"" + expr2string(t.getRhs()) + "\"";
+			
+			tag += "/>";
+			println(tag);
+		} else {
+			println("<unknown_item class=\"" + type.getClass()+ "\"/>");
+		}
+	}
+	
+	private String expr2string(expression expr) {
+		if (expr instanceof number) {
+			number n = (number)expr;
+			if (n.getValue() instanceof oct_number) {
+				return ((oct_number)n.getValue()).getValue();
+			} else if (n.getValue() instanceof dec_number) {
+				return ((dec_number)n.getValue()).getValue();
+			} else if (n.getValue() instanceof hex_number) {
+				return ((hex_number)n.getValue()).getValue();
+			} else {
+				return "unknown_number: " + n.getValue();
+			}
+		} else {
+			return "unknown_expr: " + expr.getClass();
+		}
+	}
+	
+	private String hid2string(package_identifier id) {
+		if (id instanceof hierarchical_id) {
+			return hid2string((hierarchical_id)id);
+		} else {
+			return "UNKNOWN: " + id.getClass();
+		}
 	}
 	
 	private String hid2string(hierarchical_id id) {
