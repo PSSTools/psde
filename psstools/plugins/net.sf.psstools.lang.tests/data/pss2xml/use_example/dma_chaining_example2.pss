@@ -76,7 +76,7 @@ component dma_c {
     }
     
     graph {
-      repeat (i : chain_len) {
+      repeat (chain_len) {
         add_desc;
       }
       
