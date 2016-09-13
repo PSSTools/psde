@@ -1,0 +1,27 @@
+
+
+memory struct data_s {
+	rand bit[7:0]		data;
+	rand bit[31:0]		address;
+	
+	constraint address_c {
+		address >= 0x1000 && address <= 0x1FFF;
+	}
+}
+
+package imp_methods_pkg {
+	import void doit(bit[31:0] a);	
+}
+
+component my_comp {
+	import imp_methods_pkg::*;
+	
+	action entry {
+		rand data_s		my_data;
+		
+		exec body {
+			doit(my_data.data);			
+		}
+	}
+	
+}

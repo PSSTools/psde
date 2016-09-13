@@ -510,7 +510,8 @@ data_instantiation:
 ;
 
 array_dim:
-	{array_dim} '[' (lhs=constant_expression (':' rhs=constant_expression)?)? ']'
+//	{array_dim} '[' (lhs=constant_expression (':' rhs=constant_expression)?)? ']'
+	{array_dim} '[' dim=constant_expression ']'
 ;
 
 coverspec_portmap_list:
@@ -860,11 +861,11 @@ method_function_call:
 ;
 
 method_call:
-	hierarchical_id parameters=method_parameter_list
+	method=hierarchical_id parameters=method_parameter_list
 ;
 
 function_call:
-	hierarchical_type_identifier parameters=method_parameter_list	
+	function=hierarchical_type_identifier parameters=method_parameter_list	
 ;
 
 paren_expr:

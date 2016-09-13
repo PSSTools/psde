@@ -3,10 +3,13 @@
 ifneq (1,$(RULES))
 
 PSS2XML_DIR := $(PSSTOOLS_DIR)/pss2xml
+PSS2XML_DIR_A := $(PSSTOOLS_DIR_A)/pss2xml
 PSS2XML_BUILDDIR := $(BUILDDIR)/pss2xml
 
 ifeq (Cygwin,$(UNAME_O))
-PSS2XML_BUILDDIR := $(shell cygpath -w $(PSS2XML_BUILDDIR) | sed -e 's%\\%/%g')
+PSS2XML_BUILDDIR_A := $(shell cygpath -w $(PSS2XML_BUILDDIR) | sed -e 's%\\%/%g')
+else
+PSS2XML_BUILDDIR_A := $(PSS2XML_BUILDDIR)
 endif
 
 PSS2XML_EXE_TARGETS += $(BINDIR)/pss2xml$(EXEEXT)
@@ -26,8 +29,11 @@ $(BINDIR)/pss2xml$(EXEEXT) : $(foreach o,$(PSS2XML_SRC:.cpp=.o),$(PSS2XML_BUILDD
 	$(MKDIRS)
 	$(DO_CXXLINK)
 
-$(BUILDDIR)/pss2xml/pss2xml.jar :
-	$(Q)$(call eclipse_ant,$(PSS2XML_DIR)/build.xml,build -DbuildDirectory=$(PSS2XML_BUILDDIR))
+LANG_PLUGIN := $(PSSTOOLS_DIR)/psstools/plugins/net.sf.psstools.lang
+PSS2XML_DEPS := $(shell find $(LANG_PLUGIN) -name '*.java'; find $(LANG_PLUGIN) -name '*.xtext')
+
+$(BUILDDIR)/pss2xml/pss2xml.jar : $(PSS2XML_DEPS)
+	$(Q)$(call eclipse_ant,$(PSS2XML_DIR_A)/build.xml,build -DbuildDirectory=$(PSS2XML_BUILDDIR_A))
 
 $(PSS2XML_BUILDDIR)/%.o : $(PSS2XML_DIR)/%.cpp
 	$(MKDIRS)

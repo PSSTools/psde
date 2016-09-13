@@ -22,5 +22,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: net.sf.psstools.lang.ui.quickfix,
  net.sf.psstools.lang.ui.contentassist,
  net.sf.psstools.lang.ui.contentassist.antlr,
- net.sf.psstools.lang.ui.internal
+ net.sf.psstools.lang.ui.internal,
+ net.sf.psstools.lang.ui.contentassist.antlr.internal
 Bundle-Activator: net.sf.psstools.lang.ui.internal.PSSActivator

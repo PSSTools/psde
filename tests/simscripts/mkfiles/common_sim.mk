@@ -20,6 +20,28 @@ SIM:=$(DEFAULT_SIM)
 endif
 
 include $(COMMON_SIM_MK_DIR)/common_defs.mk
+
+# Locate the simulator-support file
+# - Don't include a simulator-support file if SIM='none'
+# - Allow the test suite to provide its own
+# - Allow the environment to provide its own
+# - Finally, check if 'simscripts' provides an implementation
+ifneq (none,$(SIM))
+	ifneq ("$(wildcard $(SIM_DIR)/scripts/common_sim_$(SIM).mk)","")
+		MK_INCLUDES += $(SIM_DIR)/scripts/common_sim_$(SIM).mk
+	else
+		ifneq ("$(wildcard $(SIMSCRIPTS_DIR)/../mkfiles/common_sim_$(SIM).mk)","")
+			MK_INCLUDES += $(SIMSCRIPTS_DIR)/../mkfiles/common_sim_$(SIM).mk	
+		else
+			ifneq ("$(wildcard $(SIMSCRIPTS_DIR)/mkfiles/sim_mk/common_sim_$(SIM).mk)","") 
+				MK_INCLUDES += $(SIMSCRIPTS_DIR)/mkfiles/sim_mk/common_sim_$(SIM).mk
+			else
+				BUILD_TARGETS += missing_sim_mk
+			endif
+		endif
+	endif
+endif
+
 include $(MK_INCLUDES)
 
 ifeq (true,$(DYNLINK))
@@ -39,19 +61,11 @@ vpath %.cpp $(SRC_DIRS)
 vpath %.S $(SRC_DIRS)
 vpath %.c $(SRC_DIRS)
 
-.phony: all build run target_build
+.phony: all build run target_build missing_sim_mk
 
 all :
 	echo "Error: Specify target of build or run
 	exit 1
-
-include $(COMMON_SIM_MK_DIR)/sim_mk/common_sim_$(SIM).mk	
-
-target_build :
-	echo "SIM=$(SIM)"
-	if test "x$(TARGET_MAKEFILE)" != "x"; then \
-		$(MAKE) -f $(TARGET_MAKEFILE) build; \
-	fi
 
 ifeq (,$(wildcard $(SIM_DIR)/scripts/vlog_$(SIM).f))
 #ifeq (Cygwin,$(OS))
@@ -76,6 +90,20 @@ export LD_LIBRARY_PATH
 RULES := 1
 include $(COMMON_SIM_MK_DIR)/common_rules.mk
 include $(MK_INCLUDES)
+
+build : $(BUILD_TARGETS)
+
+run : $(RUN_TARGETS)
+
+missing_sim_mk :
+	@echo "Error: Failed to find makefile for sim $(SIM) in \$$(SIMSCRIPTS_DIR)/mkfiles/sim_mk and \$$(SIMSCRIPTS_DIR)/../mkfiles"
+	@exit 1
+
+target_build :
+	echo "SIM=$(SIM)"
+	if test "x$(TARGET_MAKEFILE)" != "x"; then \
+		$(MAKE) -f $(TARGET_MAKEFILE) build; \
+	fi
 
 ifeq (true,$(VERBOSE))
 $(SVF_OBJDIR)/%.o : %.cpp

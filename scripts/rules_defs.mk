@@ -6,6 +6,8 @@ SCRIPTS_DIR := $(shell cd $(dir $(lastword $(MAKEFILE_LIST))); pwd)
 UNAME_O := $(shell uname -o)
 UNAME_M := $(shell uname -m)
 
+PSSTOOLS_DIR := $(dir $(SCRIPTS_DIR))
+
 ifeq (Cygwin,$(UNAME_O))
 SCRIPTS_DIR := $(shell cygpath -w $(SCRIPTS_DIR) | sed -e 's%\\%/%g')
 os:=win32
@@ -18,7 +20,7 @@ else
 arch:=i686
 endif
 
-PSSTOOLS_DIR := $(dir $(SCRIPTS_DIR))
+PSSTOOLS_DIR_A := $(dir $(SCRIPTS_DIR))
 
 ifeq (,$(BUILDDIR))
 BUILDDIR := $(PSSTOOLS_DIR)/build

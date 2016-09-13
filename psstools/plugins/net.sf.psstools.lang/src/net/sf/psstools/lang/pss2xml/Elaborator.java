@@ -10,7 +10,10 @@ import net.sf.psstools.lang.pSS.Model;
 import net.sf.psstools.lang.pSS.action_body_item;
 import net.sf.psstools.lang.pSS.action_declaration;
 import net.sf.psstools.lang.pSS.action_field_declaration;
+import net.sf.psstools.lang.pSS.action_super_spec;
 import net.sf.psstools.lang.pSS.array_dim;
+import net.sf.psstools.lang.pSS.bool_type;
+import net.sf.psstools.lang.pSS.chandle_type;
 import net.sf.psstools.lang.pSS.component_body_item;
 import net.sf.psstools.lang.pSS.component_declaration;
 import net.sf.psstools.lang.pSS.component_field_declaration;
@@ -18,7 +21,6 @@ import net.sf.psstools.lang.pSS.component_path;
 import net.sf.psstools.lang.pSS.constraint_declaration;
 import net.sf.psstools.lang.pSS.data_declaration;
 import net.sf.psstools.lang.pSS.data_instantiation;
-import net.sf.psstools.lang.pSS.data_type;
 import net.sf.psstools.lang.pSS.dec_number;
 import net.sf.psstools.lang.pSS.enum_declaration;
 import net.sf.psstools.lang.pSS.enum_item;
@@ -26,6 +28,7 @@ import net.sf.psstools.lang.pSS.exec_block;
 import net.sf.psstools.lang.pSS.exec_block_stmt;
 import net.sf.psstools.lang.pSS.exec_body_stmt;
 import net.sf.psstools.lang.pSS.expression;
+import net.sf.psstools.lang.pSS.function_call;
 import net.sf.psstools.lang.pSS.graph_declaration;
 import net.sf.psstools.lang.pSS.graph_labeled_production;
 import net.sf.psstools.lang.pSS.graph_parallel_stmt;
@@ -37,8 +40,11 @@ import net.sf.psstools.lang.pSS.hierarchical_id;
 import net.sf.psstools.lang.pSS.import_method_decl;
 import net.sf.psstools.lang.pSS.import_stmt;
 import net.sf.psstools.lang.pSS.integer_type;
+import net.sf.psstools.lang.pSS.logical_and_expr;
 import net.sf.psstools.lang.pSS.logical_equality_expr;
 import net.sf.psstools.lang.pSS.logical_inequality_expr;
+import net.sf.psstools.lang.pSS.method_call;
+import net.sf.psstools.lang.pSS.method_function_call;
 import net.sf.psstools.lang.pSS.method_parameter;
 import net.sf.psstools.lang.pSS.method_prototype;
 import net.sf.psstools.lang.pSS.number;
@@ -50,6 +56,7 @@ import net.sf.psstools.lang.pSS.package_body_item;
 import net.sf.psstools.lang.pSS.package_declaration;
 import net.sf.psstools.lang.pSS.package_identifier;
 import net.sf.psstools.lang.pSS.package_import_pattern;
+import net.sf.psstools.lang.pSS.string_type;
 import net.sf.psstools.lang.pSS.struct_body_item;
 import net.sf.psstools.lang.pSS.struct_declaration;
 import net.sf.psstools.lang.pSS.struct_field_declaration;
@@ -101,14 +108,14 @@ public class Elaborator {
 	}
 	
 	private void elaborate_action(action_declaration a) {
-		String tag = "<pss:action name=\"" + a.getName() + "\"";
+		enter("action name=\"" + a.getName() + "\"");
 		
 		if (a.getSuper_spec() != null) {
-			tag += " super=\"" + a.getSuper_spec().getSuper().getName() + "\"";
+			action_super_spec super_s = a.getSuper_spec();
+			enter("super");
+			println("<pss:path>" + super_s.getSuper().getName() + "</pss:path>");
+			exit("super");
 		}
-		tag += ">";
-		println(tag);
-		inc_indent();
 		
 		for (action_body_item it : a.getBody()) {
 			if (it instanceof constraint_declaration) {
@@ -123,9 +130,8 @@ public class Elaborator {
 				println("<unknown_item class=\"" + it.getClass() + "\"/>");
 			}
 		}
-		
-		dec_indent();
-		println("</pss:action>");
+	
+		exit("action");
 	}
 	
 	private void elaborate_action_field(action_field_declaration f) {
@@ -156,29 +162,20 @@ public class Elaborator {
 		elaborate_type(type);
 		
 		if (dim != null) {
-			enter("dim");
-			if (dim.getLhs() != null) {
-				elaborate_expr(dim.getLhs(), "pss:lhs");
-				
-				if (dim.getRhs() != null) {
-					elaborate_expr(dim.getRhs(), "pss:rhs");
-				}
-			}
-			
-			exit("dim");
+			elaborate_expr(dim.getDim(), "dim");
 		}		
 	}
 	
 	
 	private void elaborate_component(component_declaration c) {
-		println("<pss:component name=\"" + c.getName() + "\">");
-	
-		// TODO: handle super
+		enter("component name=\"" + c.getName() + "\"");
+
+		// TODO: need to check what happens when the 'super' doesn't exist
 		if (c.getSuper() != null) {
-//			tag += " super=\"" + c.getSuper().getName() + "\"";
+			enter("super");
+			println("<pss:path>" + c.getSuper().getName() + "</pss:path>");
+			exit("super");
 		}
-		
-		inc_indent();
 		
 		for (component_body_item it : c.getBody()) {
 			if (it instanceof action_declaration) {
@@ -196,8 +193,7 @@ public class Elaborator {
 			}
 		}
 		
-		dec_indent();
-		println("</pss:component>");
+		exit("component");
 	}
 
 	private void elaborate_component_field(component_field_declaration f) {
@@ -280,7 +276,7 @@ public class Elaborator {
 	
 	private void elaborate_expr(EObject obj, String tag) {
 		if (tag != null) {
-			enter("<" + tag + ">");
+			enter(tag);
 		}
 		
 		if (obj instanceof expression) {
@@ -301,7 +297,7 @@ public class Elaborator {
 		}
 		
 		if (tag != null) {
-			exit("</" + tag + ">");
+			exit(tag);
 		}
 	}
 	
@@ -322,7 +318,7 @@ public class Elaborator {
 				elaborate_expr(li.getRight(), "pss:rhs");
 				exit("</pss:inside>");
 			} else {
-				String tag = "<pss:binexp op=\"";
+				String tag = "binexp op=\"";
 
 				if (li.getOp().equals("=")) {
 					tag += "Eq";
@@ -361,26 +357,22 @@ public class Elaborator {
 				} else {
 					tag += "unknown-op: " + li.getOp();
 				}
-				tag += "\"/>";
+				tag += "\"";
 
-				println(tag);
-				inc_indent();
+				enter(tag);
 				
-				println("<pss:lhs>");
-				inc_indent();
-				elaborate_expr(li.getLeft());
-				dec_indent();
-				println("</pss:lhs>");
-				println("<pss:rhs>");
-				inc_indent();
-				elaborate_expr(li.getRight());
+				elaborate_expr(li.getLeft(), "pss:lhs");
+				elaborate_expr(li.getRight(), "pss:rhs");
 				
-				dec_indent();
-				println("</pss:rhs>");
-				
-				dec_indent();
-				println("</pss:binexpr>");
+				exit("binexp");
 			}
+		} else if (expr instanceof logical_and_expr) {
+			logical_and_expr e = (logical_and_expr)expr;
+			
+			enter("binexp op=\"AndAnd\"");
+			elaborate_expr(e.getLeft(), "pss:lhs");
+			elaborate_expr(e.getRight(), "pss:rhs");
+			exit("binexp");
 		} else if (expr instanceof logical_equality_expr) {
 			logical_equality_expr le = (logical_equality_expr)expr;
 			String tag = "<pss:binexp op=\"";
@@ -492,36 +484,44 @@ public class Elaborator {
 	}
 	
 	private void elaborate_exec_block_stmt(exec_block_stmt exec) {
-		enter("<pss:exec>");
+		enter("exec");
 		if (exec instanceof exec_block) {
 			exec_block b = (exec_block)exec;
-			String t = "<pss:block";
-			
-			t += " kind=\"" + b.getKind() + "\"";
-			t += ">";
-			enter(t);
-			
+			enter("block kind=\"" + b.getKind() + "\"");
 			
 			for (exec_body_stmt s : b.getBody_stmts()) {
-				t = "<pss:stmt";
 				
-				if (s.getOp() != null) {
-					t += " op=\"" + to_op(s.getOp()) + "\"";
-				}
-				
-				t += ">";
-				enter(t);
-				
-				elaborate_expr(s.getLhs(), "pss:lhs");
-				
-				if (s.getRhs() != null) {
+				if (s.getOp() == null) {
+					// Method call
+					elaborate_method_function_call((method_function_call)s.getLhs(), "pss:call");
+				} else {
+					// Assignment
+					String t = "assign op=\"" + to_op(s.getOp()) + "\"";
+					enter(t);
+					elaborate_expr(s.getLhs(), "pss:lhs");
 					elaborate_expr(s.getRhs(), "pss:rhs");
+					
+					exit(t);
 				}
-				exit("</pss:stmt>");
 			}
 			
-			exit("</pss:block>");
-		} else if (exec instanceof target_code_exec_block) { 
+			exit("block");
+		} else if (exec instanceof target_code_exec_block) {
+			target_code_exec_block b = (target_code_exec_block)exec;
+			String kind_s = b.getKind();
+			String lang_s = b.getLanguage();
+			String body_s = b.getBody();
+			
+			if (body_s.startsWith("\"\"\"")) {
+				body_s = body_s.substring(3, body_s.length()-3);
+			} else if (body_s.startsWith("\"")) {
+				body_s = body_s.substring(1, body_s.length()-1);
+			}
+			
+			String tag = "code_block kind=\"" + kind_s + "\" language=\"" + lang_s + "\"";
+			enter(tag);
+			println(body_s);
+			exit("code_block");
 		} else if (exec instanceof target_file_exec_block) {
 		}
 		exit("</pss:exec>");
@@ -637,7 +637,29 @@ public class Elaborator {
 	}
 	
 	private void elaborate_import_method(import_method_decl imp) {
-		elaborate_method_prototype(imp.getPrototype(), "pss:import_method");
+		elaborate_method_prototype(imp.getPrototype(), "pss:import_function");
+	}
+	
+	private void elaborate_method_function_call(method_function_call c, String tag) {
+		enter(tag);
+		if (c instanceof function_call) {
+			function_call fc = (function_call)c;
+//			to_hierarchical_id(fc.getFunction(), "function");
+		} else if (c instanceof method_call) {
+			method_call mc = (method_call)c;
+			to_hierarchical_id(mc.getMethod(), "pss:function");
+			if (mc.getParameters() != null) {
+				enter("parameters");
+				for (expression p : mc.getParameters().getParameters()) {
+					elaborate_expr(p, "pss:parameter");
+				}
+				exit("parameters");
+			}
+		} else {
+			println("<unknown-element class=\"" + c.getClass()+ "\"/>");
+		}
+		
+		exit(tag);
 	}
 	
 	private void elaborate_method_prototype(method_prototype p, String tag) {
@@ -658,7 +680,7 @@ public class Elaborator {
 	
 	private void elaborate_method_parameter(method_parameter p, String tag) {
 		enter("<" + tag + " name=\"" + p.getName() + "\">");
-		elaborate_type(p.getType(), null);
+		elaborate_type(p.getType(), "pss:type");
 		exit("</" + tag + ">");
 	}
 	
@@ -686,20 +708,19 @@ public class Elaborator {
 	}
 	
 	private void elaborate_struct(struct_declaration s) {
-		String tag = "<pss:struct name=\"" + s.getName() + "\"";
-		
-		if (s.getSuper() != null) {
-			tag += "super=\"" + s.getSuper().getName() + "\"";
-		}
+		String tag = "struct name=\"" + s.getName() + "\"";
 		
 		if (s.getQualifier() != null) {
 			tag += " qualifier=\"" + s.getQualifier().getType() + "\"";
 		}
 		
-		tag += ">";
-		println(tag);
-	
-		inc_indent();
+		enter(tag);
+		
+		if (s.getSuper() != null) {
+			enter("super");
+			println("<pss:path>" + s.getSuper().getName() + "</pss:path>");
+			exit("super");
+		}
 		
 		for (struct_body_item it : s.getBody()) {
 			if (it instanceof struct_field_declaration) {
@@ -764,23 +785,27 @@ public class Elaborator {
 				tag = "pss:bit";
 			}
 			
-			println("<" + tag + ">");
-			inc_indent();
-			
-			println("<pss:msb>");
-			inc_indent();
-			elaborate_expr(it.getLhs());
-			dec_indent();
-			println("</pss:msb>");
-			
-			println("<pss:lsb>");
-			inc_indent();
-			elaborate_expr(it.getRhs());
-			dec_indent();
-			println("</pss:lsb>");
-			
-			dec_indent();
-			println("</" + tag + ">");
+			enter(tag);
+		
+			if (it.getLhs() != null) {
+				enter("msb");
+				elaborate_expr(it.getLhs());
+				exit("msb");
+				
+				if (it.getRhs() != null) {
+					enter("lsb");
+					elaborate_expr(it.getRhs());
+					exit("lsb");
+				}
+			}
+		
+			exit(tag);
+		} else if (type instanceof bool_type) {
+			println("<pss:bool/>");
+		} else if (type instanceof string_type) {
+			println("<pss:string/>");
+		} else if (type instanceof chandle_type) {
+			println("<pss:chandle/>");
 		} else if (type instanceof user_defined_type) {
 			user_defined_type udt = (user_defined_type)type;
 			tid2hierarchical_id(udt.getTypename(), "pss:user");
