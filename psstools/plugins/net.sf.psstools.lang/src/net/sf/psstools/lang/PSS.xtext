@@ -357,7 +357,8 @@ graph_production:
 	| graph_repeat_stmt 				
 	| graph_constraint_stmt			
 	| graph_foreach_stmt				
-	| graph_expr_stmt					
+	| graph_sequence_stmt
+	| graph_block_stmt
 	| graph_select_stmt				
 	| graph_parallel_stmt				
 	| graph_schedule_stmt				
@@ -397,9 +398,7 @@ graph_sequence_stmt:
 		(type=type_identifier item=identifier inline_with=inline_with_constraint?
 		) | 
 		(item=identifier inline_with=inline_with_constraint?
-		) | 
-		(items+=identifier ',' items+=identifier (',' items+=identifier)* 
-		) 
+		)
 	)
 	';'
 ;
@@ -449,11 +448,6 @@ graph_constraint_stmt:
 
 graph_foreach_stmt:
 	'foreach' '(' expr=expression ')' body=graph_block_stmt
-;
-
-graph_expr_stmt:
-	graph_sequence_stmt | 
-	graph_block_stmt
 ;
 
 graph_block_stmt:

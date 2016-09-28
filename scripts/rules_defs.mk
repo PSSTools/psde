@@ -12,6 +12,11 @@ ifeq (Cygwin,$(UNAME_O))
 SCRIPTS_DIR := $(shell cygpath -w $(SCRIPTS_DIR) | sed -e 's%\\%/%g')
 os:=win32
 ws:=win32
+else
+ifeq ("GNU/Linux","$(UNAME_O)")
+os:=linux
+ws:=gtk
+endif
 endif
 
 ifeq (x86_64,$(UNAME_M))

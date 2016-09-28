@@ -592,29 +592,26 @@ public class Elaborator {
 	}
 	
 	private void elaborate_graph_sequence(graph_sequence_stmt s) {
-		if (s.getItems().size() > 0) {
-			enter("pss:sequential");
-			for (String it : s.getItems()) {
-				println("<pss:traverse name=\"" + it + "\"/>");
-			}
-			exit("pss:sequential");
+//			enter("pss:sequential");
+//			for (String it : s.getItems()) {
+//				println("<pss:traverse name=\"" + it + "\"/>");
+//			}
+//			exit("pss:sequential");
+		if (s.getType() != null) {
+			println("<unknown_item type=\"inline action declaration\"/>");
 		} else {
-			if (s.getType() != null) {
-				println("<unknown_item type=\"inline action declaration\"/>");
+			String tag = "<pss:traverse name=\"" + s.getItem() + "\"";
+
+			if (s.getInline_with() == null) {
+				tag += "/>";
+				println(tag);
 			} else {
-				String tag = "<pss:traverse name=\"" + s.getItem() + "\"";
-				
-				if (s.getInline_with() == null) {
-					tag += "/>";
-					println(tag);
-				} else {
-					tag += ">";
-					println(tag);
-					inc_indent();
-					elaborate_constraint_list(s.getInline_with().getConstraints(), "pss:with");
-					dec_indent();
-					println("</traverse>");
-				}
+				tag += ">";
+				println(tag);
+				inc_indent();
+				elaborate_constraint_list(s.getInline_with().getConstraints(), "pss:with");
+				dec_indent();
+				println("</traverse>");
 			}
 		}
 	}

@@ -143,10 +143,7 @@
     		<arg value="-d"/>
     		<arg value="${buildDirectory}/plugins/net.sf.psstools.lang.ui/xtend-gen"/>
     		<arg value="-cp"/>
-    		<!--
-    		<arg value="${classpath_arg}"/>
-    		  -->
-    		<arg value="${classpath_arg};${path.separator}${xtend_core_path}"/>
+    		<arg value="${classpath_arg}${path.separator}${xtend_core_path}"/>
     		<arg value="${buildDirectory}/plugins/net.sf.psstools.lang.ui/src-gen"/>
     		<arg value="${buildDirectory}/plugins/net.sf.psstools.lang.ui/src"/>
     	</java>

@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <sys/types.h>
 #if defined(_WIN32)
 #error "Need getcwd support in Windows"
