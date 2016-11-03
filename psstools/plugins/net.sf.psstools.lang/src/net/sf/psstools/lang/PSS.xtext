@@ -142,7 +142,7 @@ action_field_declaration:
 ;
 
 action_field_modifier:
-	rand?='rand'|io_direction|lock?='lock'|shared?='share'	
+	rand?='rand'|io_direction|lock?='lock'|shared?='share'|action?='action'	
 ;
 
 io_direction:
