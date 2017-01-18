@@ -1,8 +1,13 @@
 #!/bin/sh
 
+uname_o=`uname -o`
 is_mingw=`uname | sed -e 's/MINGW.*$/1/'`
 
 if test "$is_mingw" = "1"; then
+  os=win32
+  ws=win32
+  eclipse=eclipsec
+elif test "$uname_o" = "Cygwin"; then
   os=win32
   ws=win32
   eclipse=eclipsec

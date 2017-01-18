@@ -20,17 +20,14 @@ import net.sf.psstools.lang.elaborator.rules.RuleRepeatProduction;
 import net.sf.psstools.lang.pSS.Model;
 import net.sf.psstools.lang.pSS.data_declaration;
 import net.sf.psstools.lang.pSS.data_instantiation;
-import net.sf.psstools.lang.pSS.data_type;
 import net.sf.psstools.lang.pSS.graph_block_stmt;
 import net.sf.psstools.lang.pSS.graph_production;
 import net.sf.psstools.lang.pSS.graph_repeat_stmt;
-import net.sf.psstools.lang.pSS.integer_type;
 import net.sf.psstools.lang.pSS.portable_stimulus_description;
 import net.sf.psstools.lang.pSS.struct_body_item;
 import net.sf.psstools.lang.pSS.struct_declaration;
 import net.sf.psstools.lang.pSS.struct_field_declaration;
 import net.sf.psstools.lang.pSS.type_identifier;
-import net.sf.psstools.lang.pSS.user_defined_type;
 
 public class GraphElaborator {
 	
@@ -263,45 +260,45 @@ public class GraphElaborator {
 	private DataType elaborate_data_type(EObject dt) throws ElabException {
 		DataType type = null;
 		
-		if (dt instanceof user_defined_type) {
-			user_defined_type udt = (user_defined_type)dt;
-			debug("user-defined type: " + udt.getTypename());
-			
-			if ((type = findType(udt.getTypename())) == null) {
-				// Go searching
-				Object decl = null; // graph_or_struct_declaration decl = find_graph_or_struct(udt.getTypename());
-				
-				if (decl == null) {
-					error("Struct or graph \"" + udt.getTypename() + "\" undeclared");
-				}
-				
-//				if (decl instanceof graph_declaration) {
-//					// TODO: elab
-//				} else if (decl instanceof struct_declaration) {
-//					DataTypeStruct dts = elaborate_struct_type((struct_declaration)decl);
+//		if (dt instanceof user_defined_type) {
+//			user_defined_type udt = (user_defined_type)dt;
+//			debug("user-defined type: " + udt.getTypename());
+//			
+//			if ((type = findType(udt.getTypename())) == null) {
+//				// Go searching
+//				Object decl = null; // graph_or_struct_declaration decl = find_graph_or_struct(udt.getTypename());
+//				
+//				if (decl == null) {
+//					error("Struct or graph \"" + udt.getTypename() + "\" undeclared");
 //				}
-				
-			}
-			
-		} else if (dt instanceof integer_type) {
-			integer_type int_type = (integer_type)dt;
-			
-			DataTypeScalar stype = new DataTypeScalar();
-
-			// TODO: need to establish bit-width
-//			if (int_type.getAtom_type().equals("bit")) {
-//				stype.setScalarType(DataTypeScalar.ScalarType.Bit);
-//				stype.setIsSigned(!int_type.isSigned());
-//			} else if (int_type.getAtom_type().equals("int")) {
-//				stype.setScalarType(DataTypeScalar.ScalarType.Int);
-//				stype.setIsSigned(!int_type.isUnsigned());
-//			} else {
-//				error("unknown integer atom type: " + int_type.getAtom_type());
+//				
+////				if (decl instanceof graph_declaration) {
+////					// TODO: elab
+////				} else if (decl instanceof struct_declaration) {
+////					DataTypeStruct dts = elaborate_struct_type((struct_declaration)decl);
+////				}
+//				
 //			}
-		
-			type = stype;
-		}
-		
+//			
+//		} else if (dt instanceof integer_type) {
+//			integer_type int_type = (integer_type)dt;
+//			
+//			DataTypeScalar stype = new DataTypeScalar();
+//
+//			// TODO: need to establish bit-width
+////			if (int_type.getAtom_type().equals("bit")) {
+////				stype.setScalarType(DataTypeScalar.ScalarType.Bit);
+////				stype.setIsSigned(!int_type.isSigned());
+////			} else if (int_type.getAtom_type().equals("int")) {
+////				stype.setScalarType(DataTypeScalar.ScalarType.Int);
+////				stype.setIsSigned(!int_type.isUnsigned());
+////			} else {
+////				error("unknown integer atom type: " + int_type.getAtom_type());
+////			}
+//		
+//			type = stype;
+//		}
+//		
 		return type;
 	}
 	
@@ -419,9 +416,9 @@ public class GraphElaborator {
 	
 //	private void addIntegerFields()
 	
-	private data_type resolve_user_defined_type(user_defined_type type) {
-		return null;
-	}
+//	private data_type resolve_user_defined_type(user_defined_type type) {
+//		return null;
+//	}
 	
 //	private graph_or_struct_declaration find_graph_or_struct(type_identifier name) {
 //		for (Model m : fModelList) {

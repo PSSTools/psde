@@ -23,7 +23,7 @@ import net.sf.psstools.lang.pSS.string_type
 import net.sf.psstools.lang.pSS.struct_declaration
 import net.sf.psstools.lang.pSS.struct_field_declaration
 import net.sf.psstools.lang.pSS.type_identifier
-import net.sf.psstools.lang.pSS.user_defined_type
+import net.sf.psstools.lang.pSS.user_defined_datatype
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider
 
@@ -87,8 +87,8 @@ class PSSLabelProvider extends DefaultEObjectLabelProvider {
 			return "string";
 		} else if (dd.type instanceof bool_type) {
 			return "bool";
-		} else if (dd.type instanceof user_defined_type) {
-			var ud_t = dd.type as user_defined_type;
+		} else if (dd.type instanceof user_defined_datatype) {
+			var ud_t = dd.type as user_defined_datatype;
 			return tid2string(ud_t.typename);
 		} else {
 			return "unknown";

@@ -2,15 +2,21 @@ package net.sf.psstools.lang.docbuilder;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class HTMLDocRenderer implements IDocRenderer {
 	private PrintStream				fPS;
 	private boolean					fWSInserted;
 	private int						fLen;
 	private int						fHeadBase = 1;
+	private List<String>			fKeywords;
 	
 	public HTMLDocRenderer(OutputStream os) {
 		fPS = new PrintStream(os);
+	
+		fKeywords = new ArrayList<String>();
 		
 		fPS.println("<head>");
 		fPS.println("<style>");
@@ -28,6 +34,18 @@ public class HTMLDocRenderer implements IDocRenderer {
 	
 	public void close() {
 		
+		Collections.sort(fKeywords);
+		
+		// Add in keywords table
+		fPS.println("<table>");
+		for (int i=0; i<fKeywords.size(); i++) {
+			fPS.println("<tr>");
+			fPS.println("<td>" + fKeywords.get(i) + "</td>");
+			fPS.println("</tr>");
+		}
+		fPS.println("</table>");
+		fKeywords.size();
+		
 		fPS.println("</pre>");
 		fPS.println("</body>");
 		fPS.flush();
@@ -44,6 +62,11 @@ public class HTMLDocRenderer implements IDocRenderer {
 
 	@Override
 	public void keyword(String kw) {
+		if (kw.length() > 1 && Character.isJavaIdentifierStart(kw.charAt(0))) {
+			if (!fKeywords.contains(kw)) {
+				fKeywords.add(kw);
+			}
+		}
 		fLen += kw.length();
 		fWSInserted = false;
 		fPS.print("<span class=\"kw\">" + kw + "</span>");

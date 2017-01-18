@@ -64,7 +64,7 @@ import net.sf.psstools.lang.pSS.struct_field_modifier;
 import net.sf.psstools.lang.pSS.target_code_exec_block;
 import net.sf.psstools.lang.pSS.target_file_exec_block;
 import net.sf.psstools.lang.pSS.type_identifier;
-import net.sf.psstools.lang.pSS.user_defined_type;
+import net.sf.psstools.lang.pSS.user_defined_datatype;
 import net.sf.psstools.lang.pSS.variable_ref;
 
 public class Elaborator {
@@ -803,8 +803,8 @@ public class Elaborator {
 			println("<pss:string/>");
 		} else if (type instanceof chandle_type) {
 			println("<pss:chandle/>");
-		} else if (type instanceof user_defined_type) {
-			user_defined_type udt = (user_defined_type)type;
+		} else if (type instanceof user_defined_datatype) {
+			user_defined_datatype udt = (user_defined_datatype)type;
 			tid2hierarchical_id(udt.getTypename(), "pss:user");
 		} else {
 			println("<unknown_item class=\"" + type.getClass()+ "\"/>");

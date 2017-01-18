@@ -132,7 +132,7 @@ action_body_item:
 ;
 
 graph_declaration:
-	{graph_declaration} 'graph' '{'
+	{graph_declaration} 'activity' '{'
 		body+=graph_production*
 	'}' (';')?
 ;
@@ -438,7 +438,7 @@ graph_repeat_stmt:
 	{graph_repeat_stmt} (
 		('repeat' pre_cond?='while' '(' expr=expression ')' body=graph_block_stmt) |
 		('repeat' count?='(' (ivar=identifier ':')? expr=expression ')' body=graph_block_stmt) |
-		('repeat' body=graph_block_stmt (post_cond?='while' '(' expr=expression ')')?)
+		('repeat' body=graph_block_stmt (post_cond?='while' '(' expr=expression ')' ';')?)
 		)
 ;
 
@@ -525,21 +525,19 @@ coverspec_portmap:
  * H1: Data Types
  ********************************************************************/
  
-/**
- * BNF: data_type ::= scalar_data_type | struct_identifier
- */
 data_type:
 	scalar_data_type |
-	user_defined_type
+	user_defined_datatype
 ;
 
 /**
- * BNF: action_data_type ::= scalar_data_type | struct_identifier | action_identifier
+ * BNF: action_data_type ::= scalar_data_type | user_defined_datatype | action_type
  */
 action_data_type:
 	scalar_data_type |
-	user_defined_type
+	user_defined_datatype
 ;
+
 
 scalar_data_type:
 	chandle_type 	|
@@ -566,12 +564,21 @@ enum_item:
 	name=identifier ('=' value=expression)?
 ;
 
-user_defined_type:
+/** BNF: user_defined_datatype ::= struct_type | enum_type | typedef_type*/
+user_defined_datatype:
 	typename=type_identifier
 ;
 
+struct_type : type_identifier;
+
+action_type : type_identifier;
+
+enum_type : type_identifier;
+
+typedef_type : type_identifier;
+
 typedef_declaration:
- 	'typedef' type=data_type type_id=identifier ';' 
+ 	'typedef' type=data_type type_id=type_identifier ';' 
 ;
 
 string_type: typename='string';  
@@ -962,9 +969,9 @@ terminal WS			: (' '|'\t'|'\r'|'\n')+;
  */
 terminal SL_COMMENT 	: '//' !('\n'|'\r')* ('\r'? '\n')?;
 
-/**
- * BNF: ML_COMMENT ::= <kw>/*</kw>{any_ASCII_character}<kw>/*</kw>
- */
+//
+// BNF: ML_COMMENT ::= <kw>/*</kw>{any_ASCII_character}<kw>*/</kw>
+//
 terminal ML_COMMENT	: '/*' -> '*/';
 
 string: DOUBLE_QUOTED_STRING|TRIPLE_DOUBLE_QUOTED_STRING;
