@@ -33,20 +33,36 @@ public class HTMLDocRenderer implements IDocRenderer {
 	}
 	
 	public void close() {
+		fPS.println("</pre>");
 		
 		Collections.sort(fKeywords);
-		
+	
+		fPS.println("<h" + (fHeadBase+1) + ">Keywords</h" + (fHeadBase+1) + ">");
+		fPS.println("PSS reserves the keywords listed in the following table");
+		fPS.println("<p/>");
+		fPS.println("<p/>");
 		// Add in keywords table
-		fPS.println("<table>");
-		for (int i=0; i<fKeywords.size(); i++) {
-			fPS.println("<tr>");
-			fPS.println("<td>" + fKeywords.get(i) + "</td>");
-			fPS.println("</tr>");
+		int per_column = 15;
+		int col_per_page = 4;
+		int per_page = per_column * col_per_page;
+		int num_pages = ((fKeywords.size()-1)/per_page)+1;
+		for (int page=0; page<num_pages; page++) {
+			fPS.println("<table cellpadding=\"5\" cellspacing=\"5\" frame=\"box\">");
+			for (int row=0; row<per_column; row++) {
+				fPS.println("<tr>");
+				for (int col=0; col<col_per_page; col++) {
+					int idx = (page*per_page) + (col*per_column) + row;
+					if (idx < fKeywords.size()) {
+						fPS.println("<td><pre>" + fKeywords.get(idx) + "</pre></td>");
+					} else {
+						fPS.println("<td/>");
+					}
+				}
+				fPS.println("</tr>");
+			}
+			fPS.println("</table>");
 		}
-		fPS.println("</table>");
-		fKeywords.size();
 		
-		fPS.println("</pre>");
 		fPS.println("</body>");
 		fPS.flush();
 	}

@@ -355,6 +355,27 @@ public class DocBuilder {
 	private void process(String markup) {
 		int last_idx=0, idx=0;
 		
+		// First, replace any escaped characters
+		StringBuilder sb = new StringBuilder(markup);
+		int i, s=0;
+		
+		while ((i = sb.indexOf("\\0", s)) >=0) {
+			int ch=-1;
+			String ch_s = sb.substring(i+1, i+4);
+			System.out.println("ch_s=" + ch_s);
+			try {
+				ch = Integer.parseInt(ch_s, 8);
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+			
+			sb.replace(i, i+4, ""+((char)ch));
+			
+			s=i+1;
+		}
+		
+		markup = sb.toString();
+		
 		while ((idx=markup.indexOf("<kw>", last_idx)) != -1) {
 			if (idx > last_idx) {
 				fRenderer.append(markup.substring(last_idx, idx));

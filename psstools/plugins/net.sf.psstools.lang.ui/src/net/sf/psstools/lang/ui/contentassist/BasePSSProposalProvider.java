@@ -37,13 +37,6 @@ public class BasePSSProposalProvider extends AbstractPSSProposalProvider {
 	};
 
 	@Override
-	public void complete_graph_bind_stmt(EObject model, RuleCall ruleCall, 
-			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
-		System.out.println("complete_graph_bind_stmt: " + ruleCall);
-	};
-	
-
-	@Override
 	public void complete_hierarchical_id(
 			EObject model, 
 			RuleCall ruleCall, 

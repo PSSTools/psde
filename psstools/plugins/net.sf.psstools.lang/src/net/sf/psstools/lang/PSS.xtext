@@ -117,11 +117,11 @@ abstract_action_declaration returns action_declaration:
 ;
 
 action_super_spec:
-	':' super=[action_declaration|action_identifier] 
+	':' super=type_identifier
 ;
 
 action_body_item:
-	graph_declaration			|
+	activity_declaration			|
 	overrides_declaration  		|	
 	constraint_declaration 		|
 	action_field_declaration	|
@@ -131,9 +131,9 @@ action_body_item:
 	exec_block_stmt
 ;
 
-graph_declaration:
-	{graph_declaration} 'activity' '{'
-		body+=graph_production*
+activity_declaration:
+	{activity_declaration} 'activity' '{'
+		body+=activity_stmt*
 	'}' (';')?
 ;
 
@@ -183,9 +183,12 @@ exec_body_stmt:
  * H1: Struct Declarations
  ****************************************************************************/
 struct_declaration:
-	(qualifier=struct_qualifier)? 'struct' name=identifier (':' super=[struct_declaration|struct_identifier])? '{'
+	(qualifier=struct_qualifier)? 'struct' name=identifier (super=struct_super_spec)? '{'
 		body+=struct_body_item*
 	'}' (';')?
+;
+
+struct_super_spec : ':' super=type_identifier
 ;
 
 struct_qualifier:
@@ -306,14 +309,19 @@ export_action:
  ****************************************************************************/
 component_declaration:
 //	(attr=attributes)?
-	'component' name=component_identifier (':' super=[component_declaration|component_identifier])? '{'
+	'component' name=component_identifier (super=component_super_spec)? '{'
 	body+=component_body_item*
 	'}' (';')?
+;
+
+component_super_spec :
+	':' super=type_identifier
 ;
 
 component_body_item:
 	overrides_declaration			|
 	component_field_declaration		|
+	constraint_declaration 			|
 	action_declaration 				|
 	struct_declaration				|
 	import_stmt						|
@@ -323,7 +331,20 @@ component_body_item:
 ;
 
 component_field_declaration:
-	(pool?='pool')? declaration=data_declaration
+	component_data_declaration |
+	component_pool_declaration
+;
+
+component_data_declaration:
+	declaration=data_declaration
+;
+
+component_pool_declaration:
+	'pool' ('[' size=expression ']')? declaration=data_declaration
+;
+
+component_field_modifier:
+	(pool?='pool')
 ;
 
 inline_type_object_declaration:
@@ -350,19 +371,19 @@ component_path_elem:
 ;
 
 /********************************************************************
- * H1: Graph Productions
+ * H1: Activity-Graph Statements
  ********************************************************************/
-graph_production: 
-	graph_if_else_production		
-	| graph_repeat_stmt 				
-	| graph_constraint_stmt			
-	| graph_foreach_stmt				
-	| graph_sequence_stmt
-	| graph_block_stmt
-	| graph_select_stmt				
-	| graph_parallel_stmt				
-	| graph_schedule_stmt				
-	| graph_bind_stmt					
+activity_stmt: 
+	activity_if_else_stmt		
+	| activity_repeat_stmt 				
+	| activity_constraint_stmt			
+	| activity_foreach_stmt				
+	| activity_action_traversal_stmt
+	| activity_sequence_block_stmt
+	| activity_select_stmt				
+	| activity_parallel_stmt				
+	| activity_schedule_stmt				
+	| activity_bind_stmt					
 //	| graph_method_call_stmt
 ;
 
@@ -372,29 +393,29 @@ graph_method_call_stmt:
 ;
 */
 
-graph_bind_stmt:
-	'bind' lhs=hierarchical_id rhs=graph_bind_item_or_list ';'
+activity_bind_stmt:
+	'bind' lhs=hierarchical_id rhs=activity_bind_item_or_list ';'
 ;
 
-graph_bind_item_or_list:
+activity_bind_item_or_list:
 	items+=hierarchical_id | ('{' items+=hierarchical_id (',' items+=hierarchical_id)* '}')
 ;
 
-graph_if_else_production:
-	'if' '(' expr=expression ')' if_production=graph_production 
-	(=> 'else' else_production=graph_production)?
+activity_if_else_stmt:
+	'if' '(' expr=expression ')' if_production=activity_stmt 
+	(=> 'else' else_production=activity_stmt)?
 ;
 
-graph_select_stmt:
+activity_select_stmt:
 	'select' '{'
-		productions+=graph_labeled_production 
-		productions+=graph_labeled_production
-		productions+=graph_labeled_production*
+		stmts+=activity_labeled_stmt 
+		stmts+=activity_labeled_stmt
+		stmts+=activity_labeled_stmt*
 	'}'
 ;
 
-graph_sequence_stmt:
-	{graph_sequence_stmt} (
+activity_action_traversal_stmt:
+	{activity_action_traversal_stmt} (
 		(type=type_identifier item=identifier inline_with=inline_with_constraint?
 		) | 
 		(item=identifier inline_with=inline_with_constraint?
@@ -408,20 +429,20 @@ inline_with_constraint:
 ;
 
 
-graph_parallel_stmt:
-	{graph_parallel_stmt} 'parallel' '{'
-		productions+=graph_labeled_production*
+activity_parallel_stmt:
+	{activity_parallel_stmt} 'parallel' '{'
+		productions+=activity_labeled_stmt*
 	'}' (';')?
 ;
 
-graph_schedule_stmt:
-	{graph_schedule_stmt} 'schedule' '{'
-		productions+=graph_labeled_production*
+activity_schedule_stmt:
+	{activity_schedule_stmt} 'schedule' '{'
+		productions+=activity_labeled_stmt*
 	'}' (';')?
 ;
 
 //graph_select_production:
-//	(label=identifier /*(':=' weight=graph_select_weight)?*/ ':')? production=graph_production 
+//	(label=identifier /*(':=' weight=graph_select_weight)?*/ ':')? production=activity_stmt 
 //;
 //
 //graph_select_weight:
@@ -430,37 +451,37 @@ graph_schedule_stmt:
 //	'(' expr=expression ')'
 //;
 
-graph_labeled_production:
-	(label=identifier ':')? production=graph_production
+activity_labeled_stmt:
+	(label=identifier ':')? production=activity_stmt
 ;
 
-graph_repeat_stmt:
-	{graph_repeat_stmt} (
-		('repeat' pre_cond?='while' '(' expr=expression ')' body=graph_block_stmt) |
-		('repeat' count?='(' (ivar=identifier ':')? expr=expression ')' body=graph_block_stmt) |
-		('repeat' body=graph_block_stmt (post_cond?='while' '(' expr=expression ')' ';')?)
+activity_repeat_stmt:
+	{activity_repeat_stmt} (
+		('repeat' pre_cond?='while' '(' expr=expression ')' body=activity_sequence_block_stmt) |
+		('repeat' count?='(' (ivar=identifier ':')? expr=expression ')' body=activity_sequence_block_stmt) |
+		('repeat' body=activity_sequence_block_stmt (post_cond?='while' '(' expr=expression ')' ';')?)
 		)
 ;
 
-graph_constraint_stmt:
-	{graph_constraint_stmt} 'constraint' ((block?='{' body+=constraint_body_item* '}' ) | (body+=single_stmt_constraint))
+activity_constraint_stmt:
+	{activity_constraint_stmt} 'constraint' ((block?='{' body+=constraint_body_item* '}' ) | (body+=single_stmt_constraint))
 ;
 
-graph_foreach_stmt:
-	'foreach' '(' expr=expression ')' body=graph_block_stmt
+activity_foreach_stmt:
+	'foreach' '(' expr=expression ')' body=activity_sequence_block_stmt
 ;
 
-graph_block_stmt:
-	'{' {graph_block_stmt} stmt_list+=graph_production* '}'
+activity_sequence_block_stmt:
+	('sequence')? '{' {activity_sequence_block_stmt} stmt_list+=activity_stmt* '}'
 ;
 
 symbol_declaration:
 	'symbol' name=identifier ('(' parameters=symbol_paramlist ')')? '='
-		rules+=graph_production 
+		rules+=activity_stmt 
 ;
 
 symbol_param:
-	(dir=io_direction)? (type=data_type) name=identifier
+	(type=data_type) name=identifier
 ;
 
 symbol_paramlist:
@@ -481,7 +502,7 @@ override_stmt:
 ;
 
 type_override:
-	'type' src=identifier 'with' dest=identifier ';'
+	'type' src=identifier 'with' dest=hierarchical_type_identifier ';'
 ;
 
 instance_override:
@@ -561,7 +582,7 @@ chandle_type:
 ;
 
 enum_item:
-	name=identifier ('=' value=expression)?
+	name=identifier ('=' value=constant_expression)?
 ;
 
 /** BNF: user_defined_datatype ::= struct_type | enum_type | typedef_type*/
@@ -627,7 +648,11 @@ constraint_body_item:
 ;
 
 expression_constraint_item:
-	expression (('->' impl_constraint=constraint_set)|';')
+	expr=expression (impl_constraint=implicand_constraint_item|';')
+;
+
+implicand_constraint_item:
+	'->' constraint=constraint_set
 ;
 
 single_stmt_constraint:
@@ -644,11 +669,12 @@ foreach_constraint_item:
 ;
 
 constraint_set:
-	items+=constraint_body_item | items+=constraint_block
+	item=constraint_body_item | 
+	block=constraint_block
 ;
 
 constraint_block:
-	'{' {constraint_set} items+=constraint_body_item* '}'
+	{constraint_block} '{' items+=constraint_body_item* '}'
 ;
 
 unique_constraint_item:
@@ -721,9 +747,9 @@ coverspec_option:
 
 
 coverspec_coverpoint:
-	name=ID ':' 'coverpoint' target=hierarchical_id 
+	name=coverpoint_identifier ':' 'coverpoint' target=coverpoint_target_identifier 
 		(
-			( '{' body_items+=coverspec_coverpoint_body_item* '}') | ';'
+			( '{' body_items+=coverspec_coverpoint_body_item* '}' (';')?) | ';'
 		)
 ;
 
@@ -733,7 +759,7 @@ coverspec_coverpoint_body_item:
 ;
 
 coverspec_coverpoint_binspec:
-	'bins' name=identifier 
+	'bins' name=coverpoint_identifier 
 		(bins=bin_specification | binsref=hierarchical_id) ';'
 ;
 
@@ -742,9 +768,9 @@ coverspec_cross_body_item:
 ;
 
 coverspec_cross:
-	name=ID ':' 'cross' targets+=hierarchical_id (',' targets+=hierarchical_id)*
+	name=ID ':' 'cross' targets+=coverpoint_identifier (',' targets+=coverpoint_identifier)*
 		(
-			( '{' body_items+=coverspec_cross_body_item* '}') | ';'
+			( '{' body_items+=coverspec_cross_body_item* '}' (';')? ) | ';'
 		)
 ;
 
@@ -885,6 +911,7 @@ action_identifier: identifier;
 struct_identifier: identifier;
 component_identifier: identifier;
 component_action_identifier: identifier;
+coverpoint_identifier : identifier;
 enum_identifier: identifier;
 import_class_identifier: identifier;
 language_identifier: identifier;
@@ -895,6 +922,7 @@ bin_identifier: identifier;
 exec_kind_identifier: identifier;
 constant: number | identifier;
 package_identifier: hierarchical_id;
+coverpoint_target_identifier : hierarchical_id;
 
 identifier: ID | ESCAPED_ID;
 
@@ -969,9 +997,9 @@ terminal WS			: (' '|'\t'|'\r'|'\n')+;
  */
 terminal SL_COMMENT 	: '//' !('\n'|'\r')* ('\r'? '\n')?;
 
-//
-// BNF: ML_COMMENT ::= <kw>/*</kw>{any_ASCII_character}<kw>*/</kw>
-//
+/*
+ * BNF: ML_COMMENT ::= <kw>/*</kw>{any_ASCII_character}<kw>*\057</kw>
+ */
 terminal ML_COMMENT	: '/*' -> '*/';
 
 string: DOUBLE_QUOTED_STRING|TRIPLE_DOUBLE_QUOTED_STRING;

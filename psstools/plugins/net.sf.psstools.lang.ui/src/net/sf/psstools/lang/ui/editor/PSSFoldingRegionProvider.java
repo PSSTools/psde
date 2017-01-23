@@ -7,16 +7,16 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.ui.editor.folding.DefaultFoldingRegionProvider;
 
 import net.sf.psstools.lang.pSS.action_declaration;
+import net.sf.psstools.lang.pSS.activity_constraint_stmt;
+import net.sf.psstools.lang.pSS.activity_declaration;
+import net.sf.psstools.lang.pSS.activity_select_stmt;
+import net.sf.psstools.lang.pSS.activity_parallel_stmt;
+import net.sf.psstools.lang.pSS.activity_schedule_stmt;
 import net.sf.psstools.lang.pSS.component_declaration;
 import net.sf.psstools.lang.pSS.constraint_declaration;
 import net.sf.psstools.lang.pSS.coverspec_declaration;
 import net.sf.psstools.lang.pSS.enum_declaration;
 import net.sf.psstools.lang.pSS.extend_stmt;
-import net.sf.psstools.lang.pSS.graph_constraint_stmt;
-import net.sf.psstools.lang.pSS.graph_declaration;
-import net.sf.psstools.lang.pSS.graph_parallel_stmt;
-import net.sf.psstools.lang.pSS.graph_schedule_stmt;
-import net.sf.psstools.lang.pSS.graph_select_stmt;
 import net.sf.psstools.lang.pSS.package_declaration;
 import net.sf.psstools.lang.pSS.struct_declaration;
 
@@ -32,10 +32,10 @@ public class PSSFoldingRegionProvider extends DefaultFoldingRegionProvider {
 		fFoldingRegions.add(component_declaration.class);
 		fFoldingRegions.add(coverspec_declaration.class);
 		
-		fFoldingRegions.add(graph_declaration.class);
-		fFoldingRegions.add(graph_select_stmt.class);
-		fFoldingRegions.add(graph_parallel_stmt.class);
-		fFoldingRegions.add(graph_schedule_stmt.class);
+		fFoldingRegions.add(activity_declaration.class);
+		fFoldingRegions.add(activity_select_stmt.class);
+		fFoldingRegions.add(activity_parallel_stmt.class);
+		fFoldingRegions.add(activity_schedule_stmt.class);
 		
 		fFoldingRegions.add(enum_declaration.class);
 		fFoldingRegions.add(extend_stmt.class);
@@ -66,8 +66,8 @@ public class PSSFoldingRegionProvider extends DefaultFoldingRegionProvider {
 			}
 		}
 		
-		if (e instanceof graph_constraint_stmt) {
-			if (((graph_constraint_stmt)e).isBlock()) {
+		if (e instanceof activity_constraint_stmt) {
+			if (((activity_constraint_stmt)e).isBlock()) {
 				return true;
 			}
 		}

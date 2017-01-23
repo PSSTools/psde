@@ -11,6 +11,12 @@ import net.sf.psstools.lang.pSS.action_body_item;
 import net.sf.psstools.lang.pSS.action_declaration;
 import net.sf.psstools.lang.pSS.action_field_declaration;
 import net.sf.psstools.lang.pSS.action_super_spec;
+import net.sf.psstools.lang.pSS.activity_action_traversal_stmt;
+import net.sf.psstools.lang.pSS.activity_declaration;
+import net.sf.psstools.lang.pSS.activity_labeled_stmt;
+import net.sf.psstools.lang.pSS.activity_parallel_stmt;
+import net.sf.psstools.lang.pSS.activity_repeat_stmt;
+import net.sf.psstools.lang.pSS.activity_stmt;
 import net.sf.psstools.lang.pSS.array_dim;
 import net.sf.psstools.lang.pSS.bool_type;
 import net.sf.psstools.lang.pSS.chandle_type;
@@ -18,6 +24,7 @@ import net.sf.psstools.lang.pSS.component_body_item;
 import net.sf.psstools.lang.pSS.component_declaration;
 import net.sf.psstools.lang.pSS.component_field_declaration;
 import net.sf.psstools.lang.pSS.component_path;
+import net.sf.psstools.lang.pSS.component_pool_declaration;
 import net.sf.psstools.lang.pSS.constraint_declaration;
 import net.sf.psstools.lang.pSS.data_declaration;
 import net.sf.psstools.lang.pSS.data_instantiation;
@@ -29,12 +36,6 @@ import net.sf.psstools.lang.pSS.exec_block_stmt;
 import net.sf.psstools.lang.pSS.exec_body_stmt;
 import net.sf.psstools.lang.pSS.expression;
 import net.sf.psstools.lang.pSS.function_call;
-import net.sf.psstools.lang.pSS.graph_declaration;
-import net.sf.psstools.lang.pSS.graph_labeled_production;
-import net.sf.psstools.lang.pSS.graph_parallel_stmt;
-import net.sf.psstools.lang.pSS.graph_production;
-import net.sf.psstools.lang.pSS.graph_repeat_stmt;
-import net.sf.psstools.lang.pSS.graph_sequence_stmt;
 import net.sf.psstools.lang.pSS.hex_number;
 import net.sf.psstools.lang.pSS.hierarchical_id;
 import net.sf.psstools.lang.pSS.import_method_decl;
@@ -113,7 +114,7 @@ public class Elaborator {
 		if (a.getSuper_spec() != null) {
 			action_super_spec super_s = a.getSuper_spec();
 			enter("super");
-			println("<pss:path>" + super_s.getSuper().getName() + "</pss:path>");
+			tid2path(super_s.getSuper());
 			exit("super");
 		}
 		
@@ -122,8 +123,8 @@ public class Elaborator {
 				elaborate_constraint((constraint_declaration)it);
 			} else if (it instanceof action_field_declaration) {
 				elaborate_action_field((action_field_declaration)it);
-			} else if (it instanceof graph_declaration) {
-				elaborate_graph((graph_declaration)it);
+			} else if (it instanceof activity_declaration) {
+				elaborate_graph((activity_declaration)it);
 			} else if (it instanceof exec_block_stmt) {
 				elaborate_exec_block_stmt((exec_block_stmt)it);
 			} else {
@@ -173,7 +174,7 @@ public class Elaborator {
 		// TODO: need to check what happens when the 'super' doesn't exist
 		if (c.getSuper() != null) {
 			enter("super");
-			println("<pss:path>" + c.getSuper().getName() + "</pss:path>");
+			tid2path(c.getSuper().getSuper());
 			exit("super");
 		}
 		
@@ -201,8 +202,9 @@ public class Elaborator {
 		
 		for (data_instantiation inst : decl.getInstances()) {
 			String tag = "<pss:field name=\"" + inst.getName() + "\"";
-
-			if (f.isPool()) {
+		
+			if (f instanceof component_pool_declaration) {
+				// TODO: pool size
 				tag += " qualifier=\"pool\"";
 			} else if (f instanceof struct_field_modifier) {
 				struct_field_modifier m = (struct_field_modifier)f;
@@ -457,25 +459,25 @@ public class Elaborator {
 		println("</pss:enum>");
 	}
 	
-	private void elaborate_graph(graph_declaration graph) {
+	private void elaborate_graph(activity_declaration graph) {
 		enter("pss:graph");
 	
-		elaborate_graph_production_list(graph.getBody());
+		elaborate_activity_stmt_list(graph.getBody());
 		
 		exit("pss:graph");
 	}
 	
-	private void elaborate_graph_production_list(EList<graph_production> productions) {
-		elaborate_graph_production_list(productions, null);
+	private void elaborate_activity_stmt_list(EList<activity_stmt> productions) {
+		elaborate_activity_stmt_list(productions, null);
 	}
 	
-	private void elaborate_graph_production_list(EList<graph_production> productions, String tag) {
+	private void elaborate_activity_stmt_list(EList<activity_stmt> productions, String tag) {
 		if (tag != null) {
 			enter(tag);
 		}
 		
-		for (graph_production p : productions) {
-			elaborate_graph_production(p);
+		for (activity_stmt p : productions) {
+			elaborate_activity_stmt(p);
 		}		
 		
 		if (tag != null) {
@@ -527,21 +529,21 @@ public class Elaborator {
 		exit("</pss:exec>");
 	}
 	
-	private void elaborate_graph_production(graph_production p) {
-		elaborate_graph_production(p, null);
+	private void elaborate_activity_stmt(activity_stmt p) {
+		elaborate_activity_stmt(p, null);
 	}
 	
-	private void elaborate_graph_production(graph_production p, String tag) {
+	private void elaborate_activity_stmt(activity_stmt p, String tag) {
 		if (tag != null) {
 			enter(tag);
 		}
 		
-		if (p instanceof graph_repeat_stmt) {
-			elaborate_graph_repeat((graph_repeat_stmt)p);
-		} else if (p instanceof graph_parallel_stmt) {
-			elaborate_graph_parallel((graph_parallel_stmt)p);
-		} else if (p instanceof graph_sequence_stmt) {
-			elaborate_graph_sequence((graph_sequence_stmt)p);
+		if (p instanceof activity_repeat_stmt) {
+			elaborate_activity_repeat((activity_repeat_stmt)p);
+		} else if (p instanceof activity_parallel_stmt) {
+			elaborate_activity_parallel((activity_parallel_stmt)p);
+		} else if (p instanceof activity_action_traversal_stmt) {
+			elaborate_activity_action_traversal_stmt((activity_action_traversal_stmt)p);
 		} else {
 			println("<unknown_item class=\"" + p.getClass() + "\"/>");
 		}		
@@ -551,17 +553,17 @@ public class Elaborator {
 		}
 	}
 	
-	private void elaborate_graph_parallel(graph_parallel_stmt p) {
+	private void elaborate_activity_parallel(activity_parallel_stmt p) {
 		enter("pss:parallel");
 
-		for (graph_labeled_production lp : p.getProductions()) {
-			elaborate_graph_production(lp.getProduction(), "pss:production");
+		for (activity_labeled_stmt lp : p.getProductions()) {
+			elaborate_activity_stmt(lp.getProduction(), "pss:production");
 		}
 
 		exit("pss:parallel");
 	}
 	
-	private void elaborate_graph_repeat(graph_repeat_stmt r) {
+	private void elaborate_activity_repeat(activity_repeat_stmt r) {
 		String tag = "pss:repeat type=\"";
 		expression expr = r.getExpr();
 	
@@ -586,12 +588,12 @@ public class Elaborator {
 			elaborate_expr(expr, "pss:expr");
 		}
 
-		elaborate_graph_production_list(r.getBody().getStmt_list(), "pss:body");
+		elaborate_activity_stmt_list(r.getBody().getStmt_list(), "pss:body");
 		
 		exit("pss:repeat");
 	}
 	
-	private void elaborate_graph_sequence(graph_sequence_stmt s) {
+	private void elaborate_activity_action_traversal_stmt(activity_action_traversal_stmt s) {
 //			enter("pss:sequential");
 //			for (String it : s.getItems()) {
 //				println("<pss:traverse name=\"" + it + "\"/>");
@@ -715,7 +717,7 @@ public class Elaborator {
 		
 		if (s.getSuper() != null) {
 			enter("super");
-			println("<pss:path>" + s.getSuper().getName() + "</pss:path>");
+			tid2path(s.getSuper().getSuper());
 			exit("super");
 		}
 		
@@ -865,6 +867,12 @@ public class Elaborator {
 			}
 		} else {
 			return "unknown_expr: " + expr.getClass();
+		}
+	}
+	
+	private void tid2path(type_identifier id) {
+		for (String elem : id.getElems()) {
+			println("<pss:path>" + elem + "</pss:path>");
 		}
 	}
 	

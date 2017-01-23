@@ -13,7 +13,7 @@ import net.sf.psstools.lang.pSS.data_declaration
 import net.sf.psstools.lang.pSS.data_instantiation
 import net.sf.psstools.lang.pSS.enum_declaration
 import net.sf.psstools.lang.pSS.extend_stmt
-import net.sf.psstools.lang.pSS.graph_declaration
+import net.sf.psstools.lang.pSS.activity_declaration
 import net.sf.psstools.lang.pSS.hierarchical_id
 import net.sf.psstools.lang.pSS.integer_type
 import net.sf.psstools.lang.pSS.object_bind_stmt
@@ -41,7 +41,7 @@ class PSSLabelProvider extends DefaultEObjectLabelProvider {
 	
 	def text(overrides_declaration e) { "override" }
 	
-	def text(graph_declaration g) { "graph" }
+	def text(activity_declaration g) { "graph" }
 	
 	def text(data_instantiation o) {
 		var dd = o.eContainer as data_declaration;
@@ -122,7 +122,7 @@ class PSSLabelProvider extends DefaultEObjectLabelProvider {
 
 	def image(action_declaration a) { 'action_obj.gif'; }
 	def image(component_declaration c) { 'class_obj.gif'; }
-	def image(graph_declaration g) { 'graph_obj.gif'; }
+	def image(activity_declaration g) { 'activity_obj.gif'; }
 	def image(extend_stmt s) { 
 		if (s.isComponent()) {
 			return "extends_component.gif";
