@@ -46,6 +46,7 @@ import net.sf.psstools.lang.pSS.logical_equality_expr;
 import net.sf.psstools.lang.pSS.logical_inequality_expr;
 import net.sf.psstools.lang.pSS.method_call;
 import net.sf.psstools.lang.pSS.method_function_call;
+import net.sf.psstools.lang.pSS.method_hierarchical_id;
 import net.sf.psstools.lang.pSS.method_parameter;
 import net.sf.psstools.lang.pSS.method_prototype;
 import net.sf.psstools.lang.pSS.number;
@@ -830,6 +831,10 @@ public class Elaborator {
 	}
 	
 	private void to_hierarchical_id(hierarchical_id id, String tag) {
+		to_hierarchical_id(id.getPath(), tag);
+	}
+
+	private void to_hierarchical_id(method_hierarchical_id id, String tag) {
 		to_hierarchical_id(id.getPath(), tag);
 	}
 	

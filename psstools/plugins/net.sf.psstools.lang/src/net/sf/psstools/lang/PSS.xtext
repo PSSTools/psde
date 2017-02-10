@@ -53,7 +53,6 @@ package_declaration:
 
 package_body_item:
 	abstract_action_declaration 	|
-//	component_declaration			| 
 	struct_declaration 				|
 	enum_declaration 				|
 	coverspec_declaration 			|
@@ -102,7 +101,7 @@ package_import_pattern:
  * H1: Action Declarations
  ****************************************************************************/
 action_declaration:
-	(abstract?='abstract')? 'action' name=action_identifier (super_spec=action_super_spec)? 
+	'action' name=action_identifier (super_spec=action_super_spec)? 
 	'{'
 		body+=action_body_item*
 	'}' (';')?
@@ -321,13 +320,11 @@ component_super_spec :
 component_body_item:
 	overrides_declaration			|
 	component_field_declaration		|
-	constraint_declaration 			|
 	action_declaration 				|
-	struct_declaration				|
-	import_stmt						|
 	object_bind_stmt				|
 	inline_type_object_declaration	|
-	exec_block
+	exec_block						|
+	package_body_item
 ;
 
 component_field_declaration:
@@ -888,7 +885,11 @@ method_function_call:
 ;
 
 method_call:
-	method=hierarchical_id parameters=method_parameter_list
+	method=method_hierarchical_id parameters=method_parameter_list
+;
+
+method_hierarchical_id :
+	path+=identifier '.' path+=identifier ('.' path+=identifier)*
 ;
 
 function_call:
@@ -929,14 +930,12 @@ identifier: ID | ESCAPED_ID;
 filename_string: DOUBLE_QUOTED_STRING;
 
 type_identifier :
-	elems+=ID ('::' elems+=ID)*
+	elems+=ID ('::' elems+=ID ('::' elems+=ID)?)?
 ;
 
 action_type_identifier: type_identifier;
 
-hierarchical_type_identifier:
-	elems+=ID '::' elems+=ID ('::' elems+=ID)*
-;
+hierarchical_type_identifier: type_identifier;
 
 hierarchical_id:
 	path+=identifier ('.' path+=identifier)*
