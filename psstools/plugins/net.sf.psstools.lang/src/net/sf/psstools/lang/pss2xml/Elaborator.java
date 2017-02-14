@@ -35,6 +35,7 @@ import net.sf.psstools.lang.pSS.exec_block;
 import net.sf.psstools.lang.pSS.exec_block_stmt;
 import net.sf.psstools.lang.pSS.exec_body_stmt;
 import net.sf.psstools.lang.pSS.expression;
+import net.sf.psstools.lang.pSS.expression_constraint_item;
 import net.sf.psstools.lang.pSS.function_call;
 import net.sf.psstools.lang.pSS.hex_number;
 import net.sf.psstools.lang.pSS.hierarchical_id;
@@ -125,7 +126,7 @@ public class Elaborator {
 			} else if (it instanceof action_field_declaration) {
 				elaborate_action_field((action_field_declaration)it);
 			} else if (it instanceof activity_declaration) {
-				elaborate_graph((activity_declaration)it);
+				elaborate_activity((activity_declaration)it);
 			} else if (it instanceof exec_block_stmt) {
 				elaborate_exec_block_stmt((exec_block_stmt)it);
 			} else {
@@ -263,6 +264,13 @@ public class Elaborator {
 		for (EObject it : constraints) {
 			if (it instanceof expression) {
 				elaborate_expr((expression)it, "pss:stmt");
+			} else if (it instanceof expression_constraint_item) {
+				expression_constraint_item e = (expression_constraint_item)it;
+				if (e.getImpl_constraint() != null) {
+					System.out.println("Error: handle implication constraint");
+				} else {
+					elaborate_expr(e.getExpr(), "pss:stmt");
+				}
 			} else {
 				println("<unknown_constraint_item class=\"" + it.getClass() + "\"/>");
 			}
@@ -460,12 +468,12 @@ public class Elaborator {
 		println("</pss:enum>");
 	}
 	
-	private void elaborate_graph(activity_declaration graph) {
-		enter("pss:graph");
+	private void elaborate_activity(activity_declaration a) {
+		enter("pss:activity");
 	
-		elaborate_activity_stmt_list(graph.getBody());
+		elaborate_activity_stmt_list(a.getBody());
 		
-		exit("pss:graph");
+		exit("pss:activity");
 	}
 	
 	private void elaborate_activity_stmt_list(EList<activity_stmt> productions) {

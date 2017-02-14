@@ -35,9 +35,15 @@ ifeq (,$(BUILDRESULT))
 BUILDRESULT := $(PSSTOOLS_DIR)/build/psstools
 endif
 
+ifeq (,$(BINDIR))
 BINDIR := $(BUILDRESULT)/bin
+endif
+ifeq (,$(LIBDIR))
 LIBDIR := $(BUILDRESULT)/lib
+endif
+ifeq (,$(LIBDIR))
 INCDIR := $(BUILDRESULT)/include
+endif
 
 OBJDIR := $(BUILDDIR)/obj
 
@@ -53,8 +59,10 @@ endif
 ECLIPSE_CMD := $(ECLIPSE_C) -nosplash --launcher.suppressErrors
 
 define eclipse_ant
-$(ECLIPSE_CMD) -application org.eclipse.ant.core.antRunner \
-  -buildfile $(1) -Dos=$(os) -Dws=$(ws) -Darch=$(arch) $(2)
+java -classpath $(ECLIPSE_HOME)/plugins/org.eclipse.equinox.launcher_*.jar \
+	org.eclipse.core.launcher.Main \
+	-application org.eclipse.ant.core.antRunner \
+	-buildfile $(1) -Dos=$(os) -Dws=$(ws) -Darch=$(arch) $(2)
 endef
 
 define MKDIRS
@@ -78,7 +86,7 @@ define MK_AR
 endef
 
 else # Verbose mode
-TMSG:=#
+TMSG:=@true
 
 define MK_AR 
 rm -f $@

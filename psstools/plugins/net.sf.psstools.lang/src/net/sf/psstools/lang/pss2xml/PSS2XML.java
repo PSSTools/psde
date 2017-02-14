@@ -38,6 +38,7 @@ import com.google.inject.Injector;
 
 import net.sf.psstools.lang.PSSStandaloneSetup;
 import net.sf.psstools.lang.pSS.Model;
+import net.sf.psstools.lang.pSS.activity_declaration;
 
 public class PSS2XML {
 	
@@ -113,6 +114,10 @@ public class PSS2XML {
 	
 	private void recurse(String ind, EObject obj) {
 		System.out.println(ind + obj.toString());
+		
+		if (obj instanceof activity_declaration) {
+			activity_declaration a = (activity_declaration)obj;
+		}
 		
 //		if (obj instanceof graph_declaration) {
 //			graph_declaration g = (graph_declaration)obj;

@@ -1,6 +1,6 @@
 <project name="collect">
 	
-	<property name="packages_dir" value="${basedir}/../packages"/>
+	<property name="packages.dir" value="${basedir}/../packages"/>
 	<property name="force" value="false"/>
 	
 	<property file="${basedir}/packages.properties"/>
@@ -64,7 +64,7 @@
 		/>
 	
 	<target name="init">
-		<mkdir dir="${packages_dir}"/>
+		<mkdir dir="${packages.dir}"/>
 	</target>
 	
 	<!-- Eclipse SDK -->
@@ -77,7 +77,7 @@
 		<and>
 			<or>
 				<not>
-					<available file="${packages_dir}/${eclipse_linux_tgz}"/>
+					<available file="${packages.dir}/${eclipse_linux_tgz}"/>
 				</not>
 				<equals arg1="${force}" arg2="true"/>
 			</or>
@@ -89,10 +89,10 @@
 	</condition>
 	
 	<target name="collect_eclipse_linux" if="${fetch.eclipse.linux}">
-		<delete file="${packages_dir}/${eclipse_linux_tgz}"/>
+		<delete file="${packages.dir}/${eclipse_linux_tgz}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${eclipse_release}/${eclipse_linux_tgz}"/>
 		</exec>
@@ -102,7 +102,7 @@
 		<and>
 			<or>
 				<not>
-					<available file="${packages_dir}/${eclipse_linux_x86_64_tgz}"/>
+					<available file="${packages.dir}/${eclipse_linux_x86_64_tgz}"/>
 				</not>
 				<equals arg1="${force}" arg2="true"/>
 			</or>
@@ -112,10 +112,10 @@
 	</condition>
 	
 	<target name="collect_eclipse_linux_x86_64" if="${fetch.eclipse.linux_x86_64}">
-		<delete file="${packages_dir}/${eclipse_linux_x86_64_tgz}"/>
+		<delete file="${packages.dir}/${eclipse_linux_x86_64_tgz}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${eclipse_release}/${eclipse_linux_x86_64_tgz}"/>
 		</exec>
@@ -125,7 +125,7 @@
 		<and>
 			<or>
 				<not>
-					<available file="${packages_dir}/${eclipse_win32_zip}"/>
+					<available file="${packages.dir}/${eclipse_win32_zip}"/>
 				</not>
 				<equals arg1="${force}" arg2="true"/>
 			</or>
@@ -137,10 +137,10 @@
 	</condition>
 	
 	<target name="collect_eclipse_win32" if="${fetch.eclipse.win32}">
-		<delete file="${packages_dir}/${eclipse_win32_zip}"/>
+		<delete file="${packages.dir}/${eclipse_win32_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${eclipse_release}/${eclipse_win32_zip}"/>
 		</exec>
@@ -150,7 +150,7 @@
 		<and>
 			<or>
 				<not>
-					<available file="${packages_dir}/${eclipse_win32_x86_64_zip}"/>
+					<available file="${packages.dir}/${eclipse_win32_x86_64_zip}"/>
 				</not>
 				<equals arg1="${force}" arg2="true"/>
 			</or>
@@ -162,10 +162,10 @@
 	</condition>
 	
 	<target name="collect_eclipse_win32_x86_64" if="${fetch.eclipse.win32_x86_64}">
-		<delete file="${packages_dir}/${eclipse_win32_x86_64_zip}"/>
+		<delete file="${packages.dir}/${eclipse_win32_x86_64_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${eclipse_release}/${eclipse_win32_x86_64_zip}"/>
 		</exec>
@@ -175,17 +175,17 @@
 	<condition property="fetch.eclipse.deltapack">
 		<or>
 			<not>
-				<available file="${packages_dir}/${eclipse_delta_pack_zip}"/>
+				<available file="${packages.dir}/${eclipse_delta_pack_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_eclipse_deltapack" if="${fetch.eclipse.deltapack}">
-		<delete file="${packages_dir}/${eclipse_delta_pack_zip}"/>
+		<delete file="${packages.dir}/${eclipse_delta_pack_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${eclipse_release}/${eclipse_delta_pack_zip}"/>
 		</exec>
@@ -194,17 +194,17 @@
 	<condition property="fetch.xtext">
 		<or>
 			<not>
-				<available file="${packages_dir}/${xtext_zip}"/>
+				<available file="${packages.dir}/${xtext_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 
 	<target name="collect_xtext" if="${fetch.xtext}">
-		<delete file="${packages_dir}/${xtext_zip}"/>
+		<delete file="${packages.dir}/${xtext_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${mirror_ftp}/${xtext_release}/${xtext_zip}"/>
 		</exec>
@@ -213,17 +213,17 @@
 	<condition property="fetch.xpand">
 		<or>
 			<not>
-				<available file="${packages_dir}/${xpand_zip}"/>
+				<available file="${packages.dir}/${xpand_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 
 	<target name="collect_xpand" if="${fetch.xpand}">
-		<delete file="${packages_dir}/${xpand_zip}"/>
+		<delete file="${packages.dir}/${xpand_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${mirror_ftp}/${xpand_release}/${xpand_zip}"/>
 		</exec>
@@ -233,17 +233,17 @@
 	<condition property="fetch.eclipse.jdt">
 		<or>
 			<not>
-				<available file="${packages_dir}/${jdt_zip}"/>
+				<available file="${packages.dir}/${jdt_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_jdt" if="${fetch.eclipse.jdt}">
-		<delete file="${packages_dir}/${jdt_zip}"/>
+		<delete file="${packages.dir}/${jdt_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${mirror_ftp}/${jdt_release}/${jdt_zip}"/>
 		</exec>
@@ -253,17 +253,17 @@
 	<condition property="fetch.cdt">
 		<or>
 			<not>
-				<available file="${packages_dir}/${cdt_zip}"/>
+				<available file="${packages.dir}/${cdt_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_cdt" if="${fetch.cdt}">
-		<delete file="${packages_dir}/${cdt_zip}"/>
+		<delete file="${packages.dir}/${cdt_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${mirror_ftp}/${cdt_release}/${cdt_zip}"/>
 		</exec>
@@ -273,17 +273,17 @@
 	<condition property="fetch.wst">
 		<or>
 			<not>
-				<available file="${packages_dir}/${wst_zip}"/>
+				<available file="${packages.dir}/${wst_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_wst" if="${fetch.wst}">
-		<delete file="${packages_dir}/${wst_zip}"/>
+		<delete file="${packages.dir}/${wst_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${mirror_ftp}/${wst_release}/${wst_zip}"/>
 		</exec>
@@ -292,17 +292,17 @@
 	<condition property="fetch.mwe2">
 		<or>
 			<not>
-				<available file="${packages_dir}/${mwe2_zip}"/>
+				<available file="${packages.dir}/${mwe2_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_mwe2" if="${fetch.mwe2}">
-		<delete file="${packages_dir}/${mwe2_zip}"/>
+		<delete file="${packages.dir}/${mwe2_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${mirror_ftp}/${mwe2_release}/${mwe2_zip}"/>
 		</exec>
@@ -311,17 +311,17 @@
 	<condition property="fetch.mwe">
 		<or>
 			<not>
-				<available file="${packages_dir}/${mwe_zip}"/>
+				<available file="${packages.dir}/${mwe_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_mwe" if="${fetch.mwe}">
-		<delete file="${packages_dir}/${mwe_zip}"/>
+		<delete file="${packages.dir}/${mwe_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${mirror_ftp}/${mwe_release}/${mwe_zip}"/>
 		</exec>
@@ -330,17 +330,17 @@
 	<condition property="fetch.emf">
 		<or>
 			<not>
-				<available file="${packages_dir}/${emf_zip}"/>
+				<available file="${packages.dir}/${emf_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_emf" if="${fetch.emf}">
-		<delete file="${packages_dir}/${emf_zip}"/>
+		<delete file="${packages.dir}/${emf_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${mirror_ftp}/${emf_release}/${emf_zip}"/>
 		</exec>
@@ -350,17 +350,17 @@
 	<condition property="fetch.dltk">
 		<or>
 			<not>
-				<available file="${packages_dir}/${dltk_zip}"/>
+				<available file="${packages.dir}/${dltk_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_dltk" if="${fetch.dltk}">
-		<delete file="${packages_dir}/${dltk_zip}"/>
+		<delete file="${packages.dir}/${dltk_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${mirror_ftp}/${dltk_release}/${dltk_zip}"/>
 		</exec>
@@ -370,7 +370,7 @@
 	<condition property="fetch.zest">
 		<or>
 			<not>
-				<available file="${packages_dir}/${zest_zip}"/>
+				<available file="${packages.dir}/${zest_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
@@ -379,7 +379,7 @@
 	<target name="collect_zest" if="${fetch.zest}">
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="${mirror_ftp}/${zest_release}/${zest_zip}"/>
 		</exec>
@@ -389,17 +389,17 @@
 	<condition property="fetch.vrapper">
 		<or>
 			<not>
-				<available file="${packages_dir}/${vrapper_zip}"/>
+				<available file="${packages.dir}/${vrapper_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_vrapper" if="${fetch.vrapper}">
-		<delete file="${packages_dir}/${vrapper_zip}"/>
+		<delete file="${packages.dir}/${vrapper_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="-O"/>
 			<arg value="${vrapper_zip}"/>
@@ -411,17 +411,17 @@
 	<condition property="fetch.sveditor">
 		<or>
 			<not>
-				<available file="${packages_dir}/${sveditor_zip}"/>
+				<available file="${packages.dir}/${sveditor_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_sveditor" if="${fetch.sveditor}">
-		<delete file="${packages_dir}/${sveditor_zip}"/>
+		<delete file="${packages.dir}/${sveditor_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="-O"/>
 			<arg value="${sveditor_zip}"/>
@@ -433,17 +433,17 @@
 	<condition property="fetch.elt">
 		<or>
 			<not>
-				<available file="${packages_dir}/${elt_zip}"/>
+				<available file="${packages.dir}/${elt_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_elt" if="${fetch.elt}">
-		<delete file="${packages_dir}/${elt_zip}"/>
+		<delete file="${packages.dir}/${elt_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="--no-check-certificate"/>
 			<arg value="-nv"/>
 			<arg value="-O"/>
@@ -456,17 +456,17 @@
 	<condition property="fetch.shelled">
 		<or>
 			<not>
-				<available file="${packages_dir}/${shelled_zip}"/>
+				<available file="${packages.dir}/${shelled_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_shelled" if="${fetch.shelled}">
-		<delete file="${packages_dir}/${shelled_zip}"/>
+		<delete file="${packages.dir}/${shelled_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="-O"/>
 			<arg value="${shelled_zip}"/>
@@ -478,17 +478,17 @@
 	<condition property="fetch.linuxtools">
 		<or>
 			<not>
-				<available file="${packages_dir}/${linuxtools_zip}"/>
+				<available file="${packages.dir}/${linuxtools_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_linuxtools" if="${fetch.linuxtools}">
-		<delete file="${packages_dir}/${linuxtools_zip}"/>
+		<delete file="${packages.dir}/${linuxtools_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="-O"/>
 			<arg value="${linuxtools_zip}"/>
@@ -500,17 +500,17 @@
 	<condition property="fetch.wixtools">
 		<or>
 			<not>
-				<available file="${packages_dir}/${wixtools_zip}"/>
+				<available file="${packages.dir}/${wixtools_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_wixtools" if="${fetch.wixtools}">
-		<delete file="${packages_dir}/${wixtools_zip}"/>
+		<delete file="${packages.dir}/${wixtools_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="-O"/>
 			<arg value="${wixtools_zip}"/>
@@ -530,43 +530,43 @@
 	<condition property="fetch.epic">
 		<or>
 			<not>
-				<available file="${packages_dir}/${epic_zip}"/>
+				<available file="${packages.dir}/${epic_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_epic" if="fetch.epic">
-		<delete file="${packages_dir}/${epic_zip}"/>
-		<mkdir dir="${packages_dir}/epic"/>
-		<mirrorUpdate source="${epic_updates}" dest="${packages_dir}/epic"/>
-		<unzip src="${packages_dir}/epic/artifacts.jar"
-			dest="${packages_dir}/epic"/>
-		<delete file="${packages_dir}/epic/artifacts.jar"/>
-		<xmltask source="${packages_dir}/epic/artifacts.xml"
-			dest="${packages_dir}/epic/artifacts.xml">
+		<delete file="${packages.dir}/${epic_zip}"/>
+		<mkdir dir="${packages.dir}/epic"/>
+		<mirrorUpdate source="${epic_updates}" dest="${packages.dir}/epic"/>
+		<unzip src="${packages.dir}/epic/artifacts.jar"
+			dest="${packages.dir}/epic"/>
+		<delete file="${packages.dir}/epic/artifacts.jar"/>
+		<xmltask source="${packages.dir}/epic/artifacts.xml"
+			dest="${packages.dir}/epic/artifacts.xml">
 			<remove path="//repositoryProperties"/>
 		</xmltask>
-		<zip destfile="${packages_dir}/${epic_zip}"
-			basedir="${packages_dir}/epic"
+		<zip destfile="${packages.dir}/${epic_zip}"
+			basedir="${packages.dir}/epic"
 			includes="**/*"/>
-		<delete dir="${packages_dir}/epic"/>
+		<delete dir="${packages.dir}/epic"/>
 	</target>
 
 	<condition property="fetch.pydev">
 		<or>
 			<not>
-				<available file="${packages_dir}/${pydev_zip}"/>
+				<available file="${packages.dir}/${pydev_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 
 	<target name="collect_pydev" if="fetch.pydev">
-		<delete file="${packages_dir}/${pydev_zip}"/>
+		<delete file="${packages.dir}/${pydev_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="--no-check-certificate"/>
 			<arg value="-nv"/>
 			<arg value="-O"/>
@@ -574,29 +574,29 @@
 			<arg value="${pydev_release}"/>
 		</exec>
 <!--
-		<mkdir dir="${packages_dir}/pydev"/>
-		<mirrorUpdate source="${pydev_updates}" dest="${packages_dir}/pydev"/>
-		<zip destfile="${packages_dir}/${pydev_zip}"
-			basedir="${packages_dir}/pydev"
+		<mkdir dir="${packages.dir}/pydev"/>
+		<mirrorUpdate source="${pydev_updates}" dest="${packages.dir}/pydev"/>
+		<zip destfile="${packages.dir}/${pydev_zip}"
+			basedir="${packages.dir}/pydev"
 			includes="**/*"/>
-		<delete dir="${packages_dir}/pydev"/>
+		<delete dir="${packages.dir}/pydev"/>
   -->
 	</target>
 
 	<condition property="fetch.egit">
 		<or>
 			<not>
-				<available file="${packages_dir}/${egit_zip}"/>
+				<available file="${packages.dir}/${egit_zip}"/>
 			</not>
 			<equals arg1="${force}" arg2="true"/>
 		</or>
 	</condition>
 	
 	<target name="collect_egit" if="${fetch.egit}">
-		<delete file="${packages_dir}/${egit_zip}"/>
+		<delete file="${packages.dir}/${egit_zip}"/>
 		<exec executable="wget"
 			failonerror="true"
-			dir="${packages_dir}">
+			dir="${packages.dir}">
 			<arg value="-nv"/>
 			<arg value="-O"/>
 			<arg value="${egit_zip}"/>

@@ -2,13 +2,28 @@
 <project name="PSDE Feature" default="build">
     <property environment="env"/>
 
+	<condition property="is_win">
+		<os family="windows"/>
+	</condition>
+
+	<property name="packages.dir" value="${basedir}/../packages"/>
+
+	<condition property="eclipse_build_win_zip"
+		value="${packages.dir}/${eclipse_win32_x86_64_zip}"
+		else="${packages.dir}/${eclipse_win32_zip}">
+		<os arch="amd64"/>
+	</condition>
+
+	<condition property="eclipse_build_linux_tgz"
+		value="${packages.dir}/${eclipse_linux_x86_64_tgz}"
+		else="${packages.dir}/${eclipse_linux_tgz}">
+		<os arch="amd64"/>
+	</condition>
+
     <!-- Import the version info -->
     <property file="${basedir}/../etc/psstools.info"/>
     <property file="${basedir}/../etc/psstools_${version_type}.info"/>
     <property file="${basedir}/build.properties"/>
-
-    <property name="gef_zest" location="${env.SVE_ADDINS}/gef_zest"/>
-	
 
     <condition property="sf_update_dir"
 	value="update"
@@ -74,9 +89,50 @@
         classname="com.oopsconsultancy.xmltask.ant.XmlTask">
       <classpath path="${basedir}/xmltask.jar"/>
     </taskdef>
-        
-    <target name="build" depends="compile, mkarchive">
+	
+	<target name="init">
 		<delete dir="${buildDirectory}"/>
+	</target>
+        
+    <target name="build" depends="init,collect,mk_eclipse">
+    	<java fork="true" failonerror="true"
+    		classname="org.eclipse.core.launcher.Main">
+    		<classpath>
+    			<fileset dir="${buildDirectory}/eclipse_sdk/eclipse/plugins"
+    				includes="org.eclipse.equinox.launcher_*.jar"/>
+    		</classpath>
+    		<arg value="-application"/>
+    		<arg value="org.eclipse.ant.core.antRunner"/>
+    		<arg value="-data"/>
+    		<arg value="${buildDirectory}/ws2"/>
+    		<arg value="-buildfile"/>
+    		<arg value="${basedir}/build.xml"/>
+    		<arg value="build_core"/>
+    		<arg value="-Dos=${os}"/>
+    		<arg value="-Dws=${ws}"/>
+    		<arg value="-Darch=${arch}"/>
+   		</java>
+    </target>
+
+	<target name="collect">
+		<ant antfile="${basedir}/collect.xml" target="collect"/>
+	</target>
+
+	<target name="mk_eclipse" 
+		depends="linux_unpack_eclipse,windows_unpack_eclipse">
+	</target>
+
+	<target name="linux_unpack_eclipse" unless="is_win">
+		<exec executable="tar" dir="${buildDirectory}">
+			<arg value="xvzf"/>
+			<arg value="${eclipse_build_linux_tgz"/>
+		</exec>
+	</target>
+
+	<target name="windows_unpack_eclipse" if="is_win">
+	</target>
+
+	<target name="build_core" depends="compile, mkarchive">
     </target>
 
     <target name="compile"> 
