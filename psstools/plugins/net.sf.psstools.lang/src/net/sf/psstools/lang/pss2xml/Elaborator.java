@@ -10,6 +10,7 @@ import net.sf.psstools.lang.pSS.Model;
 import net.sf.psstools.lang.pSS.action_body_item;
 import net.sf.psstools.lang.pSS.action_declaration;
 import net.sf.psstools.lang.pSS.action_field_declaration;
+import net.sf.psstools.lang.pSS.action_field_modifier;
 import net.sf.psstools.lang.pSS.action_super_spec;
 import net.sf.psstools.lang.pSS.activity_action_traversal_stmt;
 import net.sf.psstools.lang.pSS.activity_declaration;
@@ -39,6 +40,7 @@ import net.sf.psstools.lang.pSS.expression_constraint_item;
 import net.sf.psstools.lang.pSS.function_call;
 import net.sf.psstools.lang.pSS.hex_number;
 import net.sf.psstools.lang.pSS.hierarchical_id;
+import net.sf.psstools.lang.pSS.hierarchical_type_identifier;
 import net.sf.psstools.lang.pSS.import_method_decl;
 import net.sf.psstools.lang.pSS.import_stmt;
 import net.sf.psstools.lang.pSS.integer_type;
@@ -142,11 +144,18 @@ public class Elaborator {
 		
 		for (data_instantiation inst : decl.getInstances()) {
 			String tag = "<pss:field name=\"" + inst.getName() + "\"";
-		
-			if (f instanceof struct_field_modifier) {
-				struct_field_modifier m = (struct_field_modifier)f;
-				if (m.isRand()) {
-					tag += " type=\"rand\"";
+	
+			if (f.getModifiers() != null) {
+				if (f.getModifiers().isRand()) {
+					tag += " qualifier=\"rand\"";
+				} else if (f.getModifiers().isAction()) {
+					tag += " qualifier=\"action\"";
+				} else if (f.getModifiers().isLock()) {
+					tag += " qualifier=\"lock\"";
+				} else if (f.getModifiers().isShared()) {
+					tag += " qualifier=\"share\"";
+				} else {
+					System.out.println("Error: unknown modifier");
 				}
 			}
 			
@@ -511,7 +520,6 @@ public class Elaborator {
 					enter(t);
 					elaborate_expr(s.getLhs(), "pss:lhs");
 					elaborate_expr(s.getRhs(), "pss:rhs");
-					
 					exit(t);
 				}
 			}
@@ -652,7 +660,14 @@ public class Elaborator {
 		enter(tag);
 		if (c instanceof function_call) {
 			function_call fc = (function_call)c;
-//			to_hierarchical_id(fc.getFunction(), "function");
+			to_hierarchical_id(fc.getFunction(), "pss:function");
+			if (fc.getParameters() != null) {
+				enter("parameters");
+				for (expression p : fc.getParameters().getParameters()) {
+					elaborate_expr(p, "pss:parameter");
+				}
+				exit("parameters");
+			}
 		} else if (c instanceof method_call) {
 			method_call mc = (method_call)c;
 			to_hierarchical_id(mc.getMethod(), "pss:function");
@@ -840,6 +855,11 @@ public class Elaborator {
 	
 	private void to_hierarchical_id(hierarchical_id id, String tag) {
 		to_hierarchical_id(id.getPath(), tag);
+	}
+	
+	private void to_hierarchical_id(hierarchical_type_identifier id, String tag) {
+		type_identifier ti_id = (type_identifier)id;
+		to_hierarchical_id(ti_id.getElems(), tag);
 	}
 
 	private void to_hierarchical_id(method_hierarchical_id id, String tag) {
