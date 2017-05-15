@@ -10,7 +10,6 @@ import net.sf.psstools.lang.pSS.Model;
 import net.sf.psstools.lang.pSS.action_body_item;
 import net.sf.psstools.lang.pSS.action_declaration;
 import net.sf.psstools.lang.pSS.action_field_declaration;
-import net.sf.psstools.lang.pSS.action_field_modifier;
 import net.sf.psstools.lang.pSS.action_super_spec;
 import net.sf.psstools.lang.pSS.activity_action_traversal_stmt;
 import net.sf.psstools.lang.pSS.activity_declaration;
@@ -66,6 +65,7 @@ import net.sf.psstools.lang.pSS.struct_body_item;
 import net.sf.psstools.lang.pSS.struct_declaration;
 import net.sf.psstools.lang.pSS.struct_field_declaration;
 import net.sf.psstools.lang.pSS.struct_field_modifier;
+import net.sf.psstools.lang.pSS.struct_type;
 import net.sf.psstools.lang.pSS.target_code_exec_block;
 import net.sf.psstools.lang.pSS.target_file_exec_block;
 import net.sf.psstools.lang.pSS.type_identifier;
@@ -97,8 +97,8 @@ public class Elaborator {
 				elaborate_component((component_declaration)o);
 			} else if (o instanceof package_declaration) {
 				elaborate_package((package_declaration)o);
-			} else if (o instanceof struct_declaration) {
-				elaborate_struct((struct_declaration)o);
+			} else if (o instanceof struct_type) {
+				elaborate_struct((struct_type)o);
 			} else {
 				System.out.println("Object: " + o.getClass());
 			}
@@ -192,8 +192,8 @@ public class Elaborator {
 		for (component_body_item it : c.getBody()) {
 			if (it instanceof action_declaration) {
 				elaborate_action((action_declaration)it);
-			} else if (it instanceof struct_declaration) {
-				elaborate_struct((struct_declaration)it);
+			} else if (it instanceof struct_type) {
+				elaborate_struct((struct_type)it);
 			} else if (it instanceof import_stmt) {
 				elaborate_import((import_stmt)it);
 			} else if (it instanceof component_field_declaration) {
@@ -713,8 +713,8 @@ public class Elaborator {
 		inc_indent();
 		
 		for (package_body_item it : p.getBody()) {
-			if (it instanceof struct_declaration) {
-				elaborate_struct((struct_declaration)it);
+			if (it instanceof struct_type) {
+				elaborate_struct((struct_type)it);
 			} else if (it instanceof enum_declaration) {
 				elaborate_enum((enum_declaration)it);
 			} else if (it instanceof import_stmt) {
@@ -730,11 +730,11 @@ public class Elaborator {
 		println("</pss:package>");
 	}
 	
-	private void elaborate_struct(struct_declaration s) {
+	private void elaborate_struct(struct_type s) {
 		String tag = "struct name=\"" + s.getName() + "\"";
 		
-		if (s.getQualifier() != null) {
-			tag += " qualifier=\"" + s.getQualifier().getType() + "\"";
+		if (s.getType() != null && !s.getType().equals("struct")) {
+			tag += " qualifier=\"" + s.getType() + "\"";
 		}
 		
 		enter(tag);

@@ -181,10 +181,13 @@ exec_body_stmt:
 /****************************************************************************
  * H1: Struct Declarations
  ****************************************************************************/
-struct_declaration:
-	(qualifier=struct_qualifier)? 'struct' name=identifier (super=struct_super_spec)? '{'
+struct_declaration: struct_type name=identifier (super=struct_super_spec)? '{'
 		body+=struct_body_item*
 	'}' (';')?
+;
+
+struct_type:
+	(type='struct' | type='buffer' | type='stream' | type='state' | (type='resource' ('[' n_resource=constant_expression ']')?))
 ;
 
 struct_super_spec : ':' super=type_identifier
@@ -413,9 +416,9 @@ activity_select_stmt:
 
 activity_action_traversal_stmt:
 	{activity_action_traversal_stmt} (
-		(type=type_identifier item=identifier inline_with=inline_with_constraint?
-		) | 
 		(item=identifier inline_with=inline_with_constraint?
+		) |
+		('do' type=type_identifier inline_with=inline_with_constraint?
 		)
 	)
 	';'
@@ -582,12 +585,12 @@ enum_item:
 	name=identifier ('=' value=constant_expression)?
 ;
 
-/** BNF: user_defined_datatype ::= struct_type | enum_type | typedef_type*/
+/** BNF: user_defined_datatype ::= struct_type_id | enum_type | typedef_type*/
 user_defined_datatype:
 	typename=type_identifier
 ;
 
-struct_type : type_identifier;
+struct_type_id : type_identifier;
 
 action_type : type_identifier;
 
@@ -756,7 +759,7 @@ coverspec_coverpoint_body_item:
 ;
 
 coverspec_coverpoint_binspec:
-	'bins' name=coverpoint_identifier 
+	'bins' name=identifier 
 		(bins=bin_specification | binsref=hierarchical_id) ';'
 ;
 
@@ -874,7 +877,8 @@ unary_expr returns expression:
 primary: //; returns expression:
 	number 					
 	| bool_literal			
-	| paren_expr 				
+	| paren_expr 
+	| string_literal
 	| variable_ref			
 	| method_function_call
 	;
@@ -924,6 +928,7 @@ exec_kind_identifier: identifier;
 constant: number | identifier;
 package_identifier: hierarchical_id;
 coverpoint_target_identifier : hierarchical_id;
+parameter_identifier : identifier;
 
 identifier: ID | ESCAPED_ID;
 
@@ -1002,6 +1007,8 @@ terminal SL_COMMENT 	: '//' !('\n'|'\r')* ('\r'? '\n')?;
 terminal ML_COMMENT	: '/*' -> '*/';
 
 string: DOUBLE_QUOTED_STRING|TRIPLE_DOUBLE_QUOTED_STRING;
+
+string_literal: value=string;
 
 terminal DOUBLE_QUOTED_STRING	: 
 			'"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|'"') )* '"' 
