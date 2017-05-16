@@ -11,9 +11,9 @@ component uart_c {
 };
 
 package additional_config_pkg {
-	extend enum config_modes_e {MODE_C=30, MODE_D=50};
+	extend enum config_modes_e {MODE_C=30, MODE_D=50}
 	
 	extend action uart_c::configure {
 		constraint {mode != MODE_D;}
-	};
-};
+	}
+}

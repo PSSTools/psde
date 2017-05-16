@@ -1,10 +1,10 @@
 
 // Example 10.7.5
 
-resource cpu_core_s {};
+resource cpu_core_s {}
 
 component dma_c {
-	resource channel_s {};
+	resource channel_s {}
 	pool[2] channel_s channels;
 	bind channels *; 	// accessible to all actions
 						// under this component (and its sub-tree)

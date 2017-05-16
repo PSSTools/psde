@@ -26,6 +26,6 @@ component top {
 		activity {
 			do write1;
 			do read;
- }
-};
+		}
+	}
 }

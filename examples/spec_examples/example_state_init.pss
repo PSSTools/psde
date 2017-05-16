@@ -1,7 +1,7 @@
 
 // Example: 10.7.6
 
-enum codec_config_mode_e {UNKNOWN, A, B};
+enum codec_config_mode_e {UNKNOWN, A, B}
 
 component codec_c {
 	state configuration_s {
