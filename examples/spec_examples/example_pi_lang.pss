@@ -3,6 +3,6 @@
 
 package known_c_methods {
 
- import C int generic_methods::compute_expected_value;
+ import C generic_methods::compute_expected_value;
 
 }
