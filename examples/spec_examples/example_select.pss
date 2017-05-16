@@ -1,0 +1,15 @@
+
+// Example: 11.4.4.3
+
+component top {
+	action my_test {
+ my_action1 action1;
+ my_action2 action2;
+ activity {
+ select {
+ action1;
+ action2;
+ }
+ }
+}
+}
