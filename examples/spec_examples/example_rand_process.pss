@@ -4,10 +4,11 @@
 
 
 struct S1 {
- rand bit[3:0] a;
- bit[3:0] b;
+	rand bit[3:0] a;
+	bit[3:0] b;
 }
+
 struct S2 {
- rand S1 s1_1;
- S1 s1_2;
+	rand S1 s1_1;
+	S1 s1_2;
 }

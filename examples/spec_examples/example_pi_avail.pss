@@ -3,16 +3,17 @@
 
 package external_functions_pkg {
 
- import bit[31:0] alloc_addr(bit[31:0] size);
+	import bit[31:0] alloc_addr(bit[31:0] size);
 
- import void transfer_mem(
- bit[31:0] src, bit[31:0] dst, bit[31:0] size
- );
+	import void transfer_mem(
+		bit[31:0] src, bit[31:0] dst, bit[31:0] size
+	);
 }
+
 package pregen_tests_pkg {
 
- import solve alloc_addr;
+	import solve alloc_addr;
 
- import target transfer_mem;
+	import target transfer_mem;
 
 }

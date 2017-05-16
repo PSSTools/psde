@@ -3,13 +3,11 @@
 
 component top {
 	action my_test {
- my_action1 action1;
- my_action2 action2;
- activity {
- select {
- action1;
- action2;
- }
- }
-}
+		activity {
+			select {
+				do my_action1;
+				do my_action2;
+			}
+		}
+	}
 }

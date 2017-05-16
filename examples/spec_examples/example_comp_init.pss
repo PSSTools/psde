@@ -2,16 +2,17 @@
 // Example: 8.5.2 (2)
 
 component sub_c {
- int base_addr;
+	int base_addr;
 
- exec init {
- base_addr = 0x1000;
- }
+	exec init {
+		base_addr = 0x1000;
+	}
 };
-component pss_top {
- sub_c s1, s2;
 
- exec init {
- s1.base_addr = 0x2000;
- }
+component pss_top {
+	sub_c s1, s2;
+
+	exec init {
+		s1.base_addr = 0x2000;
+	}
 }

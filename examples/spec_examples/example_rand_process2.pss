@@ -3,16 +3,16 @@
 
 component top {
 	action A {
- rand bit[3:0] a;
- }
+		rand bit[3:0] a;
+	}
 
- action B {
- A a_1, a_2;
- rand bit[3:0] b;
+	action B {
+		A a_1, a_2;
+		rand bit[3:0] b;
 
- activity {
- a_1;
- a_2;
- }
- }
+		activity {
+			a_1;
+			a_2;
+		}
+	}
 }

@@ -3,11 +3,11 @@
 
 component top {
 	action A {
- rand bit[31:0] addr;
+		rand bit[31:0] addr;
 
- constraint addr_c {
- addr == 0x1000;
- }
-}
+		constraint addr_c {
+			addr == 0x1000;
+		}
+	}
 }
  

@@ -3,15 +3,16 @@
 
 component top {
 	action my_test {
- A a;
- B b;
- C c;
- activity {
- a;
- parallel {
- b;
- c;
- }
- }
-};
+		A a;
+		B b;
+		C c;
+		
+		activity {
+			a;
+			parallel {
+				b;
+				c;
+			}
+		}
+	}
 }

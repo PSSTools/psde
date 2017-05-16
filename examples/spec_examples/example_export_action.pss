@@ -3,21 +3,21 @@
 
 component comp {
 
- action A1 {
- rand bit mode;
- rand bit[31:0] val;
+	action A1 {
+		rand bit mode;
+		rand bit[31:0] val;
 
- constraint {
- if (mode) {
- val inside [0..10];
- } else {
- val inside [10..100];
- }
- }
- }
-
+		constraint {
+			if (mode) {
+				val inside [0..10];
+			} else {
+				val inside [10..100];
+			}
+		}
+	}
 }
+
 package pkg {
- // Export A1, providing a mapping to field 'mode'
- export target comp::A1(bit mode);
+	// Export A1, providing a mapping to field 'mode'
+	export target comp::A1(bit mode);
 }

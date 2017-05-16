@@ -3,11 +3,9 @@
 
 component top {
 	action my_test {
- 		A a;
-		B b;
 		activity {
-			a;
-			b;
+			do A;
+			do B;
  		}
 	}
 }

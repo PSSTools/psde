@@ -3,14 +3,14 @@
 
 component top {
 	action my_test {
- rand int[1..10] x;
- A a;
- B b;
- activity {
- if (x > 5)
- a;
- else
- b;
- }
-};
+		rand int[1..10] x;
+		A a;
+		B b;
+		activity {
+			if (x > 5)
+				a;
+			else
+				b;
+		}
+	}
 }

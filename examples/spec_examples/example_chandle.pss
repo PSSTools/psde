@@ -1,9 +1,9 @@
 import chandle do_init();
 
 struct info_s {
- chandle ptr;
+	chandle ptr;
 
- exec pre_solve {
- ptr = do_init();
- }
+	exec pre_solve {
+		ptr = do_init();
+	}
 }

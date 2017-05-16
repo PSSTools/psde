@@ -4,7 +4,10 @@ component codec_c {
 	vid_pipe_c pipeA, pipeB;
 	
  	action decode {
- 		constraint mode == AX -> comp != pss_top.multimedia_ss.codecs[0];
+ 		constraint {
+ 			mode == AX -> comp != pss_top.multimedia_ss.codecs[0];
+		}
+ 		
 		vid_pipe_c::program pipe_prog_a;
  		
  		activity {
