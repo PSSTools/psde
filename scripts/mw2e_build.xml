@@ -1,0 +1,47 @@
+
+<project>
+
+	<property name="buildDirectory" value=""/>
+
+	<path id="classpath">
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.eclipse.emf.*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.apache.commons.*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.apache.log4j*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.eclipse.equinox.common*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.eclipse.xtext*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="com.google*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="javax.inject*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.antlr.runtime*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.eclipse.xpand*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.eclipse.xtend*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="com.ibm.icu*.jar"/>
+		<fileset dir="${eclipse.home}/plugins" 
+			includes="org.objectweb.asm*.jar"/>
+
+		<fileset dir="${buildDirectory}/plugins/net.sf.psstools.lang"
+			includes=".antlr-generator-3.2.0-patch.jar"/>
+		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang/src"/>
+	</path>
+
+	<target name="build">
+		<echo message="buldDirectory=${buildDirectory}"/>
+		<java fork="true" failonerror="true"
+			classpathref="classpath"
+			classname="org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher"
+			dir="${buildDirectory}/plugins/net.sf.psstools.lang">
+				<arg value="src/net/sf/psstools/lang/GeneratePSS.mwe2"/>
+		</java>
+	</target>
+	
+</project>

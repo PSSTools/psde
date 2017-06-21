@@ -1,22 +1,12 @@
-#******************************************************************************
-#* Primary Makefile
-#******************************************************************************
 
-include rules_defs.mk
-include psstools_mkfiles.mk
+PSSTOOLS_SCRIPTS_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+PSSTOOLS_SCRIPTS_DIR := $(shell cd $(PSSTOOLS_SCRIPTS_DIR) ; pwd)
+PSSTOOLS_DIR := $(shell cd $(PSSTOOLS_SCRIPTS_DIR)/.. ; pwd)
 
-all : $(LIB_TARGETS) $(EXE_TARGETS) $(INST_TARGETS)
-	$(Q)echo "SCRIPTS_DIR=$(SCRIPTS_DIR)"
-	$(Q)echo "PSSTOOLS_DIR=$(PSSTOOLS_DIR)"
+BUILD_DIR := $(PSSTOOLS_DIR)/build
+PACKAGES_DIR := $(PSSTOOLS_DIR)/packages
+BUILD_TOOLS_DIR := $(BUILD_DIR)/tools
 
-
-# build : $(LIB_TARGETS) $(EXE_TARGETS) $(INST_TARGETS)
-
-RULES:=1
-
-clean :
-	$(Q)rm -rf $(BUILDDIR)
-
-include rules_defs.mk	
-include psstools_mkfiles.mk
-
+MK_INCLUDES += $(PSSTOOLS_SCRIPTS_DIR)/pssc.mk
+# MK_INCLUDES += $(PSSTOOLS_SCRIPTS_DIR)/psde.mk
+include $(PSSTOOLS_DIR)/eclipsescripts/mkfiles/eclipsescripts.mk

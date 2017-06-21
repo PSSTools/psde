@@ -1,0 +1,36 @@
+
+-- 0.0.6 Release --
+
+- #(enh) - Add DPI method declaration and usage to the grammar
+
+------------------------------------------------------------------------------
+-- 0.0.5 Release --
+
+- #(nobug) - Add 'bool' type to the grammar
+
+- #(enh) - Enhance handling of 'package' in the outline view
+
+- #(enh) - Clean up handling of coverpsec in outline view
+
+- #(enh) - Add support for folding regions
+
+- #(enh) - Add outline-view icons for actions, structs, components, etc
+
+------------------------------------------------------------------------------
+-- 0.0.4 Release --
+
+- #(enh) - Clean up the outline view a bit to reduce extraneous hierarchy levels
+
+------------------------------------------------------------------------------
+-- 0.0.3 Release --
+
+- #(enh) - Update grammar to support new 'bind' construct
+
+------------------------------------------------------------------------------
+-- 0.0.2 Release --
+
+------------------------------------------------------------------------------
+-- 0.0.1 Release --
+
+------------------------------------------------------------------------------
+

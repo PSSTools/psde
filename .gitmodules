@@ -2,3 +2,7 @@
 	path = psi
 	url = https://github.com/mballance/psi.git
 	branch = master
+[submodule "eclipsescripts"]
+	path = eclipsescripts
+	url = https://github.com/mballance/eclipsescripts.git
+	branch = master
