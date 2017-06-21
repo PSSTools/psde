@@ -2,26 +2,24 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: net.sf.psstools.lang.ui
 Bundle-Vendor: My Company
-Bundle-Version: 1.2.3
+Bundle-Version: 1.0.0.qualifier
 Bundle-SymbolicName: net.sf.psstools.lang.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
-Require-Bundle: net.sf.psstools.lang;visibility:=reexport,
- org.eclipse.ui.editors,
- org.eclipse.ui.ide,
+Require-Bundle: net.sf.psstools.lang,
+ net.sf.psstools.lang.ide,
+ org.eclipse.xtext.ui,
  org.eclipse.xtext.ui.shared,
- org.eclipse.ui,
- org.eclipse.xtext.builder,
- org.eclipse.xtext.xbase.lib,
- org.antlr.runtime,
- org.eclipse.xtext.common.types.ui,
  org.eclipse.xtext.ui.codetemplates.ui,
+ org.eclipse.ui.editors;bundle-version="3.5.0",
+ org.eclipse.ui.ide;bundle-version="3.5.0",
+ org.eclipse.ui,
  org.eclipse.compare,
- org.eclipse.xtext.ui
+ org.eclipse.xtext.builder,
+ org.eclipse.xtend.lib;resolution:=optional,
+ org.eclipse.xtext.xbase.lib
 Import-Package: org.apache.log4j
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Export-Package: net.sf.psstools.lang.ui.quickfix,
- net.sf.psstools.lang.ui.contentassist,
- net.sf.psstools.lang.ui.contentassist.antlr,
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: net.sf.psstools.lang.ui.contentassist,
  net.sf.psstools.lang.ui.internal,
- net.sf.psstools.lang.ui.contentassist.antlr.internal
-Bundle-Activator: net.sf.psstools.lang.ui.internal.PSSActivator
+ net.sf.psstools.lang.ui.quickfix
+Bundle-Activator: net.sf.psstools.lang.ui.internal.LangActivator

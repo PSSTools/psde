@@ -62,7 +62,6 @@ import net.sf.psstools.lang.pSS.package_identifier;
 import net.sf.psstools.lang.pSS.package_import_pattern;
 import net.sf.psstools.lang.pSS.string_type;
 import net.sf.psstools.lang.pSS.struct_body_item;
-import net.sf.psstools.lang.pSS.struct_declaration;
 import net.sf.psstools.lang.pSS.struct_field_declaration;
 import net.sf.psstools.lang.pSS.struct_field_modifier;
 import net.sf.psstools.lang.pSS.struct_type;

@@ -22,7 +22,7 @@ package soc_config_pkg {
 }
 
 extend component dma_c {
-	import AB_subsystem_pkg::*; // explicitly exporting the package grants
+	import AB_subsystem_pkg::*; // explicitly importing the package grants
 	import soc_config_pkg::*; // access to enum items
 	
 	action dma_test {

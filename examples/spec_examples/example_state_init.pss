@@ -23,8 +23,8 @@ component pss_top {
 	codec_c codec0,codec1;
 	action sys_configure {
 		activity {
-			do codec_c::configure with {mode == A;};
-			do codec_c::configure with {mode == B;};
+			do codec_c::configure with {next_conf.mode == A;};
+			do codec_c::configure with {next_conf.mode == B;};
 			// OK, but only on a different codec instance
 		}
 	}

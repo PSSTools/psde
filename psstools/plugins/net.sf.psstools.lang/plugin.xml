@@ -1,36 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="windows-1252"?>
 <?eclipse version="3.0"?>
-
 <plugin>
-
-  <extension point="org.eclipse.emf.ecore.generated_package">
-    <package 
-       uri = "http://www.sf.net/psstools/lang/PSS" 
-       class = "net.sf.psstools.lang.pSS.PSSPackage"
-       genModel = "model/generated/PSS.genmodel" /> 
-	
-  </extension>
-  <extension
-        point="org.eclipse.xtext.builder.participant">
-     <participant
-           class="net.sf.psstools.lang.builder.IncrementalBuildParticipant"
-           fileExtensions=".pss">
-     </participant>
-  </extension>
-  <extension
-        id="html.docbuilder"
-        name="PSS HTML Doc Builder"
-        point="org.eclipse.core.runtime.applications">
-     <application
-           cardinality="singleton-global"
-           thread="main"
-           visible="true">
-        <run
-              class="net.sf.psstools.lang.docbuilder.HTMLDocBuilderApp">
-        </run>
-     </application>
-  </extension>
-
-
-
+	<extension point="org.eclipse.emf.ecore.generated_package">
+		<package 
+			uri = "http://www.sf.net/psstools/lang/PSS"
+			class = "net.sf.psstools.lang.pSS.PSSPackage"
+			genModel = "model/generated/PSS.genmodel" />
+	</extension>
+ <extension
+       id="pssc"
+       name="PSS Compiler/Checker"
+       point="org.eclipse.core.runtime.applications">
+    <application
+          cardinality="singleton-global"
+          thread="main"
+          visible="true">
+       <run
+             class="net.sf.psstools.lang.pssc.PSSCApp">
+       </run>
+    </application>
+ </extension>
+ <extension
+       id="pssc"
+       point="org.eclipse.core.runtime.products">
+    <product
+          application="net.sf.psstools.lang.pssc"
+          name="PSS Compiler/Checker">
+       <property
+             name="appName"
+             value="PSS Compiler/Checker">
+       </property>
+    </product>
+ </extension>
 </plugin>

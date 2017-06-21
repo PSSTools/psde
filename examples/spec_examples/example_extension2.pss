@@ -8,6 +8,9 @@ component mem_ops_c {
 		rand mem_block_tag_e mem_block;
 	}
 	
+	pool mem_buff_s mem;
+	bind mem *;
+	
 	action memcpy {
 		input mem_buff_s src_buff;
 		output mem_buff_s dst_buff;
@@ -21,18 +24,18 @@ package soc_config_pkg {
 		constraint { // layering additional constraint
 			src_buff.mem_block inside [SYS_MEM, A_MEM, DDR];
 			dst_buff.mem_block inside [SYS_MEM, A_MEM, DDR];
-			ta_width < 4 -> dst_buff.seg.mem_block != A_MEM;
+			ta_width < 4 -> dst_buff.mem_block != A_MEM;
 		}
 	}
 }
 
 component pss_top {
-	import soc_config_pkg::*;	// explicitly exporting the package grants
+	import soc_config_pkg::*;	// explicitly importing the package grants
 								// access to types and type-members
-	mem_ops mem_ops_c;
+	mem_ops_c mem_ops_c;
 	
 	action test {
-		mem_defs_pkg::memcpy cpy1, cpy2;
+		mem_ops_c::memcpy cpy1, cpy2;
 		constraint cpy1.ta_width == cpy2.ta_width;	// constraining an attribute
 													// introduced in an extension
 		activity {

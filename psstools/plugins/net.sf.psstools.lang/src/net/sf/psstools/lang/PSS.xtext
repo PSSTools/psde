@@ -248,12 +248,10 @@ import_method_qualifiers:
 	;
 
 import_method_phase_qualifiers:
-//	(attr=attributes)?
 	'import' func_qualifiers=import_function_qualifiers name=type_identifier ';'
 ;
 
 import_method_target_template:
-//	(attr=attributes)?
 	'import' language=language_identifier prototype=method_prototype '=' string ';'
 ;
 
@@ -271,7 +269,6 @@ method_return_type:
 ;
 
 method_parameter:
-//	(attr=attributes)?
 	dir=method_parameter_dir? type=data_type name=identifier
 ;
 
@@ -283,14 +280,12 @@ method_parameter_dir:
  * H2: Import Class Declaration
  ****************************************************************************/
 import_class_decl:
-//	(attr=attributes)?
 	'import' 'class' name=import_class_identifier (extends=import_class_extends)? '{'
 		methods+=import_class_method_decl*
 	'}' (';')?
 	;
 	
 import_class_method_decl:
-//	(attr=attributes)?
 	prototype=method_prototype ';'
 ;
 
