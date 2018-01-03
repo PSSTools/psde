@@ -169,6 +169,7 @@
 		dir="${buildDirectory}">
 		<property name="buildLabel" value="release"/>
 		<property name="buildId" value="release"/>
+		<property name="archivePrefix" value="psstools"/>
 	</ant>
 		<copy tofile="${buildDirectory}/psstools-feature-${feature.version}.zip"
 			file="${buildDirectory}/release/net.sf.psstools.lang.feature-release-${os}.${ws}.${arch}.zip"/>
@@ -205,7 +206,6 @@
 		compress="false"
 		source="${buildDirectory}/archive_tmp"/>
 
-	</target>
 
         <!-- Categorize the items in the repository -->
         <java fork="true" classname="org.eclipse.core.launcher.Main">
@@ -216,16 +216,16 @@
             <arg value="-application"/>
             <arg value="org.eclipse.equinox.p2.publisher.CategoryPublisher"/>
             <arg value="-metadataRepository"/>
-            <arg value="file:/${repository}"/>
+	    <arg value="file:/${buildDirectory}/archive_tmp/repository"/>
             <arg value="-categoryDefinition"/>
-            <arg value="file:/${basedir}/../archive_tmp/category.xml"/>
+            <arg value="file:/${buildDirectory}/archive_tmp/category.xml"/>
             <arg value="-categoryQualifier"/>
         </java>
 
 	<xmltask source="${buildDirectory}/archive_tmp/repository/artifacts.xml"
 		dest="${buildDirectory}/archive_tmp/repository/artifacts_1.xml">
                 <replace path="/repository/@name"
-                        withText="http://psstools.sourceforge.net/${sf_update_dir}"/>
+			withText="http://psstools.sourceforge.net/update-site"/>
         </xmltask>
 
 	<move file="${buildDirectory}/archive_tmp/repository/artifacts_1.xml"
@@ -234,39 +234,58 @@
 	<xmltask source="${buildDirectory}/archive_tmp/repository/content.xml"
 		dest="${buildDirectory}/archive_tmp/repository/content_1.xml">
                 <replace path="/repository/@name"
-                        withText="http://psstools.sourceforge.net/${sf_update_dir}"/>
+			withText="http://psstools.sourceforge.net/update-site"/>
         </xmltask>
 
 	<move file="${buildDirectory}/archive_tmp/repository/content_1.xml"
 		tofile="${buildDirectory}/archive_tmp/repository/content.xml"/>
 
 
-        <jar destfile="${buildDirectory}/psstools-${feature.version}.jar"
+	<jar destfile="${buildDirectory}/../psstools-${feature.version}.jar"
 		basedir="${buildDirectory}/archive_tmp/repository"
              includes="*.xml, features/**, plugins/**"/>
 
-	<!--
+        <copy todir="${buildDirectory}/archive_tmp" overwrite="true">
+		<fileset dir="${srcdir}/../etc" includes="${feature.id}.mappings.xml"/>
+                <filterset begintoken="1" endtoken="3">
+                        <filter token=".2." value="${feature.version}"/>
+                </filterset>
+        </copy>
 
+	<xmltask source="${buildDirectory}/archive_tmp/${feature.id}.mappings.xml">
+            <copy path="/repository/mappings"
+                  buffer="artifacts_mappings"/>
+        </xmltask>
 
+	<xmltask source="${buildDirectory}/archive_tmp/repository/artifacts.xml"
+		dest="${buildDirectory}/archive_tmp/repository/artifacts_1.xml">
+            <remove path="/repository/mappings"/>
+            <insert path="/repository/properties" position="after"
+		    file="${buildDirectory}/archive_tmp/${feature.id}.mappings.xml"/>
+        </xmltask>
 
-		<java fork="true" failonerror="true"
-			classpathref="classpath"
-			classname="org.eclipse.xtend.core.compiler.batch.Main"
-			dir="${buildDirectory}/plugins/net.sf.psstools.lang.ui">
-			<arg value="-useCurrentClassLoader"/>
-			<arg value="-d"/>
-			<arg value="xtend-gen"/>
-			<arg value="src"/>
-		</java>
+	<move file="${buildDirectory}/archive_tmp/repository/artifacts_1.xml"
+		tofile="${buildDirectory}/archive_tmp/repository/artifacts.xml"/>
 
-    	<delete dir="${buildDirectory}/plugins/net.sf.psstools.lang/@dot"/>
-    	<delete dir="${buildDirectory}/plugins/net.sf.psstools.lang.ui/@dot"/>
+	<zip destfile="${buildDirectory}/archive_tmp/repository/artifacts.jar"
+		basedir="${buildDirectory}/archive_tmp/repository" includes="artifacts.xml"/>
+	<zip destfile="${buildDirectory}/archive_tmp/repository/content.jar"
+		basedir="${buildDirectory}/archive_tmp/repository" includes="content.xml"/>
+        <delete>
+		<fileset dir="${buildDirectory}/archive_tmp/repository" includes="*.xml"/>
+        </delete>
 
-        <ant antfile="${buildDirectory}/features/net.sf.psstools.lang.feature/build.xml"
-            dir="${buildDirectory}/features/net.sf.psstools.lang.feature"
-            target="build.jars"/>
+	<zip destfile="${buildDirectory}/../psstools-release-${feature.version}.zip">
+		<fileset dir="${buildDirectory}/archive_tmp/repository">
+                        <include name="*.jar"/>
+                        <include name="features/**"/>
+                        <include name="plugins/**"/>
+                </fileset>
+        </zip>
+
+	<delete dir="${buildDirectory}"/>
+
 	</target>
- 	-->
-	
+
 </project>
 
