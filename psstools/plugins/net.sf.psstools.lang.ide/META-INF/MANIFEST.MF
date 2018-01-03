@@ -2,12 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: net.sf.psstools.lang.ide
 Bundle-Vendor: My Company
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.2.3
 Bundle-SymbolicName: net.sf.psstools.lang.ide; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: net.sf.psstools.lang,
  org.eclipse.xtext.ide,
- org.eclipse.xtext.xbase.ide
+ org.eclipse.xtext.xbase.ide,
+ org.antlr.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: net.sf.psstools.lang.ide.contentassist.antlr.internal,
  net.sf.psstools.lang.ide.contentassist.antlr

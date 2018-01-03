@@ -3,6 +3,27 @@
  */
 package net.sf.psstools.lang.ui.outline
 
+import net.sf.psstools.lang.pSS.action_declaration
+import net.sf.psstools.lang.pSS.action_field_declaration
+import net.sf.psstools.lang.pSS.activity_action_traversal_stmt
+import net.sf.psstools.lang.pSS.activity_declaration
+import net.sf.psstools.lang.pSS.bins_declaration
+import net.sf.psstools.lang.pSS.component_declaration
+import net.sf.psstools.lang.pSS.component_field_declaration
+import net.sf.psstools.lang.pSS.constraint_declaration
+import net.sf.psstools.lang.pSS.coverspec_declaration
+import net.sf.psstools.lang.pSS.data_declaration
+import net.sf.psstools.lang.pSS.data_instantiation
+import net.sf.psstools.lang.pSS.enum_declaration
+import net.sf.psstools.lang.pSS.exec_block_stmt
+import net.sf.psstools.lang.pSS.import_method_decl
+import net.sf.psstools.lang.pSS.object_bind_stmt
+import net.sf.psstools.lang.pSS.overrides_declaration
+import net.sf.psstools.lang.pSS.struct_field_declaration
+import net.sf.psstools.lang.pSS.struct_type
+import net.sf.psstools.lang.pSS.typedef_declaration
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.xtext.ui.editor.outline.IOutlineNode
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
 
 /**
@@ -11,5 +32,81 @@ import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#outline
  */
 class PSSOutlineTreeProvider extends DefaultOutlineTreeProvider {
+	
+	def _isLeaf(constraint_declaration e) { true }
+	def _isLeaf(typedef_declaration e) { true }
+	def _isLeaf(data_instantiation e) { true }
+	def _isLeaf(bins_declaration e) { true }
+	def _isLeaf(overrides_declaration e) { true }
+	def _isLeaf(enum_declaration e) { true }
+	def _isLeaf(object_bind_stmt e) { true }
+	def _isLeaf(exec_block_stmt e) { true }
+	def _isLeaf(import_method_decl e) { true }
+
+	def _createChildren(IOutlineNode parentNode, struct_type struct) {
+		for (EObject child : struct.body) {
+			if (child instanceof struct_field_declaration) {
+				var field = child as struct_field_declaration;
+				for (EObject value : field.declaration.instances) {
+					createNode(parentNode, value);
+				}
+			} else {
+				createNode(parentNode, child);
+			}
+		}
+	}
+	
+	def _createChildren(IOutlineNode parentNode, activity_declaration activity) {
+		for (EObject c : activity.body) {
+			if (c instanceof activity_action_traversal_stmt) {
+				var t = c as activity_action_traversal_stmt;
+				if (t.item != null) {
+					createNode(parentNode, t.item);
+				} else {
+					createNode(parentNode, t.type);
+				}
+			}
+		}
+	}
+
+        def _createChildren(IOutlineNode parentNode, action_declaration struct) {
+                for (EObject child : struct.body) {
+                        if (child instanceof action_field_declaration) {
+                                var field = child as action_field_declaration;
+                                for (EObject value : field.declaration.instances) {
+                                        createNode(parentNode, value);
+                                }
+                        } else {
+                                createNode(parentNode, child);
+                        }
+                }
+        }
+
+        def _createChildren(IOutlineNode parentNode, coverspec_declaration cs) {
+                for (EObject child : cs.body_items) {
+                        createNode(parentNode, child);
+                }
+        }
+
+        def _createChildren(IOutlineNode parentNode, component_declaration component) {
+                for (EObject child : component.body) {
+                        if (child instanceof component_field_declaration) {
+                                var field = child as component_field_declaration;
+
+                                _createChildren(parentNode, field.declaration);
+                        } else {
+                                if (!(child instanceof object_bind_stmt)) {
+                                        createNode(parentNode, child);
+                                }
+                        }
+                }
+        }
+
+        def _createChildren(IOutlineNode parentNode, data_declaration dd) {
+                for (data_instantiation child : dd.instances) {
+//                      System.out.println("data_instantiation: " + child.name);
+                        createNode(parentNode, child);
+                }
+        }
 
 }

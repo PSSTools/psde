@@ -27,9 +27,10 @@ Model:
 	root+=portable_stimulus_description*;
 
 portable_stimulus_description: 
-	package_body_item			|
-	package_declaration			|
-	component_declaration
+	package_body_item			//|
+	// Namespace
+//	package_declaration			|
+//	component_declaration
 ;
 
 /****************************************************************************
@@ -63,7 +64,10 @@ package_body_item:
 	typedef_declaration 			|
 	bins_declaration 				|
 	import_stmt 					|
-	extend_stmt
+	extend_stmt						|
+	// Namespace
+	package_declaration				|
+	component_declaration
 ;
 
 extend_stmt:
@@ -127,7 +131,8 @@ action_body_item:
 	bins_declaration   			|
 	symbol_declaration			|
 	coverspec_declaration		|
-	exec_block_stmt
+	exec_block_stmt				|
+	scheduling_constraint	
 ;
 
 activity_declaration:
@@ -148,6 +153,11 @@ io_direction:
 	input?='input' | output?='output'
 ;
 
+scheduling_constraint:
+	'constraint' ('parallel'|'sequence') '{' 
+		items+=variable_ref_path ',' items+=variable_ref_path (',' items+=variable_ref_path)* '}' (';')?
+;
+
 
 /****************************************************************************
  * H2: Exec Blocks
@@ -161,7 +171,18 @@ exec_block_stmt:
 exec_block:
 	native?='exec' kind=exec_kind_identifier '{' body_stmts+=exec_body_stmt* '}'
 ;
-	
+
+exec_kind_identifier:
+	'pre_solve' |
+	'post_solve' |
+	'body' |
+	'header' |
+	'declaration' |
+	'run_start' |
+	'run_end' |
+	'init'
+;	
+
 target_code_exec_block:
 	'exec' kind=exec_kind_identifier language=language_identifier '=' body=string ';'
 ;
@@ -222,6 +243,8 @@ import_method_decl:
 ;
 
 method_prototype:
+// Namespace
+//	ret_type=method_return_type name=method_identifier parameter_list=method_parameter_list_prototype
 	ret_type=method_return_type name=method_identifier parameter_list=method_parameter_list_prototype
 ;
 
@@ -409,9 +432,10 @@ activity_select_stmt:
 	'}'
 ;
 
+// TODO: allow action array elements to be traversed
 activity_action_traversal_stmt:
 	{activity_action_traversal_stmt} (
-		(item=identifier inline_with=inline_with_constraint?
+		(item=variable_ref inline_with=inline_with_constraint?
 		) |
 		('do' type=type_identifier inline_with=inline_with_constraint?
 		)
@@ -420,7 +444,10 @@ activity_action_traversal_stmt:
 ;
 
 inline_with_constraint:
-	{inline_with_constraint} 'with' ('{' constraints+=constraint_body_item* '}' | constraints+=constant_expression)
+	{inline_with_constraint} (
+		('with' '{' constraints+=constraint_body_item* '}') | 
+		('with' constraints+=constant_expression)
+	)
 ;
 
 
@@ -459,7 +486,10 @@ activity_repeat_stmt:
 ;
 
 activity_constraint_stmt:
-	{activity_constraint_stmt} 'constraint' ((block?='{' body+=constraint_body_item* '}' ) | (body+=single_stmt_constraint))
+	{activity_constraint_stmt} (
+		('constraint' (block?='{' body+=constraint_body_item* '}' )) | 
+		('constraint' (body+=single_stmt_constraint))
+	)
 ;
 
 activity_foreach_stmt:
@@ -497,7 +527,7 @@ override_stmt:
 ;
 
 type_override:
-	'type' src=identifier 'with' dest=hierarchical_type_identifier ';'
+	'type' src=identifier 'with' dest=type_identifier ';'
 ;
 
 instance_override:
@@ -580,18 +610,9 @@ enum_item:
 	name=identifier ('=' value=constant_expression)?
 ;
 
-/** BNF: user_defined_datatype ::= struct_type_id | enum_type | typedef_type*/
 user_defined_datatype:
 	typename=type_identifier
 ;
-
-struct_type_id : type_identifier;
-
-action_type : type_identifier;
-
-enum_type : type_identifier;
-
-typedef_type : type_identifier;
 
 typedef_declaration:
  	'typedef' type=data_type type_id=type_identifier ';' 
@@ -639,9 +660,21 @@ constraint_body_item:
 	expression_constraint_item |
 	foreach_constraint_item |
 	if_constraint_item		|
-	unique_constraint_item
+	unique_constraint_item     |
+	forall_constraint_item
 ;
 
+forall_constraint_item:
+	'forall' type_id=type_identifier ('in' c=type_identifier)? '{'
+		(body += constraint_body_item)*
+	'}'
+;
+
+/**
+ * BNF: expression_constraint_item ::= 
+ 	expression implicand_constraint_item
+ 	| expression <kw>;</kw>
+ */
 expression_constraint_item:
 	expr=expression (impl_constraint=implicand_constraint_item|';')
 ;
@@ -740,12 +773,15 @@ coverspec_option:
 	'option' '.' option=identifier '=' value=constant_expression ';'
 ;
 
+// 6382 -- coverpoint on expression, not identifier
+// 6383 -- Support 'iff' clause on coverpoints
+coverspec_coverpoint: 
+		name=coverpoint_identifier ':' 'coverpoint' target=expression ('iff' '(' iff=expression ')')?
+			body=coverspec_coverpoint_body
+;
 
-coverspec_coverpoint:
-	name=coverpoint_identifier ':' 'coverpoint' target=coverpoint_target_identifier 
-		(
-			( '{' body_items+=coverspec_coverpoint_body_item* '}' (';')?) | ';'
-		)
+coverspec_coverpoint_body:
+	{coverspec_coverpoint_body} (('{' body_items+=coverspec_coverpoint_body_item* '}' (';')?) | ';')
 ;
 
 coverspec_coverpoint_body_item:
@@ -753,20 +789,26 @@ coverspec_coverpoint_body_item:
 	coverspec_coverpoint_binspec
 ;
 
-coverspec_coverpoint_binspec:
-	'bins' name=identifier 
-		(bins=bin_specification | binsref=hierarchical_id) ';'
+// 6385 -- Support SV style of bins
+coverspec_coverpoint_binspec: (
+		('pattern' 'bins' name=identifier '=' bins=bin_specification ';') | 
+		('bins' name=identifier '['(sz=constant_expression)?']' '=' bins=open_range_list ';') | 
+		('bins' name=identifier '=' bins=open_range_list ';')
+	)
 ;
 
 coverspec_cross_body_item:
 	coverspec_option
 ;
 
-coverspec_cross:
+// 6383 -- Support 'iff' clause on coverpoints
+coverspec_cross: 
 	name=ID ':' 'cross' targets+=coverpoint_identifier (',' targets+=coverpoint_identifier)*
-		(
-			( '{' body_items+=coverspec_cross_body_item* '}' (';')? ) | ';'
-		)
+		('iff' '(' iff=expression ')')? body=coverspec_cross_body
+;
+
+coverspec_cross_body:
+	{coverspec_cross_body}(('{' body_items+=coverspec_cross_body_item* '}' (';')?) | ';')
 ;
 
 //coverspec_paths_body_item:
@@ -833,10 +875,24 @@ logical_equality_expr returns expression:
 	logical_inequality_expr ({logical_equality_expr.left=current} op=eq_neq_op right=logical_inequality_expr)*
 ;
 
-logical_inequality_expr returns expression:
-	binary_shift_expr ({logical_inequality_expr.left=current} 
-		((op=('<'|'<='|'>'|'>=') right=binary_shift_expr) | (op='inside' '[' right=open_range_list ']'))
-	)*
+logical_inequality_expr returns expression: 
+		binary_shift_expr ({logical_inequality_expr.left=current} right=logical_inequality_rhs)*
+;
+
+logical_inequality_rhs returns expression:
+	inequality_expr_term | inside_expr_term
+;
+
+inequality_expr_term returns expression:
+	op=logical_inequality_op right=binary_shift_expr
+;
+
+inside_expr_term returns expression:
+	op='inside' '[' right=open_range_list ']'
+;
+
+logical_inequality_op:
+	'<'|'<='|'>'|'>='
 ;
 
 binary_shift_expr returns expression:
@@ -872,9 +928,9 @@ unary_expr returns expression:
 primary: //; returns expression:
 	number 					
 	| bool_literal			
-	| paren_expr 
+	| paren_expr
 	| string_literal
-	| variable_ref			
+	| variable_ref_path
 	| method_function_call
 	;
 
@@ -892,16 +948,29 @@ method_hierarchical_id :
 ;
 
 function_call:
-	function=hierarchical_type_identifier parameters=method_parameter_list	
+	function=function_id parameters=method_parameter_list	
+;
+
+function_id:
+// Namespace
+//	ID ('::' ID ('::' ID)?)?
+	type_identifier
 ;
 
 paren_expr:
 	'(' expr=expression ')'
 ;
 
-variable_ref:
-	expr=hierarchical_id ('[' lhs=expression (':' rhs=expression)? ']')?
+// TODO: Mantis
+variable_ref_path:
+	ref+=variable_ref ('.' ref+=variable_ref)*
 ;
+
+variable_ref:
+	ref=identifier ('[' lhs=expression (':' rhs=expression)? ']')?
+//	expr=hierarchical_id ('[' lhs=expression (':' rhs=expression)? ']')?
+;
+
 
 
 /********************************************************************
@@ -916,12 +985,9 @@ enum_identifier: identifier;
 import_class_identifier: identifier;
 language_identifier: identifier;
 method_identifier: identifier;
-pool_identifier: identifier;
 variable_identifier: identifier;
-bin_identifier: identifier;
-exec_kind_identifier: identifier;
 constant: number | identifier;
-package_identifier: hierarchical_id;
+
 coverpoint_target_identifier : hierarchical_id;
 parameter_identifier : identifier;
 
@@ -929,13 +995,19 @@ identifier: ID | ESCAPED_ID;
 
 filename_string: DOUBLE_QUOTED_STRING;
 
+// Namespace
+//package_identifier: hierarchical_id;
+package_identifier: 
+	elems+=ID ('::' elems+=ID)*
+;
+
 type_identifier :
-	elems+=ID ('::' elems+=ID ('::' elems+=ID)?)?
+// Namespace
+//	elems+=ID ('::' elems+=ID ('::' elems+=ID)?)?
+	elems+=ID ('::' elems+=ID)*
 ;
 
 action_type_identifier: type_identifier;
-
-hierarchical_type_identifier: type_identifier;
 
 hierarchical_id:
 	path+=identifier ('.' path+=identifier)*

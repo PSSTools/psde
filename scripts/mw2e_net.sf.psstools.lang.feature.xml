@@ -1,0 +1,272 @@
+
+<project>
+	<property name="buildDirectory" value=""/>
+	<property name="srcdir" value=""/>
+
+	<property name="javacDebugInfo" value="true"/>
+	<property name="javacFailOnError" value="true"/>
+	<property name="javacSource" value="1.7"/>
+	<property name="javacTarget" value="1.7"/>
+	<property name="compilerarc" value="-g"/>
+	<property name="os" value="win32"/>
+	<property name="ws" value="win32"/>
+	<property name="arch" value="x86_64"/>
+	<property name="feature.version" value="0.0.1"/>
+	<property name="feature.id" value="net.sf.psstools.lang.feature"/>
+
+        <path id="classpath">
+                <fileset dir="${eclipse.home}/plugins"
+			includes="com.google.guava_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="com.google.google.inject.assistedinject_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="com.google.google.inject.multibindings_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="com.google.inject_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="com.ibm.icu_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="javax.inject_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.antlr.runtime_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.apache.commons.cli_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.apache.commons.logging_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.apache.log4j_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.emf.codegen.ecore_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.emf.codegen_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.emf.common_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.emf.ecore.xmi_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.emf.ecore_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.emf.mwe.core_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.emf.mwe.utils_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.emf.mwe2.language_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.emf.mwe2.launch_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.emf.mwe2.lib_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.emf.mwe2.runtime_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.jdt.annotation_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.jdt.annotation_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.jdt.core_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.xpand_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.xtend.core_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.xtend.lib_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.xtend.lib.macro_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.xtend.typesystem.emf_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.xtend_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.xtext.common.types_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.xtext.generator_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.xtext.xtext.generator_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.xtext.util_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.xtext.xbase.lib_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.xtext.xbase_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.xtext_*.jar"/>
+                <fileset dir="${buildDirectory}/plugins/net.sf.psstools.lang"
+                        includes=".antlr-generator-3.2.0-patch.jar"/>
+		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang/src"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.core.runtime_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.eclipse.equinox.common_*.jar"/>
+                <fileset dir="${eclipse.home}/plugins"
+			includes="org.objectweb.asm_*.jar"/>
+	</path>
+
+	<taskdef name="xtendc"
+		classname="org.eclipse.xtend.core.compiler.batch.XtendCompilerAntTask">
+		<classpath>
+			<fileset dir="${eclipse.home}/plugins">
+				<include name="org.eclipse.xtend.core_*.jar"/>
+				<include name="org.eclipse.xtend.standalone_*.jar"/>
+			</fileset>
+		</classpath>
+	</taskdef>
+
+	<taskdef name="xmltask"
+		classname="com.oopsconsultancy.xmltask.ant.XmlTask">
+		<classpath path="${basedir}/xmltask.jar"/>
+	</taskdef>
+
+
+	<target name="build" 
+		depends="
+		generate-xtext-artifacts,
+		compile-xtend,
+		compile-java,
+		mkarchive"/>
+		<echo message="buldDirectory=${buildDirectory}"/>
+
+	<target name="generate-xtext-artifacts">
+        <eclipse.buildScript
+            elements="feature@net.sf.psstools.lang.feature"
+	    buildDirectory="${buildDirectory}"
+            baseLocation="${eclipse.home}"
+	    forceContextQualifier="0"
+            configInfo="win32,win32,x86_64"
+	    generateFeatureVersionSuffix="true"
+	    outputUpdateJars="true"/>
+
+		<java fork="true" failonerror="true"
+			classpathref="classpath"
+			classname="org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher"
+			dir="${buildDirectory}/plugins/net.sf.psstools.lang">
+				<arg value="src/net/sf/psstools/lang/GeneratePSS.mwe2"/>
+		</java>
+	</target>
+
+	<target name="compile-xtend">
+		<pathconvert pathsep="${path.separator}"
+			property="classpath-string"
+			refid="classpath"/>
+		<java fork="true" failonerror="true"
+			classpathref="classpath"
+			classname="org.eclipse.xtend.core.compiler.batch.Main"
+			dir="${buildDirectory}/plugins/net.sf.psstools.lang">
+			<arg value="-cp"/>
+			<arg value="${classpath-string}"/>
+			<!--
+			<arg value="-useCurrentClassLoader"/>
+			-->
+			<arg value="-d"/>
+			<arg value="xtend-gen"/>
+			<arg value="src-gen${path.separator}src"/>
+		</java>
+	</target>
+
+	<target name="compile-java">
+		<ant antfile="${buildDirectory}/features/${feature.id}/build.xml"
+            dir="${buildDirectory}/features/net.sf.psstools.lang.feature"
+	    target="build.jars"/>
+        <ant antfile="${buildDirectory}/assemble.net.sf.psstools.lang.feature.${os}.${ws}.${arch}.xml"
+		dir="${buildDirectory}">
+		<property name="buildLabel" value="release"/>
+		<property name="buildId" value="release"/>
+	</ant>
+		<copy tofile="${buildDirectory}/psstools-feature-${feature.version}.zip"
+			file="${buildDirectory}/release/net.sf.psstools.lang.feature-release-${os}.${ws}.${arch}.zip"/>
+
+	</target>
+
+	<target name="mkarchive">
+		<delete dir="${buildDirectory}/archive_tmp"/>
+	        <mkdir dir="${buildDirectory}/archive_tmp"/>
+	        <mkdir dir="${buildDirectory}/archive_tmp/features"/>
+		<mkdir dir="${buildDirectory}/archive_tmp/plugins"/>
+
+	        <ant antfile="${buildDirectory}/features/${feature.id}/build.xml"
+			dir="${buildDirectory}/features/${feature.id}"
+			target="build.update.jar">
+			<property name="feature.destination" value="${buildDirectory}/archive_tmp/features"/>
+			<property name="plugin.destination" value="${buildDirectory}/archive_tmp/plugins"/>
+        </ant>
+
+        <copy todir="${buildDirectory}/archive_tmp">
+            <fileset dir="${srcdir}/features/${feature.id}">
+                <include name="category.xml"/>
+            </fileset>
+            <filterset begintoken="1" endtoken="3">
+                <filter token=".2." value="${feature.version}"/>
+            </filterset>
+        </copy>
+
+        <!-- Create the P2 repository -->
+        <p2.publish.featuresAndBundles
+		metadataRepository="file:${buildDirectory}/archive_tmp/repository"
+		artifactRepository="file:${buildDirectory}/archive_tmp/repository"
+            	publishArtifacts="true"
+		compress="false"
+		source="${buildDirectory}/archive_tmp"/>
+
+	</target>
+
+        <!-- Categorize the items in the repository -->
+        <java fork="true" classname="org.eclipse.core.launcher.Main">
+            <classpath>
+                    <fileset dir="${eclipse.home}/plugins"
+                            includes="org.eclipse.equinox.launcher_*.jar"/>
+            </classpath>
+            <arg value="-application"/>
+            <arg value="org.eclipse.equinox.p2.publisher.CategoryPublisher"/>
+            <arg value="-metadataRepository"/>
+            <arg value="file:/${repository}"/>
+            <arg value="-categoryDefinition"/>
+            <arg value="file:/${basedir}/../archive_tmp/category.xml"/>
+            <arg value="-categoryQualifier"/>
+        </java>
+
+	<xmltask source="${buildDirectory}/archive_tmp/repository/artifacts.xml"
+		dest="${buildDirectory}/archive_tmp/repository/artifacts_1.xml">
+                <replace path="/repository/@name"
+                        withText="http://psstools.sourceforge.net/${sf_update_dir}"/>
+        </xmltask>
+
+	<move file="${buildDirectory}/archive_tmp/repository/artifacts_1.xml"
+		tofile="${buildDirectory}/archive_tmp/repository/artifacts.xml"/>
+
+	<xmltask source="${buildDirectory}/archive_tmp/repository/content.xml"
+		dest="${buildDirectory}/archive_tmp/repository/content_1.xml">
+                <replace path="/repository/@name"
+                        withText="http://psstools.sourceforge.net/${sf_update_dir}"/>
+        </xmltask>
+
+	<move file="${buildDirectory}/archive_tmp/repository/content_1.xml"
+		tofile="${buildDirectory}/archive_tmp/repository/content.xml"/>
+
+
+        <jar destfile="${buildDirectory}/psstools-${feature.version}.jar"
+		basedir="${buildDirectory}/archive_tmp/repository"
+             includes="*.xml, features/**, plugins/**"/>
+
+	<!--
+
+
+
+		<java fork="true" failonerror="true"
+			classpathref="classpath"
+			classname="org.eclipse.xtend.core.compiler.batch.Main"
+			dir="${buildDirectory}/plugins/net.sf.psstools.lang.ui">
+			<arg value="-useCurrentClassLoader"/>
+			<arg value="-d"/>
+			<arg value="xtend-gen"/>
+			<arg value="src"/>
+		</java>
+
+    	<delete dir="${buildDirectory}/plugins/net.sf.psstools.lang/@dot"/>
+    	<delete dir="${buildDirectory}/plugins/net.sf.psstools.lang.ui/@dot"/>
+
+        <ant antfile="${buildDirectory}/features/net.sf.psstools.lang.feature/build.xml"
+            dir="${buildDirectory}/features/net.sf.psstools.lang.feature"
+            target="build.jars"/>
+	</target>
+ 	-->
+	
+</project>
+

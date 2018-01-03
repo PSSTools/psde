@@ -7,6 +7,12 @@ BUILD_DIR := $(PSSTOOLS_DIR)/build
 PACKAGES_DIR := $(PSSTOOLS_DIR)/packages
 BUILD_TOOLS_DIR := $(BUILD_DIR)/tools
 
-MK_INCLUDES += $(PSSTOOLS_SCRIPTS_DIR)/pssc.mk
+# MK_INCLUDES += $(PSSTOOLS_SCRIPTS_DIR)/pssc.mk
 # MK_INCLUDES += $(PSSTOOLS_SCRIPTS_DIR)/psde.mk
+MK_INCLUDES += $(PSSTOOLS_SCRIPTS_DIR)/net.sf.psstools.lang.feature.mk
+# MK_INCLUDES += $(PSSTOOLS_SCRIPTS_DIR)/net.sf.psstools.pssc.feature.mk
+
+
 include $(PSSTOOLS_DIR)/eclipsescripts/mkfiles/eclipsescripts.mk
+
+

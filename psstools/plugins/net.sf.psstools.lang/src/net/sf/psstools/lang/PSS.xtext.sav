@@ -1,0 +1,9 @@
+grammar net.sf.psstools.lang.PSS with org.eclipse.xtext.common.Terminals
+
+generate pSS "http://www.sf.net/psstools/lang/PSS"
+
+Model:
+	greetings+=Greeting*;
+	
+Greeting:
+	'Hello' name=ID '!';

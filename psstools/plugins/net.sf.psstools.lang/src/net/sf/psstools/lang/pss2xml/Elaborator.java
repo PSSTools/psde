@@ -37,9 +37,9 @@ import net.sf.psstools.lang.pSS.exec_body_stmt;
 import net.sf.psstools.lang.pSS.expression;
 import net.sf.psstools.lang.pSS.expression_constraint_item;
 import net.sf.psstools.lang.pSS.function_call;
+import net.sf.psstools.lang.pSS.function_id;
 import net.sf.psstools.lang.pSS.hex_number;
 import net.sf.psstools.lang.pSS.hierarchical_id;
-import net.sf.psstools.lang.pSS.hierarchical_type_identifier;
 import net.sf.psstools.lang.pSS.import_method_decl;
 import net.sf.psstools.lang.pSS.import_stmt;
 import net.sf.psstools.lang.pSS.integer_type;
@@ -441,7 +441,7 @@ public class Elaborator {
 			println("<pss:ref>");
 			inc_indent();
 
-			to_hierarchical_id(v.getExpr().getPath());
+//TODO:			to_hierarchical_id(v.getExpr().getPath());
 			
 			if (v.getLhs() != null) {
 				elaborate_expr(v.getLhs(), "pss:lhs");
@@ -856,10 +856,28 @@ public class Elaborator {
 		to_hierarchical_id(id.getPath(), tag);
 	}
 	
-	private void to_hierarchical_id(hierarchical_type_identifier id, String tag) {
-		type_identifier ti_id = (type_identifier)id;
-		to_hierarchical_id(ti_id.getElems(), tag);
+	private void to_hierarchical_id(function_id id, String tag) {
+		to_hierarchical_id((hierarchical_id)id, tag);
 	}
+	
+	private void to_hierarchical_id(String id, String tag) {
+		if (tag != null) {
+			println("<" + tag + ">");
+			inc_indent();
+		}
+		
+		println("<pss:path>" + id + "</pss:path>");
+	
+		if (tag != null) {
+			dec_indent();
+			println("</" + tag + ">");
+		}		
+	}	
+	
+//	private void to_hierarchical_id(hierarchical_type_identifier id, String tag) {
+//		type_identifier ti_id = (type_identifier)id;
+//		to_hierarchical_id(ti_id.getElems(), tag);
+//	}
 
 	private void to_hierarchical_id(method_hierarchical_id id, String tag) {
 		to_hierarchical_id(id.getPath(), tag);
