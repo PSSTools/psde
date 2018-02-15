@@ -96,13 +96,10 @@
   -->
 		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang/src"/>
 		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang/src-gen"/>
-		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang/xtend-gen"/>
 		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang.ide/src"/>
 		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang.ide/src-gen"/>
-		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang.ide/xtend-gen"/>
 		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang.ui/src"/>
 		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang.ui/src-gen"/>
-		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang.ui/xtend-gen"/>
                 <fileset dir="${eclipse.home}/plugins"
 			includes="org.eclipse.core.runtime_*.jar"/>
                 <fileset dir="${eclipse.home}/plugins"
