@@ -1,0 +1,9 @@
+
+<template 
+	name="select"
+	autoinsert="true" context="net.sf.psstools.lang.PSS.activity_stmt"
+	delete="false" description="activity" enabled="true">
+select {
+	${cursor}
+}
+</template>

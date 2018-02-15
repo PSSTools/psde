@@ -1,0 +1,7 @@
+
+<template 
+	name="function"
+	autoinsert="true" context="net.sf.psstools.lang.PSS.package_body_item"
+	delete="false" description="Create a function declaration" enabled="true">
+function ${return} ${name} ( ${cursor} );
+</template>

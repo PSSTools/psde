@@ -7,7 +7,6 @@ import net.sf.psstools.lang.pSS.action_declaration
 import net.sf.psstools.lang.pSS.action_field_declaration
 import net.sf.psstools.lang.pSS.activity_action_traversal_stmt
 import net.sf.psstools.lang.pSS.activity_declaration
-import net.sf.psstools.lang.pSS.bins_declaration
 import net.sf.psstools.lang.pSS.component_declaration
 import net.sf.psstools.lang.pSS.component_field_declaration
 import net.sf.psstools.lang.pSS.constraint_declaration
@@ -16,7 +15,7 @@ import net.sf.psstools.lang.pSS.data_declaration
 import net.sf.psstools.lang.pSS.data_instantiation
 import net.sf.psstools.lang.pSS.enum_declaration
 import net.sf.psstools.lang.pSS.exec_block_stmt
-import net.sf.psstools.lang.pSS.import_method_decl
+import net.sf.psstools.lang.pSS.function_decl
 import net.sf.psstools.lang.pSS.object_bind_stmt
 import net.sf.psstools.lang.pSS.overrides_declaration
 import net.sf.psstools.lang.pSS.struct_field_declaration
@@ -36,12 +35,12 @@ class PSSOutlineTreeProvider extends DefaultOutlineTreeProvider {
 	def _isLeaf(constraint_declaration e) { true }
 	def _isLeaf(typedef_declaration e) { true }
 	def _isLeaf(data_instantiation e) { true }
-	def _isLeaf(bins_declaration e) { true }
+//	def _isLeaf(bins_declaration e) { true }
 	def _isLeaf(overrides_declaration e) { true }
 	def _isLeaf(enum_declaration e) { true }
 	def _isLeaf(object_bind_stmt e) { true }
 	def _isLeaf(exec_block_stmt e) { true }
-	def _isLeaf(import_method_decl e) { true }
+	def _isLeaf(function_decl e) { true }
 
 	def _createChildren(IOutlineNode parentNode, struct_type struct) {
 		for (EObject child : struct.body) {

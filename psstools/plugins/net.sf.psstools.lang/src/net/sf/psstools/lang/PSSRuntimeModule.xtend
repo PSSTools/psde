@@ -3,9 +3,38 @@
  */
 package net.sf.psstools.lang
 
+import com.google.inject.Binder
+import net.sf.psstools.lang.scoping.PSSResourceDescriptionStrategy
+import org.eclipse.xtext.resource.IDefaultResourceDescriptionStrategy
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
  */
 class PSSRuntimeModule extends AbstractPSSRuntimeModule {
+	
+	override configure(Binder binder) {
+		super.configure(binder);
+		binder.bind(IDefaultResourceDescriptionStrategy)
+		.to(PSSResourceDescriptionStrategy);
+	}
+
+//	override bindIQualifiedNameProvider() {
+//		System.out.println("bindIQualifiedNameProvider");
+//		return PSSQualifiedNameProvider;
+//	}	
+
+	def bindIResourceDescriptionStrategy() {
+		System.out.println("bindIResourceDescriptionStrategy");
+		return PSSResourceDescriptionStrategy;
+	}
+	
+	def bindDefaultResourceDescriptionStrategy() {
+		System.out.println("bindDefaultResourceDescriptionStrategy");
+		return PSSResourceDescriptionStrategy;
+	}
+	
+	def bindIResourceServiceProvider() {
+		return PSSResourceServiceProvider;
+	}
+	
 }

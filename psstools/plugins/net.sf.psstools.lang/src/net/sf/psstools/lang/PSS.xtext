@@ -57,12 +57,12 @@ package_body_item:
 	struct_declaration 				|
 	enum_declaration 				|
 	coverspec_declaration 			|
-	import_method_decl				|
+	function_decl					|
 	import_class_decl				|
 	import_method_qualifiers		|
 	export_action					|
 	typedef_declaration 			|
-	bins_declaration 				|
+//#6429	bins_declaration 				|
 	import_stmt 					|
 	extend_stmt						|
 	// Namespace
@@ -124,11 +124,11 @@ action_super_spec:
 ;
 
 action_body_item:
-	activity_declaration			|
+	activity_declaration		|
 	overrides_declaration  		|	
 	constraint_declaration 		|
 	action_field_declaration	|
-	bins_declaration   			|
+//#6429	bins_declaration   		|
 	symbol_declaration			|
 	coverspec_declaration		|
 	exec_block_stmt				|
@@ -222,7 +222,7 @@ struct_body_item:
 	constraint_declaration		|
 	struct_field_declaration	|
 	typedef_declaration			|
-	bins_declaration			|
+//#6429	bins_declaration			|
 	coverspec_declaration		|
 	exec_block_stmt
 ;
@@ -238,8 +238,8 @@ struct_field_modifier:
 /****************************************************************************
  * H1: Procedural Interface
  ****************************************************************************/
-import_method_decl:
-	'import' prototype=method_prototype ';'
+function_decl:
+	'function' prototype=method_prototype ';'
 ;
 
 method_prototype:
@@ -271,11 +271,11 @@ import_method_qualifiers:
 	;
 
 import_method_phase_qualifiers:
-	'import' func_qualifiers=import_function_qualifiers name=type_identifier ';'
+	'import' func_qualifiers=import_function_qualifiers 'function' name=type_identifier ';'
 ;
 
 import_method_target_template:
-	'import' language=language_identifier prototype=method_prototype '=' string ';'
+	'target' 'function' language=language_identifier prototype=method_prototype '=' string ';'
 ;
 
 import_function_qualifiers:
@@ -402,7 +402,23 @@ activity_stmt:
 	| activity_parallel_stmt				
 	| activity_schedule_stmt				
 	| activity_bind_stmt					
+	| activity_expand_stmt
+	| activity_join_stmt
 //	| graph_method_call_stmt
+;
+
+activity_expand_stmt :
+	{activity_expand_stmt}
+	'expand' '(' (identifier ':')? count=expression ')' '{'
+		stmts += activity_stmt*
+	'}'
+;
+
+activity_join_stmt :
+	{activity_join_stmt}
+	'join' '{'
+		stmts += activity_stmt*
+	'}'
 ;
 
 /*
@@ -435,7 +451,7 @@ activity_select_stmt:
 // TODO: allow action array elements to be traversed
 activity_action_traversal_stmt:
 	{activity_action_traversal_stmt} (
-		(item=variable_ref inline_with=inline_with_constraint?
+		(item=variable_ref_path inline_with=inline_with_constraint?
 		) |
 		('do' type=type_identifier inline_with=inline_with_constraint?
 		)
@@ -621,15 +637,9 @@ typedef_declaration:
 string_type: typename='string';  
 
 integer_type:
-	typename=integer_atom_type ('[' 
-		lhs=expression
-		(
-			(bitRange?=':' rhs=expression) | 
-			(domin?=',' ranges+=open_range_value (',' ranges+=open_range_value)*) | 
-			(domain?='..' rhs=expression (',' ranges+=open_range_value)*)
-		)?
-		']'
-	)? 
+	typename=integer_atom_type 
+		('[' lhs=expression (':' rhs=expression)? ']')? 
+		('in' '[' domain=open_range_list ']')?
 ;
 
 integer_atom_type:
@@ -641,7 +651,8 @@ open_range_list:
 ;
 
 open_range_value:
-	lhs=expression ('..' rhs=expression)?
+	('..' rhs=expression) |
+	lhs=expression ('..' (rhs=expression)?)?
 ;
 
 /********************************************************************
@@ -660,15 +671,15 @@ constraint_body_item:
 	expression_constraint_item |
 	foreach_constraint_item |
 	if_constraint_item		|
-	unique_constraint_item     |
-	forall_constraint_item
+	unique_constraint_item     //|
+//	forall_constraint_item
 ;
 
-forall_constraint_item:
-	'forall' type_id=type_identifier ('in' c=type_identifier)? '{'
-		(body += constraint_body_item)*
-	'}'
-;
+//forall_constraint_item:
+//	'forall' type_id=type_identifier ('in' c=type_identifier)? '{'
+//		(body += constraint_body_item)*
+//	'}'
+//;
 
 /**
  * BNF: expression_constraint_item ::= 
@@ -710,51 +721,55 @@ unique_constraint_item:
 ;
 
 /********************************************************************
- * H1: Bins 
+ * //#coverspec_cleanup H1: Bins 
  ********************************************************************/
- bins_declaration:
- 	'bins' name=identifier (item=variable_identifier)? bins=bin_specification ';'
- ;
+//#6429 bins_declaration:
+// 	'bins' name=identifier (item=variable_identifier)? bins=bin_specification ';'
+// ;
  
- bin_specification:
- 	items+=bin_specifier (items+=bin_specifier)* (bin_wildcard)?
- ;
+// bin_specification:
+// 	items+=bin_specifier (items+=bin_specifier)* /*(bin_wildcard)? */
+// ;
+// 
+// bin_specifier:
+// 	explicit_bin_value |
+// 	explicit_bin_range |
+// 	bin_range_divide   |
+// 	bin_range_size
+// ;
+// 
+// explicit_bin_value:
+// 	'[' constant ']'
+// ;
+// 
+// explicit_bin_range: 
+// 	'[' range=open_range_list ']'
+// ;
+// 
+// bin_range_divide:
+// 	explicit_bin_range '/' div=constant
+// ;
+// 
+// bin_range_size:
+// 	explicit_bin_range ':' size=constant
+// ;
  
- bin_specifier:
- 	explicit_bin_value |
- 	explicit_bin_range |
- 	bin_range_divide   |
- 	bin_range_size
- ;
- 
- explicit_bin_value:
- 	'[' constant ']'
- ;
- 
- explicit_bin_range:
- 	'[' low=constant '..' high=constant ']'
- ;
- 
- bin_range_divide:
- 	explicit_bin_range '/' div=constant
- ;
- 
- bin_range_size:
- 	explicit_bin_range ':' size=constant
- ;
- 
- bin_wildcard:
- 	'[' '*' ']'
- ;
+// bin_wildcard:
+// 	'[' '*' ']'
+// ;
  
 /********************************************************************
  * H1: Coverspec
  ********************************************************************/
 
 coverspec_declaration:
-	'coverspec' name=identifier '(' ports+=coverspec_port (',' ports+=coverspec_port)* ')' '{'
+	'coverspec' name=identifier '(' ports+=coverspec_port (',' ports+=coverspec_port)* ')' (coverspec_sample_event)? '{'
 		body_items+=coverspec_body_item*
 	'}' (';')?
+;
+
+coverspec_sample_event:
+	'@' 'coverevent'
 ;
 
 coverspec_port:
@@ -789,17 +804,37 @@ coverspec_coverpoint_body_item:
 	coverspec_coverpoint_binspec
 ;
 
+bins_keyword:
+	'bins' | 'illegal_bins' | 'ignore_bins'
+;
+
 // 6385 -- Support SV style of bins
 coverspec_coverpoint_binspec: (
-		('pattern' 'bins' name=identifier '=' bins=bin_specification ';') | 
-		('bins' name=identifier '['(sz=constant_expression)?']' '=' bins=open_range_list ';') | 
-		('bins' name=identifier '=' bins=open_range_list ';')
+//		('pattern' type=bins_keyword name=identifier '=' bins=pattern_bin_specification 
+//			('with' '(' expr=coverspec_expression ')')? ';') | 
+		(type=bins_keyword name=identifier ('['(sz=constant_expression)?']')? '=' '[' bins=open_range_list  ']'
+			('with' '(' expr=coverspec_expression ')')? ';')
 	)
 ;
 
-coverspec_cross_body_item:
-	coverspec_option
-;
+//pattern_bin_specification:
+//	items+=pattern_bin_specifier (items+=pattern_bin_specifier)*
+//;
+// 
+//pattern_bin_specifier:
+// 	'[' range=open_range_list ']' (div=pattern_bin_div_specifier|size=pattern_bin_size_specifier)?
+// 	;
+//
+//pattern_bin_div_specifier:
+//	'/' div=constant_expression
+//; 
+//
+//pattern_bin_size_specifier:
+//	':' size=constant_expression
+//;
+ 
+coverspec_expression : expression;
+
 
 // 6383 -- Support 'iff' clause on coverpoints
 coverspec_cross: 
@@ -809,6 +844,15 @@ coverspec_cross:
 
 coverspec_cross_body:
 	{coverspec_cross_body}(('{' body_items+=coverspec_cross_body_item* '}' (';')?) | ';')
+;
+
+coverspec_cross_body_item:
+	coverspec_option |
+	coverspec_cross_binspec
+;
+
+coverspec_cross_binspec:
+	type=bins_keyword name=identifier ('[' ']')? '=' 'with' '(' expr=coverspec_expression ')' ';'
 ;
 
 //coverspec_paths_body_item:
@@ -888,7 +932,7 @@ inequality_expr_term returns expression:
 ;
 
 inside_expr_term returns expression:
-	op='inside' '[' right=open_range_list ']'
+	op='in' '[' right=open_range_list ']'
 ;
 
 logical_inequality_op:
@@ -925,7 +969,7 @@ unary_expr returns expression:
 	(unary_op)? primary
 ;
 
-primary: //; returns expression:
+primary returns expression:
 	number 					
 	| bool_literal			
 	| paren_expr
@@ -963,12 +1007,13 @@ paren_expr:
 
 // TODO: Mantis
 variable_ref_path:
+	{variable_ref_path}
 	ref+=variable_ref ('.' ref+=variable_ref)*
 ;
 
 variable_ref:
-	ref=identifier ('[' lhs=expression (':' rhs=expression)? ']')?
-//	expr=hierarchical_id ('[' lhs=expression (':' rhs=expression)? ']')?
+	{variable_ref}
+	ref=identifier ( '[' left=expression (':' rhs=expression)? ']' )?
 ;
 
 

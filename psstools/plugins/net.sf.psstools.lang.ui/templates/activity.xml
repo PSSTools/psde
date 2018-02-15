@@ -1,0 +1,9 @@
+
+<template 
+	name="activity"
+	autoinsert="true" context="net.sf.psstools.lang.PSS.action_body_item"
+	delete="false" description="activity" enabled="true">
+activity {
+	${cursor}
+}
+</template>

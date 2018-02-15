@@ -12,7 +12,7 @@ BUILD_TOOLS_DIR := $(BUILD_DIR)/tools
 MK_INCLUDES += $(PSSTOOLS_SCRIPTS_DIR)/net.sf.psstools.lang.feature.mk
 # MK_INCLUDES += $(PSSTOOLS_SCRIPTS_DIR)/net.sf.psstools.pssc.feature.mk
 
-FEATURE_VERSION=0.0.1
+FEATURE_VERSION=0.0.2
 SF_FRS_URL=$(SF_USERNAME),psstools@frs.sourceforge.net
 SF_WEB_URL=$(SF_USERNAME),psstools@web.sourceforge.net
 SF_UPDATE_URL=$(SF_USERNAME),psstools@web.sourceforge.net:htdocs

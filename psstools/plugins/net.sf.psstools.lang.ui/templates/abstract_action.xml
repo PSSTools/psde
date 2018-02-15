@@ -1,0 +1,9 @@
+
+<template 
+	name="abstract action"
+	autoinsert="true" context="net.sf.psstools.lang.PSS.package_body_item"
+	delete="false" description="Create an abstract action" enabled="true">
+abstract action ${name} {
+	${cursor}
+}
+</template>

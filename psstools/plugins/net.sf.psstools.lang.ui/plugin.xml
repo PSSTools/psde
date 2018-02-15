@@ -407,4 +407,10 @@
 			type="text">
 		</fileTypes>
 	</extension>
+ <extension
+       point="org.eclipse.core.runtime.preferences">
+    <initializer
+          class="net.sf.psstools.lang.ui.TemplatePrefsInitializer">
+    </initializer>
+ </extension>
 </plugin>

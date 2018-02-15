@@ -37,10 +37,10 @@ import net.sf.psstools.lang.pSS.exec_body_stmt;
 import net.sf.psstools.lang.pSS.expression;
 import net.sf.psstools.lang.pSS.expression_constraint_item;
 import net.sf.psstools.lang.pSS.function_call;
+import net.sf.psstools.lang.pSS.function_decl;
 import net.sf.psstools.lang.pSS.function_id;
 import net.sf.psstools.lang.pSS.hex_number;
 import net.sf.psstools.lang.pSS.hierarchical_id;
-import net.sf.psstools.lang.pSS.import_method_decl;
 import net.sf.psstools.lang.pSS.import_stmt;
 import net.sf.psstools.lang.pSS.integer_type;
 import net.sf.psstools.lang.pSS.logical_and_expr;
@@ -443,12 +443,12 @@ public class Elaborator {
 
 //TODO:			to_hierarchical_id(v.getExpr().getPath());
 			
-			if (v.getLhs() != null) {
-				elaborate_expr(v.getLhs(), "pss:lhs");
-			}
-			if (v.getRhs() != null) {
-				elaborate_expr(v.getRhs(), "pss:rhs");
-			}
+//			if (v.getLhs() != null) {
+//				elaborate_expr(v.getLhs(), "pss:lhs");
+//			}
+//			if (v.getRhs() != null) {
+//				elaborate_expr(v.getRhs(), "pss:rhs");
+//			}
 			
 			dec_indent();
 			println("</pss:ref>");
@@ -651,7 +651,7 @@ public class Elaborator {
 		println("</pss:import_stmt>");
 	}
 	
-	private void elaborate_import_method(import_method_decl imp) {
+	private void elaborate_import_method(function_decl imp) {
 		elaborate_method_prototype(imp.getPrototype(), "pss:import_function");
 	}
 	
@@ -718,8 +718,8 @@ public class Elaborator {
 				elaborate_enum((enum_declaration)it);
 			} else if (it instanceof import_stmt) {
 				elaborate_import((import_stmt)it);
-			} else if (it instanceof import_method_decl) {
-				elaborate_import_method((import_method_decl)it);
+			} else if (it instanceof function_decl) {
+				elaborate_import_method((function_decl)it);
 			} else {
 				println("<unknown_item class=\"" + it.getClass() + "\"/>");
 			}
