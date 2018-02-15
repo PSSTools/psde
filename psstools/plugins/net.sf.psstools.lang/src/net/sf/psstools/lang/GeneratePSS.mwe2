@@ -42,6 +42,7 @@ Workflow {
 			}
 			formatter = {
 				generateStub = true
+				generateXtendStub = false
 			}
 		}
 	}
