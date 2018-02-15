@@ -14,8 +14,7 @@ class PSSRuntimeModule extends AbstractPSSRuntimeModule {
 	
 	override configure(Binder binder) {
 		super.configure(binder);
-		binder.bind(IDefaultResourceDescriptionStrategy)
-		.to(PSSResourceDescriptionStrategy);
+
 	}
 
 //	override bindIQualifiedNameProvider() {
@@ -23,18 +22,6 @@ class PSSRuntimeModule extends AbstractPSSRuntimeModule {
 //		return PSSQualifiedNameProvider;
 //	}	
 
-	def bindIResourceDescriptionStrategy() {
-		System.out.println("bindIResourceDescriptionStrategy");
-		return PSSResourceDescriptionStrategy;
-	}
-	
-	def bindDefaultResourceDescriptionStrategy() {
-		System.out.println("bindDefaultResourceDescriptionStrategy");
-		return PSSResourceDescriptionStrategy;
-	}
-	
-	def bindIResourceServiceProvider() {
-		return PSSResourceServiceProvider;
-	}
+
 	
 }
