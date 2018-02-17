@@ -1,6 +1,6 @@
 
 ------------------------------------------------------------------------------
--- 0.0.2 Release --
+-- 0.0.3 Release --
 
 - Incorporate Mantis #5838 -- changes to variable domain specification
 
