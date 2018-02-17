@@ -2,7 +2,7 @@
 FEATURE := net.sf.psstools.lang.feature
 FEATURE_SRCDIR := $(PSSTOOLS_DIR)/psstools
 FEATURE_DIR := $(FEATURE_SRCDIR)/features/$(FEATURE)
-FEATURE_VERSION := 0.0.2
+FEATURE_VERSION := 0.0.3
 FEATURE_PRE_BUILD_TARGETS := $(FEATURE)_mw2e
 
 
@@ -18,6 +18,7 @@ $(FEATURE)_mw2e :
 		-DbuildDirectory=$(call NATIVE_PATH,$(net.sf.psstools.lang.feature_BUILDDIR)/build) \
 		-Dfeature.version=$(FEATURE_VERSION) \
 		-Dsrcdir=$(call NATIVE_PATH,$(PSSTOOLS_DIR)/psstools) \
+		-Dos=$(osgi_os) -Dws=$(osgi_ws) -Darch=$(osgi_arch) \
 		-verbose \
 		build
 

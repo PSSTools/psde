@@ -3,9 +3,31 @@
  */
 package net.sf.psstools.lang.ui.labeling;
 
-import com.google.inject.Inject;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider;
+
+import com.google.inject.Inject;
+
+import net.sf.psstools.lang.pSS.Model;
+import net.sf.psstools.lang.pSS.action_declaration;
+import net.sf.psstools.lang.pSS.activity_declaration;
+import net.sf.psstools.lang.pSS.bool_type;
+import net.sf.psstools.lang.pSS.component_declaration;
+import net.sf.psstools.lang.pSS.component_field_declaration;
+import net.sf.psstools.lang.pSS.data_declaration;
+import net.sf.psstools.lang.pSS.data_instantiation;
+import net.sf.psstools.lang.pSS.enum_declaration;
+import net.sf.psstools.lang.pSS.extend_stmt;
+import net.sf.psstools.lang.pSS.hierarchical_id;
+import net.sf.psstools.lang.pSS.integer_type;
+import net.sf.psstools.lang.pSS.object_bind_stmt;
+import net.sf.psstools.lang.pSS.overrides_declaration;
+import net.sf.psstools.lang.pSS.package_declaration;
+import net.sf.psstools.lang.pSS.string_type;
+import net.sf.psstools.lang.pSS.struct_declaration;
+import net.sf.psstools.lang.pSS.struct_field_declaration;
+import net.sf.psstools.lang.pSS.type_identifier;
+import net.sf.psstools.lang.pSS.user_defined_datatype;
 
 /**
  * Provides labels for EObjects.
@@ -19,132 +41,126 @@ public class PSSLabelProvider extends DefaultEObjectLabelProvider {
 		super(delegate);
 	}
 
+	
 	// Labels and icons can be computed like this:
 	
-//	String text(Greeting ele) {
-//		return "A greeting to " + ele.getName();
-//	}
-//
-//	String image(Greeting ele) {
-//		return "Greeting.gif";
-//	}
+	public String text(overrides_declaration e) { return "override"; }
 	
-//	def text(overrides_declaration e) { "override" }
-//	
-//	def text(activity_declaration g) { "activity" }
-//	
-//	def text(data_instantiation o) {
-//		var dd = o.eContainer as data_declaration;
-//		return o.name + " : " + typename(dd);
-//	}
-//	
-//	def text(object_bind_stmt o) {
-//		var ret = "bind " + hid2string(o.lhs);
-//		
-//		if (o.rhs.items.size > 1) {
-//			ret += '{';
+	public String text(activity_declaration g) { return "activity"; }
+	
+	public String text(data_instantiation o) {
+		data_declaration dd = (data_declaration)o.eContainer();
+		return o.getName() + " : " + typename(dd);
+	}
+	
+	public String text(object_bind_stmt o) {
+		String ret = "bind " + hid2string(o.getLhs());
+		
+		if (o.getRhs().getItems().size() > 1) {
+			ret += '{';
+		}
+		
+//		for (var i=0; i<o.rhs.items.size; i++) {
+//			ret += o.rhs.items.size
 //		}
-//		
-////		for (var i=0; i<o.rhs.items.size; i++) {
-////			ret += o.rhs.items.size
-////		}
-//		
-//		if (o.rhs.items.size > 1) {
-//			ret += '}';
-//		}
-//		return ret;
-//	}
-//	
-////	def text(variable_ref r) {
-////		return "" + r.eContainer;
-////	}
-//	
-//	def text(extend_stmt e) {
-//		var ret = tid2string(e.name);
-//		if (e.isAction) ret += " : action";
-//		if (e.isStruct) ret += " : struct";
-//		if (e.isEnum_e) ret += " : enum";
-//		if (e.isComponent) ret += " : component";
-//		return ret;
-//	}
-//	
-//	def text(package_declaration p) {
-//		return hid2string(p.name as hierarchical_id) + " : package";
-//	}
-//	
-//	
-//	def typename(data_declaration dd) {
-//		if (dd.type instanceof integer_type) {
-//			var i_t = dd.type as integer_type;
-//			return i_t.typename;
-//		} else if (dd.type instanceof string_type) {
-//			return "string";
-//		} else if (dd.type instanceof bool_type) {
-//			return "bool";
-//		} else if (dd.type instanceof user_defined_datatype) {
-//			var ud_t = dd.type as user_defined_datatype;
-//			return tid2string(ud_t.typename);
-//		} else {
-//			return "unknown";
-//		}
-//	}
-//	
-//	def tid2string(type_identifier ti) {
-//		var ret = "";
-//		for (var i=0; i<ti.elems.size; i++) {
-//			var id = ti.elems.get(i);
-//			ret += id;
-//			if (i+1 < ti.elems.size) {
-//				ret += "::";
-//			}
-//		}
-//		return ret;
-//	}
-//	
-//	def hid2string(hierarchical_id hi) {
-//		var ret = "";
-//		for (var i=0; i<hi.path.size; i++) {
-//			ret += hi.path.get(i);
-//			if (i+1<hi.path.size) {
-//				ret += ".";
-//			}
-//		}
-//		return ret;
-//	}
-//	
-//	// Labels and icons can be computed like this:
-//
-//	def image(action_declaration a) { 'action_obj.gif'; }
-//	def image(component_declaration c) { 'class_obj.gif'; }
-//	def image(activity_declaration g) { 'activity_obj.gif'; }
-//	def image(extend_stmt s) { 
-//		if (s.isComponent()) {
-//			return "extends_component.gif";
-//		} else if (s.isAction()) {
-//			return "extends_action.gif";
-//		}
-//	
-//		return 'extends.gif'; 
-//	}
-//	def image(component_field_declaration f) { 
-////		System.out.println("data_declaration: " + f.eContainer);
-//		'field_public_obj.gif'; 
-//	}
-//	def image(data_instantiation f) { 
-////		System.out.println("data_instantiation: " + f.eContainer);
-//		return 'field_public_obj.gif'; 
-//	}
-//	def image(enum_declaration e) { 'enum_obj.gif'; }
-//	def image(Model m) { 'module_obj.gif'; }
-//	def image(struct_declaration s) { 'struct_obj.gif'; }
-//	def image(package_declaration p) { 'package.gif'; }
-//	def image(struct_field_declaration f) { 'field_public_obj.gif'; }
-//	
-////	def text(Greeting ele) {
-////		'A greeting to ' + ele.name
-////	}
-////
-////	def image(Greeting ele) {
-////		'Greeting.gif'
-////	}	
+		
+		if (o.getRhs().getItems().size() > 1) {
+			ret += '}';
+		}
+		return ret;
+	}
+	
+	public String text(extend_stmt e) {
+		String ret = tid2string(e.getName());
+		if (e.isAction()) ret += " : action";
+		if (e.isStruct()) ret += " : struct";
+		if (e.isEnum_e()) ret += " : enum";
+		if (e.isComponent()) ret += " : component";
+		return ret;
+	}
+	
+	public String text(package_declaration p) {
+		return hid2string((hierarchical_id)p.getName()) + " : package";
+	}
+	
+	
+	private String typename(data_declaration dd) {
+		if (dd.getType() instanceof integer_type) {
+			integer_type i_t = (integer_type)dd.getType();
+			return i_t.getTypename();
+		} else if (dd.getType() instanceof string_type) {
+			return "string";
+		} else if (dd.getType() instanceof bool_type) {
+			return "bool";
+		} else if (dd.getType() instanceof user_defined_datatype) {
+			user_defined_datatype ud_t = (user_defined_datatype)dd.getType();
+			return tid2string(ud_t.getTypename());
+		} else {
+			return "unknown";
+		}
+	}
+	
+	private String tid2string(type_identifier ti) {
+		String ret = "";
+		for (int i=0; i<ti.getElems().size(); i++) {
+			String id = ti.getElems().get(i);
+			ret += id;
+			if (i+1 < ti.getElems().size()) {
+				ret += "::";
+			}
+		}
+		return ret;
+	}
+	
+	private String hid2string(hierarchical_id hi) {
+		String ret = "";
+		for (int i=0; i<hi.getPath().size(); i++) {
+			ret += hi.getPath().get(i);
+			if (i+1<hi.getPath().size()) {
+				ret += ".";
+			}
+		}
+		return ret;
+	}
+	
+	// Labels and icons can be computed like this:
+	
+	
+
+	public Object image(action_declaration a) { return "action_obj.gif"; }
+
+
+	public Object image(component_declaration c) { return "class_obj.gif"; }
+	public Object image(activity_declaration g) { return "activity_obj.gif"; }
+	public Object image(extend_stmt s) { 
+		if (s.isComponent()) {
+			return "extends_component.gif";
+		} else if (s.isAction()) {
+			return "extends_action.gif";
+		}
+	
+		return "extends.gif"; 
+	}
+	public Object image(component_field_declaration f) { 
+		return "field_public_obj.gif"; 
+	}
+	public Object image(data_instantiation f) { 
+		return "field_public_obj.gif"; 
+	}
+	public Object image(enum_declaration e) { 
+		return "enum_obj.gif"; 
+	}
+	public Object image(Model m) { 
+		return "module_obj.gif"; 
+	}
+	public Object image(struct_declaration s) { 
+		return "struct_obj.gif"; 
+	}
+	public Object image(package_declaration p) { 
+		return "package.gif"; 
+	}
+	public Object image(struct_field_declaration f) { 
+		return "field_public_obj.gif"; 
+	}
+
 }

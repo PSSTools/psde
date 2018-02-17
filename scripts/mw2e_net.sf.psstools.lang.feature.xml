@@ -8,8 +8,8 @@
 	<property name="javacSource" value="1.7"/>
 	<property name="javacTarget" value="1.7"/>
 	<property name="compilerarc" value="-g"/>
-	<property name="os" value="win32"/>
-	<property name="ws" value="win32"/>
+	<property name="os" value="linux"/>
+	<property name="ws" value="gtk"/>
 	<property name="arch" value="x86_64"/>
 	<property name="feature.version" value="0.0.1"/>
 	<property name="feature.id" value="net.sf.psstools.lang.feature"/>

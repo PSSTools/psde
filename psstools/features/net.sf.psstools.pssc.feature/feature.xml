@@ -24,7 +24,14 @@
          unpack="false"/>
 
    <plugin
-         id="net.sf.psstools.pssc.product"
+         id="net.sf.psstools.lang.ide"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.sf.psstools.lang.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"

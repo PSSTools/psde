@@ -4,7 +4,27 @@
 package net.sf.psstools.lang.ui.outline;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.xtext.ui.editor.outline.IOutlineNode;
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider;
+
+import net.sf.psstools.lang.pSS.action_declaration;
+import net.sf.psstools.lang.pSS.action_field_declaration;
+import net.sf.psstools.lang.pSS.activity_action_traversal_stmt;
+import net.sf.psstools.lang.pSS.activity_declaration;
+import net.sf.psstools.lang.pSS.component_declaration;
+import net.sf.psstools.lang.pSS.component_field_declaration;
+import net.sf.psstools.lang.pSS.constraint_declaration;
+import net.sf.psstools.lang.pSS.coverspec_declaration;
+import net.sf.psstools.lang.pSS.data_declaration;
+import net.sf.psstools.lang.pSS.data_instantiation;
+import net.sf.psstools.lang.pSS.enum_declaration;
+import net.sf.psstools.lang.pSS.exec_block_stmt;
+import net.sf.psstools.lang.pSS.function_decl;
+import net.sf.psstools.lang.pSS.object_bind_stmt;
+import net.sf.psstools.lang.pSS.overrides_declaration;
+import net.sf.psstools.lang.pSS.struct_field_declaration;
+import net.sf.psstools.lang.pSS.struct_type;
+import net.sf.psstools.lang.pSS.typedef_declaration;
 
 /**
  * Customization of the default outline structure.
@@ -20,80 +40,81 @@ public class PSSOutlineTreeProvider extends DefaultOutlineTreeProvider {
 	}
 
 
-//	def _isLeaf(constraint_declaration e) { true }
-//	def _isLeaf(typedef_declaration e) { true }
-//	def _isLeaf(data_instantiation e) { true }
-////	def _isLeaf(bins_declaration e) { true }
-//	def _isLeaf(overrides_declaration e) { true }
-//	def _isLeaf(enum_declaration e) { true }
-//	def _isLeaf(object_bind_stmt e) { true }
-//	def _isLeaf(exec_block_stmt e) { true }
-//	def _isLeaf(function_decl e) { true }
-//
-//	def _createChildren(IOutlineNode parentNode, struct_type struct) {
-//		for (EObject child : struct.body) {
-//			if (child instanceof struct_field_declaration) {
-//				var field = child as struct_field_declaration;
-//				for (EObject value : field.declaration.instances) {
-//					createNode(parentNode, value);
-//				}
-//			} else {
-//				createNode(parentNode, child);
-//			}
-//		}
-//	}
-//	
-//	def _createChildren(IOutlineNode parentNode, activity_declaration activity) {
-//		for (EObject c : activity.body) {
-//			if (c instanceof activity_action_traversal_stmt) {
-//				var t = c as activity_action_traversal_stmt;
-//				if (t.item != null) {
-//					createNode(parentNode, t.item);
-//				} else {
-//					createNode(parentNode, t.type);
-//				}
-//			}
-//		}
-//	}
-//
-//        def _createChildren(IOutlineNode parentNode, action_declaration struct) {
-//                for (EObject child : struct.body) {
-//                        if (child instanceof action_field_declaration) {
-//                                var field = child as action_field_declaration;
-//                                for (EObject value : field.declaration.instances) {
-//                                        createNode(parentNode, value);
-//                                }
-//                        } else {
-//                                createNode(parentNode, child);
-//                        }
-//                }
-//        }
-//
-//        def _createChildren(IOutlineNode parentNode, coverspec_declaration cs) {
-//                for (EObject child : cs.body_items) {
-//                        createNode(parentNode, child);
-//                }
-//        }
-//
-//        def _createChildren(IOutlineNode parentNode, component_declaration component) {
-//                for (EObject child : component.body) {
-//                        if (child instanceof component_field_declaration) {
-//                                var field = child as component_field_declaration;
-//
-//                                _createChildren(parentNode, field.declaration);
-//                        } else {
-//                                if (!(child instanceof object_bind_stmt)) {
-//                                        createNode(parentNode, child);
-//                                }
-//                        }
-//                }
-//        }
-//
-//        def _createChildren(IOutlineNode parentNode, data_declaration dd) {
-//                for (data_instantiation child : dd.instances) {
-////                      System.out.println("data_instantiation: " + child.name);
-//                        createNode(parentNode, child);
-//                }
-//        }
+	public boolean _isLeaf(constraint_declaration e) { return true; }
+	public boolean _isLeaf(typedef_declaration e) { return true; }
+	public boolean _isLeaf(data_instantiation e) { return true; }
+//	def _isLeaf(bins_declaration e) { true }
+	public boolean _isLeaf(overrides_declaration e) { return true; }
+	public boolean _isLeaf(enum_declaration e) { return true; }
+	public boolean _isLeaf(object_bind_stmt e) { return true; }
+	public boolean _isLeaf(exec_block_stmt e) { return true; }
+	public boolean _isLeaf(function_decl e) { return true; }
+	
+	
+	public void _createChildren(IOutlineNode parentNode, struct_type struct) {
+		for (EObject child : struct.getBody()) {
+			if (child instanceof struct_field_declaration) {
+				struct_field_declaration field = (struct_field_declaration)child;
+				for (EObject value : field.getDeclaration().getInstances()) {
+					createNode(parentNode, value);
+				}
+			} else {
+				createNode(parentNode, child);
+			}
+		}
+	}
+	
+	public void _createChildren(IOutlineNode parentNode, activity_declaration activity) {
+		for (EObject c : activity.getBody()) {
+			if (c instanceof activity_action_traversal_stmt) {
+				activity_action_traversal_stmt t = (activity_action_traversal_stmt)c;
+				if (t.getItem() != null) {
+					createNode(parentNode, t.getItem());
+				} else {
+					createNode(parentNode, t.getType());
+				}
+			}
+		}
+	}
+
+        public void _createChildren(IOutlineNode parentNode, action_declaration struct) {
+                for (EObject child : struct.getBody()) {
+                        if (child instanceof action_field_declaration) {
+                                action_field_declaration field = (action_field_declaration)child;
+                                for (EObject value : field.getDeclaration().getInstances()) {
+                                        createNode(parentNode, value);
+                                }
+                        } else {
+                                createNode(parentNode, child);
+                        }
+                }
+        }
+
+        public void _createChildren(IOutlineNode parentNode, coverspec_declaration cs) {
+                for (EObject child : cs.getBody_items()) {
+                        createNode(parentNode, child);
+                }
+        }
+
+        public void _createChildren(IOutlineNode parentNode, component_declaration component) {
+        	for (EObject child : component.getBody()) {
+        		if (child instanceof component_field_declaration) {
+        			component_field_declaration field = (component_field_declaration)child;
+
+        			_createChildren(parentNode, field.getDeclaration());
+        		} else {
+        			if (!(child instanceof object_bind_stmt)) {
+        				createNode(parentNode, child);
+        			}
+        		}
+        	}
+        }
+
+        public void _createChildren(IOutlineNode parentNode, data_declaration dd) {
+                for (data_instantiation child : dd.getInstances()) {
+//                      System.out.println("data_instantiation: " + child.name);
+                        createNode(parentNode, child);
+                }
+        }
 
 }
