@@ -11,6 +11,7 @@ import net.sf.psstools.lang.pSS.action_declaration;
 import net.sf.psstools.lang.pSS.action_field_declaration;
 import net.sf.psstools.lang.pSS.activity_action_traversal_stmt;
 import net.sf.psstools.lang.pSS.activity_declaration;
+import net.sf.psstools.lang.pSS.activity_stmt;
 import net.sf.psstools.lang.pSS.component_declaration;
 import net.sf.psstools.lang.pSS.component_field_declaration;
 import net.sf.psstools.lang.pSS.constraint_declaration;
@@ -49,6 +50,7 @@ public class PSSOutlineTreeProvider extends DefaultOutlineTreeProvider {
 	public boolean _isLeaf(object_bind_stmt e) { return true; }
 	public boolean _isLeaf(exec_block_stmt e) { return true; }
 	public boolean _isLeaf(function_decl e) { return true; }
+	public boolean _isLeaf(activity_stmt e) { return true; }
 	
 	
 	public void _createChildren(IOutlineNode parentNode, struct_type struct) {

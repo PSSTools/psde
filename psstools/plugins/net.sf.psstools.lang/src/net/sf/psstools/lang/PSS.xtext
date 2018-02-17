@@ -72,19 +72,19 @@ package_body_item:
 
 extend_stmt:
 		(
-			('extend' action?='action' name=type_identifier '{'
+			('extend' action?='action' name=[action_declaration|type_identifier] '{'
 				body+=action_body_item*
 				'}' (';')?
 			) | 
-			('extend' struct?='struct' name=type_identifier '{'
+			('extend' struct?='struct' name=[struct_declaration|type_identifier] '{'
 				body+=struct_body_item*
 				'}' (';')?
 			) |
-			('extend' enum_e?='enum' name=type_identifier '{'
+			('extend' enum_e?='enum' name=[enum_declaration|type_identifier] '{'
 				(body+=enum_item (',' body+=enum_item)*)?
 				'}' (';')?
 			) |
-			('extend' component?='component' name=type_identifier '{'
+			('extend' component?='component' name=[component_declaration|type_identifier] '{'
 				body+=component_body_item*
 				'}' (';')?
 			)
@@ -120,7 +120,7 @@ abstract_action_declaration returns action_declaration:
 ;
 
 action_super_spec:
-	':' super=type_identifier
+	':' super=[action_declaration|type_identifier]
 ;
 
 action_body_item:
@@ -211,7 +211,7 @@ struct_type:
 	(type='struct' | type='buffer' | type='stream' | type='state' | (type='resource' ('[' n_resource=constant_expression ']')?))
 ;
 
-struct_super_spec : ':' super=type_identifier
+struct_super_spec : ':' super=[struct_declaration|type_identifier]
 ;
 
 struct_qualifier:
@@ -313,7 +313,7 @@ import_class_method_decl:
 ;
 
 import_class_extends:
-	':' extends+=type_identifier (',' extends+=type_identifier)*
+	':' extends+=[import_class_decl|type_identifier] (',' extends+=[import_class_decl|type_identifier])*
 ;
 
 /****************************************************************************
@@ -321,7 +321,7 @@ import_class_extends:
  ****************************************************************************/
 export_action:
 //	(attr=attributes)?
-	'export' (qualifiers=method_qualifiers)? name=action_type_identifier parameters=method_parameter_list_prototype ';'
+	'export' (qualifiers=method_qualifiers)? name=[action_declaration|action_type_identifier] parameters=method_parameter_list_prototype ';'
 ;
 
 /****************************************************************************
@@ -453,7 +453,7 @@ activity_action_traversal_stmt:
 	{activity_action_traversal_stmt} (
 		(item=variable_ref_path inline_with=inline_with_constraint?
 		) |
-		('do' type=type_identifier inline_with=inline_with_constraint?
+		(do?='do' type=[action_declaration|type_identifier] inline_with=inline_with_constraint?
 		)
 	)
 	';'
@@ -626,8 +626,15 @@ enum_item:
 	name=identifier ('=' value=constant_expression)?
 ;
 
+user_defined_datatype_c :
+	action_declaration 		|
+	component_declaration 	|
+	struct_declaration 		|
+	enum_declaration
+;
+
 user_defined_datatype:
-	typename=type_identifier
+	typename=[user_defined_datatype_c|type_identifier]
 ;
 
 typedef_declaration:
@@ -1047,9 +1054,13 @@ package_identifier:
 ;
 
 type_identifier :
+	QualifiedName
+;
 // Namespace
 //	elems+=ID ('::' elems+=ID ('::' elems+=ID)?)?
 //	elems+=ID ('::' elems+=ID)*
+
+QualifiedName :
 	ID ('::' ID)*
 ;
 

@@ -3,10 +3,14 @@
  */
 package net.sf.psstools.lang;
 
+import org.eclipse.xtext.naming.IQualifiedNameConverter;
+import org.eclipse.xtext.naming.IQualifiedNameProvider;
 import org.eclipse.xtext.resource.IDefaultResourceDescriptionStrategy;
 
 import com.google.inject.Binder;
 
+import net.sf.psstools.lang.scoping.PSSQualifiedNameConverter;
+import net.sf.psstools.lang.scoping.PSSQualifiedNameProvider;
 import net.sf.psstools.lang.scoping.PSSResourceDescriptionStrategy;
 
 /**
@@ -34,5 +38,12 @@ public class PSSRuntimeModule extends AbstractPSSRuntimeModule {
 //	def bindIResourceServiceProvider() {
 //		return PSSResourceServiceProvider;
 //	}
+
+	public Class<? extends IQualifiedNameProvider> bindIQualifiedNameProvider() {
+		return PSSQualifiedNameProvider.class;
+	}
 	
+	public Class<? extends IQualifiedNameConverter> bindIQualifiedNameConverter() {
+		return PSSQualifiedNameConverter.class;
+	}
 }

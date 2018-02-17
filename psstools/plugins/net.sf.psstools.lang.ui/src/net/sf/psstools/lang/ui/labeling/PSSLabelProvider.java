@@ -70,11 +70,19 @@ public class PSSLabelProvider extends DefaultEObjectLabelProvider {
 	}
 	
 	public String text(extend_stmt e) {
-		String ret = tid2string(e.getName());
-		if (e.isAction()) ret += " : action";
-		if (e.isStruct()) ret += " : struct";
-		if (e.isEnum_e()) ret += " : enum";
-		if (e.isComponent()) ret += " : component";
+		String ret = null;
+		if (e.isAction()) {
+			ret = e.getName() + " : action";
+		}
+		if (e.isStruct()) {
+			ret = e.getName() + " : struct";
+		}
+		if (e.isEnum_e()) {
+			ret = e.getName() + " : enum";
+		}
+		if (e.isComponent()) {
+			ret = e.getName() + " : component";
+		}
 		return ret;
 	}
 	
@@ -93,7 +101,8 @@ public class PSSLabelProvider extends DefaultEObjectLabelProvider {
 			return "bool";
 		} else if (dd.getType() instanceof user_defined_datatype) {
 			user_defined_datatype ud_t = (user_defined_datatype)dd.getType();
-			return tid2string(ud_t.getTypename());
+//			return tid2string(ud_t.getTypename());
+			return "TODO: user-defined datatype";
 		} else {
 			return "unknown";
 		}

@@ -5,21 +5,36 @@ package net.sf.psstools.lang.scoping;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.Attributes.Name;
 
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.xtext.EcoreUtil2;
-import org.eclipse.xtext.naming.QualifiedName;
+import org.eclipse.xtext.naming.IQualifiedNameProvider;
 import org.eclipse.xtext.resource.EObjectDescription;
 import org.eclipse.xtext.resource.IEObjectDescription;
+import org.eclipse.xtext.scoping.IGlobalScopeProvider;
 import org.eclipse.xtext.scoping.IScope;
 import org.eclipse.xtext.scoping.Scopes;
 import org.eclipse.xtext.scoping.impl.SimpleScope;
-import org.eclipse.xtext.util.SimpleAttributeResolver;
 
-import net.sf.psstools.lang.pSS.PSSPackage;
+import com.google.common.base.Predicate;
+import com.google.inject.Inject;
+
+import net.sf.psstools.lang.pSS.action_declaration;
+import net.sf.psstools.lang.pSS.action_super_spec;
+import net.sf.psstools.lang.pSS.activity_action_traversal_stmt;
 import net.sf.psstools.lang.pSS.component_declaration;
 import net.sf.psstools.lang.pSS.component_super_spec;
+import net.sf.psstools.lang.pSS.enum_declaration;
+import net.sf.psstools.lang.pSS.extend_stmt;
+import net.sf.psstools.lang.pSS.struct_declaration;
+import net.sf.psstools.lang.pSS.struct_super_spec;
+import net.sf.psstools.lang.pSS.user_defined_datatype;
+import net.sf.psstools.lang.pSS.user_defined_datatype_c;
 
 /**
  * This class contains custom scoping description.
@@ -28,47 +43,93 @@ import net.sf.psstools.lang.pSS.component_super_spec;
  * on how and when to use it.
  */
 public class PSSScopeProvider extends AbstractPSSScopeProvider {
+	
+	@Inject
+	private IGlobalScopeProvider			fGlobalScopeProvider;
+	
+	@Inject
+	private IQualifiedNameProvider			fQualifiedNameProvider;
 
 	@Override
 	public IScope getScope(EObject context, EReference reference) {
-		System.out.println("getScope: context=" + context + " reference=" + reference);
+		IScope ret = null;
+//		System.out.println("getScope: context=" + context + " reference=" + reference);
+		Class<? extends EObject> target_cls = null;
+//		String type_id = null;
+		
 		if (context instanceof component_super_spec) {
-		EObject rootElement = EcoreUtil2.getRootContainer(context);
-		System.out.println("rootElement=" + rootElement.eContainer() + " " + rootElement.eResource());
-		List<component_declaration> candidates = EcoreUtil2.getAllContentsOfType(
-				rootElement, component_declaration.class);
-		System.out.println("candidates=" + candidates);
+			target_cls = component_declaration.class;
+//			type_id = ((component_super_spec)context).getSuper().getName();
+		} else if (context instanceof action_super_spec) {
+			target_cls = action_declaration.class;
+//			type_id = ((action_super_spec)context).getSuper().getName();
+		} else if (context instanceof struct_super_spec) {
+			target_cls = struct_declaration.class;
+		} else if (context instanceof extend_stmt) {
+			extend_stmt stmt = (extend_stmt)context;
+			if (stmt.isAction()) {
+				target_cls = action_declaration.class;
+			} else if (stmt.isComponent()) {
+				target_cls = component_declaration.class;
+			} else if (stmt.isStruct()) {
+				target_cls = struct_declaration.class;
+			} else if (stmt.isEnum_e()) {
+				target_cls = enum_declaration.class;
+			}
+		} else if (context instanceof user_defined_datatype) {
+			target_cls = user_defined_datatype_c.class;
+		} else if (context instanceof activity_action_traversal_stmt) {
+			if (((activity_action_traversal_stmt)context).isDo()) {
+				target_cls = action_declaration.class;
+			}
+		}
 		
-//		List<component_declaration> candidate_t = new ArrayList<component_declaration>();
-//		for (EObject c : candidates) {
-//			val ti = PSSPackage.eINSTANCE.EFactoryInstance.create(PSSPackage.eINSTANCE.gettype_identifier()) as type_identifier;
-//			ti.elems.add(c.name);
-//			candidate_t.add(ti)
-//		}
+//		System.out.println("type_id: " + type_id + " " + context);
 		
-	
-//		val existingScope = Scopes.scopeFor(candidate_t);
-//		
-//		//return new FilteringScope(existingScope, [getEObjectOrProxy != context]);	
-//		return existingScope		
-		List<IEObjectDescription> descriptions = new ArrayList<IEObjectDescription>();
-		for (component_declaration d : candidates) {
-			EObjectDescription desc = new EObjectDescription(
-					QualifiedName.create(d.getName()),
-					d, null);
-			descriptions.add(desc);
-			System.out.println("Desc: " + d);
+		if (target_cls != null) {
+			EObject rootElement = EcoreUtil2.getRootContainer(context);
+			List<? extends EObject> candidates = EcoreUtil2.getAllContentsOfType(rootElement, target_cls);
+			IScope local_s = Scopes.scopeFor(candidates);
+			
+			IScope global_s = fGlobalScopeProvider.getScope(
+						context.eResource(), reference, new Predicate<IEObjectDescription>() {
+
+							@Override
+							public boolean apply(IEObjectDescription arg0) {
+//								System.out.println("apply: " + arg0);
+								return true;
+							}
+				});
+		
+			List<IEObjectDescription> merged = new ArrayList<IEObjectDescription>();
+			for (IEObjectDescription d : local_s.getAllElements()) {
+				if (d.getEObjectOrProxy() instanceof action_declaration) {
+					System.out.println("add action_declaration");
+					merged.add(EObjectDescription.create(
+							fQualifiedNameProvider.getFullyQualifiedName(d.getEObjectOrProxy()),
+							d.getEObjectOrProxy())
+							);
+				} else {
+					merged.add(d);
+				}
+			}
+			for (IEObjectDescription d : global_s.getAllElements()) {
+				merged.add(d);
+			}
+			
+			ret = new SimpleScope(merged);
+		} else { // not a type reference
+			ret = super.getScope(context, reference);
 		}
-				
-//		SimpleScope s = new SimpleScope(descriptions);
-		IScope s =  Scopes.scopeFor(candidates);
-		// TODO Auto-generated method stub
-		for (IEObjectDescription d : s.getAllElements()) {
-			System.out.println("Object: " + d);
+		
+		if (context instanceof activity_action_traversal_stmt) {
+			System.out.println("getScope: context=" + context);
+			for (IEObjectDescription d : ret.getAllElements()) {
+				System.out.println("  Elem: " + d + " " + d.getQualifiedName());
+			}
 		}
-		return s;
-		}
-		return super.getScope(context, reference);
+		
+		return ret;
 	}
 
 	public IScope getScope(component_declaration cdecl, EReference reference) {
