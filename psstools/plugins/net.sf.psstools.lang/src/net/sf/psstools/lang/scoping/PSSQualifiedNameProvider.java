@@ -3,9 +3,8 @@ package net.sf.psstools.lang.scoping;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.naming.DefaultDeclarativeQualifiedNameProvider;
 import org.eclipse.xtext.naming.QualifiedName;
-import org.eclipse.xtext.resource.IDefaultResourceDescriptionStrategy;
-import org.eclipse.xtext.resource.IResourceDescriptionsProvider;
-import org.eclipse.xtext.resource.impl.DefaultResourceDescription;
+
+import net.sf.psstools.lang.pSS.component_declaration;
 
 public class PSSQualifiedNameProvider extends DefaultDeclarativeQualifiedNameProvider {
 	
@@ -18,5 +17,14 @@ public class PSSQualifiedNameProvider extends DefaultDeclarativeQualifiedNamePro
 		System.out.println("getFullyQualifiedName: " + obj + " " + ret);
 		return ret;
 	}
+
+	public QualifiedName qualifiedName(component_declaration d) {
+		System.out.println("QualifiedName: component_declaration");
+		return null;
+	}
 	
+//	public QualifiedName qualifiedName(type_identifier d) {
+//		System.out.println("QualifiedName: type_identifier");
+//		return null;
+//	}
 }

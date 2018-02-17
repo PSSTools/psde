@@ -26,7 +26,6 @@ import net.sf.psstools.lang.pSS.package_declaration;
 import net.sf.psstools.lang.pSS.string_type;
 import net.sf.psstools.lang.pSS.struct_declaration;
 import net.sf.psstools.lang.pSS.struct_field_declaration;
-import net.sf.psstools.lang.pSS.type_identifier;
 import net.sf.psstools.lang.pSS.user_defined_datatype;
 
 /**
@@ -100,16 +99,19 @@ public class PSSLabelProvider extends DefaultEObjectLabelProvider {
 		}
 	}
 	
-	private String tid2string(type_identifier ti) {
-		String ret = "";
-		for (int i=0; i<ti.getElems().size(); i++) {
-			String id = ti.getElems().get(i);
-			ret += id;
-			if (i+1 < ti.getElems().size()) {
-				ret += "::";
-			}
-		}
-		return ret;
+//	private String tid2string(type_identifier ti) {
+//		String ret = "";
+//		for (int i=0; i<ti.getElems().size(); i++) {
+//			String id = ti.getElems().get(i);
+//			ret += id;
+//			if (i+1 < ti.getElems().size()) {
+//				ret += "::";
+//			}
+//		}
+//		return ret;
+//	}
+	private String tid2string(String ti) {
+		return ti;
 	}
 	
 	private String hid2string(hierarchical_id hi) {

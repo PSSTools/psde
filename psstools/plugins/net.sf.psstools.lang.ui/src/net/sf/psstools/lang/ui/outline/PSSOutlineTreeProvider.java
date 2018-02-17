@@ -70,9 +70,9 @@ public class PSSOutlineTreeProvider extends DefaultOutlineTreeProvider {
 				activity_action_traversal_stmt t = (activity_action_traversal_stmt)c;
 				if (t.getItem() != null) {
 					createNode(parentNode, t.getItem());
-				} else {
+				} /* TODO: else {
 					createNode(parentNode, t.getType());
-				}
+				} */
 			}
 		}
 	}

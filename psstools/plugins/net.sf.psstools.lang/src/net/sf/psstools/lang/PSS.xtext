@@ -335,7 +335,7 @@ component_declaration:
 ;
 
 component_super_spec :
-	':' super=type_identifier
+	':' super=[component_declaration|type_identifier]
 ;
 
 component_body_item:
@@ -1049,7 +1049,8 @@ package_identifier:
 type_identifier :
 // Namespace
 //	elems+=ID ('::' elems+=ID ('::' elems+=ID)?)?
-	elems+=ID ('::' elems+=ID)*
+//	elems+=ID ('::' elems+=ID)*
+	ID ('::' ID)*
 ;
 
 action_type_identifier: type_identifier;
