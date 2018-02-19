@@ -4,48 +4,48 @@
 	<extension
 		point="org.eclipse.ui.editors">
 		<editor
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
 			contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
 			default="true"
 			extensions="pss"
-			id="net.sf.psstools.lang.PSS"
+			id="org.psstools.psde.lang.PSS"
 			name="PSS Editor">
 		</editor>
 	</extension>
 	<extension
 		point="org.eclipse.ui.handlers">
 		<handler
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclarationHandler"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclarationHandler"
 			commandId="org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclaration">
 			<activeWhen>
 				<reference
-					definitionId="net.sf.psstools.lang.PSS.Editor.opened">
+					definitionId="org.psstools.psde.lang.PSS.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
 		<handler
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.handler.ValidateActionHandler"
-			commandId="net.sf.psstools.lang.PSS.validate">
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.handler.ValidateActionHandler"
+			commandId="org.psstools.psde.lang.PSS.validate">
 		<activeWhen>
 			<reference
-					definitionId="net.sf.psstools.lang.PSS.Editor.opened">
+					definitionId="org.psstools.psde.lang.PSS.Editor.opened">
 			</reference>
 		</activeWhen>
 		</handler>
 		<!-- copy qualified name -->
 		<handler
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedNameHandler"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedNameHandler"
 			commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName">
 			<activeWhen>
-				<reference definitionId="net.sf.psstools.lang.PSS.Editor.opened" />
+				<reference definitionId="org.psstools.psde.lang.PSS.Editor.opened" />
 			</activeWhen>
 		</handler>
 		<handler
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedNameHandler"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedNameHandler"
 			commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedName">
 			<activeWhen>
 				<and>
-					<reference definitionId="net.sf.psstools.lang.PSS.XtextEditor.opened" />
+					<reference definitionId="org.psstools.psde.lang.PSS.XtextEditor.opened" />
 					<iterate>
 						<adapt type="org.eclipse.xtext.ui.editor.outline.IOutlineNode" />
 					</iterate>
@@ -54,22 +54,22 @@
 		</handler>
 	</extension>
 	<extension point="org.eclipse.core.expressions.definitions">
-		<definition id="net.sf.psstools.lang.PSS.Editor.opened">
+		<definition id="org.psstools.psde.lang.PSS.Editor.opened">
 			<and>
 				<reference definitionId="isActiveEditorAnInstanceOfXtextEditor"/>
 				<with variable="activeEditor">
 					<test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName" 
-						value="net.sf.psstools.lang.PSS" 
+						value="org.psstools.psde.lang.PSS" 
 						forcePluginActivation="true"/>
 				</with>		
 			</and>
 		</definition>
-		<definition id="net.sf.psstools.lang.PSS.XtextEditor.opened">
+		<definition id="org.psstools.psde.lang.PSS.XtextEditor.opened">
 			<and>
 				<reference definitionId="isXtextEditorActive"/>
 				<with variable="activeEditor">
 					<test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName" 
-						value="net.sf.psstools.lang.PSS" 
+						value="org.psstools.psde.lang.PSS" 
 						forcePluginActivation="true"/>
 				</with>		
 			</and>
@@ -78,33 +78,33 @@
 	<extension
 			point="org.eclipse.ui.preferencePages">
 		<page
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
-			id="net.sf.psstools.lang.PSS"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
+			id="org.psstools.psde.lang.PSS"
 			name="PSS">
-			<keywordReference id="net.sf.psstools.lang.ui.keyword_PSS"/>
+			<keywordReference id="org.psstools.psde.lang.ui.keyword_PSS"/>
 		</page>
 		<page
-			category="net.sf.psstools.lang.PSS"
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.syntaxcoloring.SyntaxColoringPreferencePage"
-			id="net.sf.psstools.lang.PSS.coloring"
+			category="org.psstools.psde.lang.PSS"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.syntaxcoloring.SyntaxColoringPreferencePage"
+			id="org.psstools.psde.lang.PSS.coloring"
 			name="Syntax Coloring">
-			<keywordReference id="net.sf.psstools.lang.ui.keyword_PSS"/>
+			<keywordReference id="org.psstools.psde.lang.ui.keyword_PSS"/>
 		</page>
 		<page
-			category="net.sf.psstools.lang.PSS"
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.templates.XtextTemplatePreferencePage"
-			id="net.sf.psstools.lang.PSS.templates"
+			category="org.psstools.psde.lang.PSS"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.templates.XtextTemplatePreferencePage"
+			id="org.psstools.psde.lang.PSS.templates"
 			name="Templates">
-			<keywordReference id="net.sf.psstools.lang.ui.keyword_PSS"/>
+			<keywordReference id="org.psstools.psde.lang.ui.keyword_PSS"/>
 		</page>
 	</extension>
 	<extension
 			point="org.eclipse.ui.propertyPages">
 		<page
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
-			id="net.sf.psstools.lang.PSS"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
+			id="org.psstools.psde.lang.PSS"
 			name="PSS">
-			<keywordReference id="net.sf.psstools.lang.ui.keyword_PSS"/>
+			<keywordReference id="org.psstools.psde.lang.ui.keyword_PSS"/>
 			<enabledWhen>
 				<adapt type="org.eclipse.core.resources.IProject"/>
 			</enabledWhen>
@@ -114,14 +114,14 @@
 	<extension
 		point="org.eclipse.ui.keywords">
 		<keyword
-			id="net.sf.psstools.lang.ui.keyword_PSS"
+			id="org.psstools.psde.lang.ui.keyword_PSS"
 			label="PSS"/>
 	</extension>
 	<extension
 		point="org.eclipse.ui.commands">
 	<command
 			description="Trigger expensive validation"
-			id="net.sf.psstools.lang.PSS.validate"
+			id="org.psstools.psde.lang.PSS.validate"
 			name="Validate">
 	</command>
 	<!-- copy qualified name -->
@@ -142,12 +142,12 @@
 		<menuContribution
 			locationURI="popup:#TextEditorContext?after=group.edit">
 			 <command
-				 commandId="net.sf.psstools.lang.PSS.validate"
+				 commandId="org.psstools.psde.lang.PSS.validate"
 				 style="push"
 				 tooltip="Trigger expensive validation">
 			<visibleWhen checkEnabled="false">
 				<reference
-					definitionId="net.sf.psstools.lang.PSS.Editor.opened">
+					definitionId="org.psstools.psde.lang.PSS.Editor.opened">
 				</reference>
 			</visibleWhen>
 		</command>
@@ -157,7 +157,7 @@
 			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName" 
 				style="push" tooltip="Copy Qualified Name">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="net.sf.psstools.lang.PSS.Editor.opened" />
+					<reference definitionId="org.psstools.psde.lang.PSS.Editor.opened" />
 				</visibleWhen>
 			</command>
 		</menuContribution>
@@ -165,7 +165,7 @@
 			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName"
 				style="push" tooltip="Copy Qualified Name">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="net.sf.psstools.lang.PSS.Editor.opened" />
+					<reference definitionId="org.psstools.psde.lang.PSS.Editor.opened" />
 				</visibleWhen>
 			</command>
 		</menuContribution>
@@ -174,7 +174,7 @@
 				style="push" tooltip="Copy Qualified Name">
 				<visibleWhen checkEnabled="false">
 					<and>
-						<reference definitionId="net.sf.psstools.lang.PSS.XtextEditor.opened" />
+						<reference definitionId="org.psstools.psde.lang.PSS.XtextEditor.opened" />
 						<iterate>
 							<adapt type="org.eclipse.xtext.ui.editor.outline.IOutlineNode" />
 						</iterate>
@@ -187,7 +187,7 @@
 		<menuContribution locationURI="popup:#TextEditorContext?endof=group.find">
 			<command commandId="org.eclipse.xtext.ui.editor.FindReferences">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="net.sf.psstools.lang.PSS.Editor.opened">
+					<reference definitionId="org.psstools.psde.lang.PSS.Editor.opened">
 					</reference>
 				</visibleWhen>
 			</command>
@@ -195,11 +195,11 @@
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.findrefs.FindReferencesHandler"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.findrefs.FindReferencesHandler"
 			commandId="org.eclipse.xtext.ui.editor.FindReferences">
 			<activeWhen>
 				<reference
-					definitionId="net.sf.psstools.lang.PSS.Editor.opened">
+					definitionId="org.psstools.psde.lang.PSS.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
@@ -208,17 +208,17 @@
 	<extension
 		point="org.eclipse.emf.ecore.extension_parser">
 		<parser
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.resource.IResourceFactory"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.resource.IResourceFactory"
 			type="pss">
 		</parser>
 	</extension>
 	<extension point="org.eclipse.xtext.extension_resourceServiceProvider">
 		<resourceServiceProvider
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.resource.IResourceUIServiceProvider"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.resource.IResourceUIServiceProvider"
 			uriExtension="pss">
 		</resourceServiceProvider>
 	</extension>
-	<!-- marker definitions for net.sf.psstools.lang.PSS -->
+	<!-- marker definitions for org.psstools.psde.lang.PSS -->
 	<extension
 			id="pss.check.fast"
 			name="PSS Problem"
@@ -242,25 +242,25 @@
 	</extension>
 	<extension point="org.eclipse.xtext.builder.participant">
 		<participant
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
 			fileExtensions="pss"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
-			category="net.sf.psstools.lang.PSS"
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
-			id="net.sf.psstools.lang.PSS.compiler.preferencePage"
+			category="org.psstools.psde.lang.PSS"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="org.psstools.psde.lang.PSS.compiler.preferencePage"
 			name="Compiler">
-			<keywordReference id="net.sf.psstools.lang.ui.keyword_PSS"/>
+			<keywordReference id="org.psstools.psde.lang.ui.keyword_PSS"/>
 		</page>
 	</extension>
 	<extension point="org.eclipse.ui.propertyPages">
 		<page
-			category="net.sf.psstools.lang.PSS"
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
-			id="net.sf.psstools.lang.PSS.compiler.propertyPage"
+			category="org.psstools.psde.lang.PSS"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="org.psstools.psde.lang.PSS.compiler.propertyPage"
 			name="Compiler">
-			<keywordReference id="net.sf.psstools.lang.ui.keyword_PSS"/>
+			<keywordReference id="org.psstools.psde.lang.ui.keyword_PSS"/>
 			<enabledWhen>
 				<adapt type="org.eclipse.core.resources.IProject"/>
 			</enabledWhen>
@@ -271,20 +271,20 @@
 		<menuContribution locationURI="popup:#TextEditorContext?after=xtext.ui.openDeclaration">
 			<command
 				commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand"
-				id="net.sf.psstools.lang.PSS.OpenGeneratedCode"
+				id="org.psstools.psde.lang.PSS.OpenGeneratedCode"
 				style="push">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="net.sf.psstools.lang.PSS.Editor.opened" />
+					<reference definitionId="org.psstools.psde.lang.PSS.Editor.opened" />
 				</visibleWhen>
 			</command>
 		</menuContribution>
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.generator.trace.OpenGeneratedFileHandler"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.generator.trace.OpenGeneratedFileHandler"
 			commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand">
 			<activeWhen>
-				<reference definitionId="net.sf.psstools.lang.PSS.Editor.opened" />
+				<reference definitionId="org.psstools.psde.lang.PSS.Editor.opened" />
 			</activeWhen>
 		</handler>
 	</extension>
@@ -292,11 +292,11 @@
 	<extension
 		point="org.eclipse.ui.handlers">
 		<handler 
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.outline.quickoutline.ShowQuickOutlineActionHandler"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.outline.quickoutline.ShowQuickOutlineActionHandler"
 			commandId="org.eclipse.xtext.ui.editor.outline.QuickOutline">
 			<activeWhen>
 				<reference
-					definitionId="net.sf.psstools.lang.PSS.Editor.opened">
+					definitionId="org.psstools.psde.lang.PSS.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
@@ -316,33 +316,33 @@
 				style="push"
 				tooltip="Open Quick Outline">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="net.sf.psstools.lang.PSS.Editor.opened"/>
+					<reference definitionId="org.psstools.psde.lang.PSS.Editor.opened"/>
 				</visibleWhen>
 			</command>
 		</menuContribution>
 	</extension>
-	<!-- quickfix marker resolution generator for net.sf.psstools.lang.PSS -->
+	<!-- quickfix marker resolution generator for org.psstools.psde.lang.PSS -->
 	<extension
 			point="org.eclipse.ui.ide.markerResolution">
 		<markerResolutionGenerator
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
-			markerType="net.sf.psstools.lang.ui.pss.check.fast">
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="org.psstools.psde.lang.ui.pss.check.fast">
 			<attribute
 				name="FIXABLE_KEY"
 				value="true">
 			</attribute>
 		</markerResolutionGenerator>
 		<markerResolutionGenerator
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
-			markerType="net.sf.psstools.lang.ui.pss.check.normal">
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="org.psstools.psde.lang.ui.pss.check.normal">
 			<attribute
 				name="FIXABLE_KEY"
 				value="true">
 			</attribute>
 		</markerResolutionGenerator>
 		<markerResolutionGenerator
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
-			markerType="net.sf.psstools.lang.ui.pss.check.expensive">
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="org.psstools.psde.lang.ui.pss.check.expensive">
 			<attribute
 				name="FIXABLE_KEY"
 				value="true">
@@ -352,11 +352,11 @@
 	<!-- Rename Refactoring -->
 	<extension point="org.eclipse.ui.handlers">
 		<handler 
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.DefaultRenameElementHandler"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.DefaultRenameElementHandler"
 			commandId="org.eclipse.xtext.ui.refactoring.RenameElement">
 			<activeWhen>
 				<reference
-					definitionId="net.sf.psstools.lang.PSS.Editor.opened">
+					definitionId="org.psstools.psde.lang.PSS.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
@@ -368,7 +368,7 @@
 				style="push">
 				<visibleWhen checkEnabled="false">
 					<reference
-						definitionId="net.sf.psstools.lang.PSS.Editor.opened">
+						definitionId="org.psstools.psde.lang.PSS.Editor.opened">
 					</reference>
 				</visibleWhen>
 			</command>
@@ -376,28 +376,28 @@
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
-			category="net.sf.psstools.lang.PSS"
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.RefactoringPreferencePage"
-			id="net.sf.psstools.lang.PSS.refactoring"
+			category="org.psstools.psde.lang.PSS"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.RefactoringPreferencePage"
+			id="org.psstools.psde.lang.PSS.refactoring"
 			name="Refactoring">
-			<keywordReference id="net.sf.psstools.lang.ui.keyword_PSS"/>
+			<keywordReference id="org.psstools.psde.lang.ui.keyword_PSS"/>
 		</page>
 	</extension>
 	<extension point="org.eclipse.compare.contentViewers">
-		<viewer id="net.sf.psstools.lang.PSS.compare.contentViewers"
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
+		<viewer id="org.psstools.psde.lang.PSS.compare.contentViewers"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
 			extensions="pss">
 		</viewer>
 	</extension>
 	<extension point="org.eclipse.compare.contentMergeViewers">
-		<viewer id="net.sf.psstools.lang.PSS.compare.contentMergeViewers"
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
+		<viewer id="org.psstools.psde.lang.PSS.compare.contentMergeViewers"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
 			extensions="pss" label="PSS Compare">
 		</viewer>
 	</extension>
 	<extension point="org.eclipse.ui.editors.documentProviders">
-		<provider id="net.sf.psstools.lang.PSS.editors.documentProviders"
-			class="net.sf.psstools.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
+		<provider id="org.psstools.psde.lang.PSS.editors.documentProviders"
+			class="org.psstools.psde.lang.ui.PSSExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
 			extensions="pss">
 		</provider>
 	</extension>
@@ -410,7 +410,7 @@
  <extension
        point="org.eclipse.core.runtime.preferences">
     <initializer
-          class="net.sf.psstools.lang.ui.TemplatePrefsInitializer">
+          class="org.psstools.psde.lang.ui.TemplatePrefsInitializer">
     </initializer>
  </extension>
 </plugin>

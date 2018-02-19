@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: net.sf.psstools.lang.ui
+Bundle-Name: org.psstools.psde.lang.ui
 Bundle-Vendor: My Company
 Bundle-Version: 1.2.3
-Bundle-SymbolicName: net.sf.psstools.lang.ui; singleton:=true
+Bundle-SymbolicName: org.psstools.psde.lang.ui;singleton:=true
 Bundle-ActivationPolicy: lazy
-Require-Bundle: net.sf.psstools.lang,
- net.sf.psstools.lang.ide,
+Require-Bundle: org.psstools.psde.lang,
+ org.psstools.psde.lang.ide,
  org.eclipse.xtext.ui,
  org.eclipse.xtext.ui.shared,
  org.eclipse.xtext.ui.codetemplates.ui,
@@ -19,7 +19,7 @@ Require-Bundle: net.sf.psstools.lang,
  org.eclipse.xtext.xbase.lib
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: net.sf.psstools.lang.ui.contentassist,
- net.sf.psstools.lang.ui.internal,
- net.sf.psstools.lang.ui.quickfix
-Bundle-Activator: net.sf.psstools.lang.ui.internal.LangActivator
+Export-Package: org.psstools.psde.lang.ui.internal,
+ org.psstools.psde.lang.ui.contentassist,
+ org.psstools.psde.lang.ui.quickfix
+Bundle-Activator: org.psstools.psde.lang.ui.internal.LangActivator

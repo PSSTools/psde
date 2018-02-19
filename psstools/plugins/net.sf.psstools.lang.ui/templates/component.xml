@@ -1,7 +1,7 @@
 
 <template 
 	name="component"
-	autoinsert="true" context="net.sf.psstools.lang.PSS.package_body_item"
+	autoinsert="true" context="org.psstools.psde.lang.PSS.package_body_item"
 	delete="false" description="Create a component" enabled="true">
 component ${name} {
 	${cursor}

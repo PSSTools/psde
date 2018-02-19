@@ -1,7 +1,7 @@
 
 <template 
 	name="parallel"
-	autoinsert="true" context="net.sf.psstools.lang.PSS.activity_stmt"
+	autoinsert="true" context="org.psstools.psde.lang.PSS.activity_stmt"
 	delete="false" description="activity" enabled="true">
 parallel {
 	${cursor}

@@ -1,7 +1,7 @@
 
 <template 
 	name="constraint"
-	autoinsert="true" context="net.sf.psstools.lang.PSS.struct_body_item"
+	autoinsert="true" context="org.psstools.psde.lang.PSS.struct_body_item"
 	delete="false" description="Create a constraint" enabled="true">
 constraint ${name} {
 	${cursor}

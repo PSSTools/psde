@@ -4,7 +4,7 @@
 	<extension point="org.eclipse.emf.ecore.generated_package">
 		<package 
 			uri = "http://www.sf.net/psstools/lang/PSS"
-			class = "net.sf.psstools.lang.pSS.PSSPackage"
+			class = "org.psstools.psde.lang.pSS.PSSPackage"
 			genModel = "model/generated/PSS.genmodel" />
 	</extension>
 </plugin>

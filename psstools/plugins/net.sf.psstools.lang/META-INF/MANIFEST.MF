@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: net.sf.psstools.lang
+Bundle-Name: org.psstools.psde.lang
 Bundle-Vendor: My Company
 Bundle-Version: 1.2.3
-Bundle-SymbolicName: net.sf.psstools.lang; singleton:=true
+Bundle-SymbolicName: org.psstools.psde.lang;singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.xtext,
  org.eclipse.xtext.xbase,
@@ -17,16 +17,16 @@ Require-Bundle: org.eclipse.xtext,
  org.eclipse.core.runtime,
  org.eclipse.ui.ide
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: net.sf.psstools.lang.services,
- net.sf.psstools.lang.pSS.impl,
- net.sf.psstools.lang.scoping,
- net.sf.psstools.lang.serializer,
- net.sf.psstools.lang,
- net.sf.psstools.lang.validation,
- net.sf.psstools.lang.pSS,
- net.sf.psstools.lang.parser.antlr.internal,
- net.sf.psstools.lang.pSS.util,
- net.sf.psstools.lang.generator,
- net.sf.psstools.lang.parser.antlr,
- net.sf.psstools.lang.formatting2
+Export-Package: org.psstools.psde.lang.pSS,
+ org.psstools.psde.lang.pSS.impl,
+ org.psstools.psde.lang.pSS.util,
+ org.psstools.psde.lang.parser.antlr,
+ org.psstools.psde.lang.parser.antlr.internal,
+ org.psstools.psde.lang.serializer,
+ org.psstools.psde.lang.services,
+ org.psstools.psde.lang,
+ org.psstools.psde.lang.formatting2,
+ org.psstools.psde.lang.generator,
+ org.psstools.psde.lang.scoping,
+ org.psstools.psde.lang.validation
 Import-Package: org.apache.log4j

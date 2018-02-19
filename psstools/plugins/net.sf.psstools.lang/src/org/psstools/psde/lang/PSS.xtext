@@ -1,0 +1,1141 @@
+/****************************************************************************
+ * PSS.xtext
+ *
+ * Copyright 2015 Mentor Graphics Corporation
+ * All Rights Reserved Worldwide
+ *
+ * Licensed under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of
+ * the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in
+ * writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied.  See
+ * the License for the specific language governing
+ * permissions and limitations under the License.
+ ****************************************************************************/
+grammar org.psstools.psde.lang.PSS hidden(WS, ML_COMMENT, SL_COMMENT)
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+generate pSS "http://www.sf.net/psstools/lang/PSS"
+
+Model:
+	root+=portable_stimulus_description*;
+
+portable_stimulus_description: 
+	package_body_item			//|
+	// Namespace
+//	package_declaration			|
+//	component_declaration
+;
+
+/****************************************************************************
+ * H1: Package Declarations
+ ****************************************************************************/
+package_declaration:
+//	(attr=attributes)?
+	'package' name=package_identifier '{'
+		body+=package_body_item*
+	'}'	(';')?
+;
+
+//attributes:
+//	'(*' attrs+=attr (',' attrs+=attr)* '*)'
+//;
+//
+//attr:
+//	name=identifier ('=' value=DOUBLE_QUOTED_STRING)?
+//;
+
+
+package_body_item:
+	abstract_action_declaration 	|
+	struct_declaration 				|
+	enum_declaration 				|
+	coverspec_declaration 			|
+	function_decl					|
+	import_class_decl				|
+	import_method_qualifiers		|
+	export_action					|
+	typedef_declaration 			|
+//#6429	bins_declaration 				|
+	import_stmt 					|
+	extend_stmt						|
+	// Namespace
+	package_declaration				|
+	component_declaration
+;
+
+extend_stmt:
+		(
+			('extend' action?='action' name=type_identifier '{'
+				body+=action_body_item*
+				'}' (';')?
+			) | 
+			('extend' struct?='struct' name=type_identifier '{'
+				body+=struct_body_item*
+				'}' (';')?
+			) |
+			('extend' enum_e?='enum' name=type_identifier '{'
+				(body+=enum_item (',' body+=enum_item)*)?
+				'}' (';')?
+			) |
+			('extend' component?='component' name=type_identifier '{'
+				body+=component_body_item*
+				'}' (';')?
+			)
+		)
+;
+
+import_stmt:
+	'import' pkg=package_import_pattern ';'
+;
+
+package_import_pattern:
+	package=type_identifier (wildcard?='::' '*')?
+;
+
+
+
+/****************************************************************************
+ * H1: Action Declarations
+ ****************************************************************************/
+action_declaration:
+	'action' name=action_identifier (super_spec=action_super_spec)? 
+	'{'
+		body+=action_body_item*
+	'}' (';')?
+;
+
+
+abstract_action_declaration returns action_declaration:
+	abstract?='abstract' 'action' name=action_identifier (super_spec=action_super_spec)?
+	'{'
+		body+=action_body_item*
+	'}' (';')?
+;
+
+action_super_spec:
+	':' super=type_identifier
+;
+
+action_body_item:
+	activity_declaration		|
+	overrides_declaration  		|	
+	constraint_declaration 		|
+	action_field_declaration	|
+//#6429	bins_declaration   		|
+	symbol_declaration			|
+	coverspec_declaration		|
+	exec_block_stmt				|
+	scheduling_constraint	
+;
+
+activity_declaration:
+	{activity_declaration} 'activity' '{'
+		body+=activity_stmt*
+	'}' (';')?
+;
+
+action_field_declaration:
+	modifiers=action_field_modifier? declaration=action_data_declaration
+;
+
+action_field_modifier:
+	rand?='rand'|io_direction|lock?='lock'|shared?='share'|action?='action'	
+;
+
+io_direction:
+	input?='input' | output?='output'
+;
+
+scheduling_constraint:
+	'constraint' ('parallel'|'sequence') '{' 
+		items+=variable_ref_path ',' items+=variable_ref_path (',' items+=variable_ref_path)* '}' (';')?
+;
+
+
+/****************************************************************************
+ * H2: Exec Blocks
+ ****************************************************************************/
+exec_block_stmt:
+	exec_block |
+	target_code_exec_block |
+	target_file_exec_block
+	;
+	
+exec_block:
+	native?='exec' kind=exec_kind_identifier '{' body_stmts+=exec_body_stmt* '}'
+;
+
+exec_kind_identifier:
+	'pre_solve' |
+	'post_solve' |
+	'body' |
+	'header' |
+	'declaration' |
+	'run_start' |
+	'run_end' |
+	'init'
+;	
+
+target_code_exec_block:
+	'exec' kind=exec_kind_identifier language=language_identifier '=' body=string ';'
+;
+
+target_file_exec_block:
+	'exec' 'file' target_file_name=filename_string '=' body=string ';'
+;
+
+assign_op:
+	'=' | '+=' | '-=' | '<<=' | '>>=' | '|=' | '&='
+;
+
+exec_body_stmt:
+	lhs=expression (op=assign_op rhs=expression)? ';'
+;
+
+/****************************************************************************
+ * H1: Struct Declarations
+ ****************************************************************************/
+struct_declaration: struct_type name=identifier (super=struct_super_spec)? '{'
+		body+=struct_body_item*
+	'}' (';')?
+;
+
+struct_type:
+	(type='struct' | type='buffer' | type='stream' | type='state' | (type='resource' ('[' n_resource=constant_expression ']')?))
+;
+
+struct_super_spec : ':' super=type_identifier
+;
+
+struct_qualifier:
+	{struct_qualifier} (type='memory' | type='stream' | type='state' | (type='resource' ('[' n_resource=constant_expression ']')?))
+;
+
+struct_body_item:
+	constraint_declaration		|
+	struct_field_declaration	|
+	typedef_declaration			|
+//#6429	bins_declaration			|
+	coverspec_declaration		|
+	exec_block_stmt
+;
+
+struct_field_declaration:
+	struct_field_modifier? declaration=data_declaration
+;
+
+struct_field_modifier:
+	rand?='rand'
+;
+
+/****************************************************************************
+ * H1: Procedural Interface
+ ****************************************************************************/
+function_decl:
+	'function' prototype=method_prototype ';'
+;
+
+method_prototype:
+// Namespace
+//	ret_type=method_return_type name=method_identifier parameter_list=method_parameter_list_prototype
+	ret_type=method_return_type name=method_identifier parameter_list=method_parameter_list_prototype
+;
+
+method_parameter_list_prototype: {method_parameter_list_prototype}
+	'('
+		(
+			parameters+=method_parameter (',' parameters+=method_parameter)*
+		)?
+	')'
+;
+
+method_parameter_list: {method_parameter_list}
+	'('
+	(
+		parameters+=expression (',' parameters+=expression)*
+	)?
+	')'
+;
+
+// Method qualifiers
+import_method_qualifiers:
+	import_method_phase_qualifiers |
+	import_method_target_template
+	;
+
+import_method_phase_qualifiers:
+	'import' func_qualifiers=import_function_qualifiers 'function' name=type_identifier ';'
+;
+
+import_method_target_template:
+	'target' 'function' language=language_identifier prototype=method_prototype '=' string ';'
+;
+
+import_function_qualifiers:
+	(method_qualifiers (language=language_identifier)?) |
+	language=language_identifier
+;
+
+method_qualifiers: {method_qualifiers}
+	(target='target'|solve='solve')
+;
+
+method_return_type:
+	void='void'|type=data_type
+;
+
+method_parameter:
+	dir=method_parameter_dir? type=data_type name=identifier
+;
+
+method_parameter_dir:
+	(input='input'|output='output'|inout='inout')
+;
+
+/****************************************************************************
+ * H2: Import Class Declaration
+ ****************************************************************************/
+import_class_decl:
+	'import' 'class' name=import_class_identifier (extends=import_class_extends)? '{'
+		methods+=import_class_method_decl*
+	'}' (';')?
+	;
+	
+import_class_method_decl:
+	prototype=method_prototype ';'
+;
+
+import_class_extends:
+	':' extends+=type_identifier (',' extends+=type_identifier)*
+;
+
+/****************************************************************************
+ * H2: Export Action
+ ****************************************************************************/
+export_action:
+//	(attr=attributes)?
+	'export' (qualifiers=method_qualifiers)? name=action_type_identifier parameters=method_parameter_list_prototype ';'
+;
+
+/****************************************************************************
+ * H1: Component Declaration
+ ****************************************************************************/
+component_declaration:
+//	(attr=attributes)?
+	'component' name=component_identifier (super=component_super_spec)? '{'
+	body+=component_body_item*
+	'}' (';')?
+;
+
+component_super_spec :
+	':' super=type_identifier
+;
+
+component_body_item:
+	overrides_declaration			|
+	component_field_declaration		|
+	action_declaration 				|
+	object_bind_stmt				|
+	inline_type_object_declaration	|
+	exec_block						|
+	package_body_item
+;
+
+component_field_declaration:
+	component_data_declaration |
+	component_pool_declaration
+;
+
+component_data_declaration:
+	declaration=data_declaration
+;
+
+component_pool_declaration:
+	'pool' ('[' size=expression ']')? declaration=data_declaration
+;
+
+component_field_modifier:
+	(pool?='pool')
+;
+
+inline_type_object_declaration:
+	'pool' qualifier=struct_qualifier 'struct' name=identifier (':' super=[struct_declaration|struct_identifier])? '{'
+		body+=struct_body_item*
+	'}' (';')?
+;
+
+object_bind_stmt:
+	'bind' lhs=hierarchical_id rhs=object_bind_item_or_list ';'
+;
+
+object_bind_item_or_list:
+	items+=component_path | '{' items+=component_path (',' items+=component_path)* '}'
+;
+
+component_path:
+	{component_path} (path+=component_identifier ('.' path+=component_path_elem)*) |
+	path+='*'
+; 
+
+component_path_elem:
+	component_action_identifier|'*'
+;
+
+/********************************************************************
+ * H1: Activity-Graph Statements
+ ********************************************************************/
+activity_stmt: 
+	activity_if_else_stmt		
+	| activity_repeat_stmt 				
+	| activity_constraint_stmt			
+	| activity_foreach_stmt				
+	| activity_action_traversal_stmt
+	| activity_sequence_block_stmt
+	| activity_select_stmt				
+	| activity_parallel_stmt				
+	| activity_schedule_stmt				
+	| activity_bind_stmt					
+	| activity_expand_stmt
+	| activity_join_stmt
+//	| graph_method_call_stmt
+;
+
+activity_expand_stmt :
+	{activity_expand_stmt}
+	'expand' '(' (identifier ':')? count=expression ')' '{'
+		stmts += activity_stmt*
+	'}'
+;
+
+activity_join_stmt :
+	{activity_join_stmt}
+	'join' '{'
+		stmts += activity_stmt*
+	'}'
+;
+
+/*
+graph_method_call_stmt:
+	(lhs=variable_ref op=assign_op)? call=method_function_call ';'
+;
+*/
+
+activity_bind_stmt:
+	'bind' lhs=hierarchical_id rhs=activity_bind_item_or_list ';'
+;
+
+activity_bind_item_or_list:
+	items+=hierarchical_id | ('{' items+=hierarchical_id (',' items+=hierarchical_id)* '}')
+;
+
+activity_if_else_stmt:
+	'if' '(' expr=expression ')' if_production=activity_stmt 
+	(=> 'else' else_production=activity_stmt)?
+;
+
+activity_select_stmt:
+	'select' '{'
+		stmts+=activity_labeled_stmt 
+		stmts+=activity_labeled_stmt
+		stmts+=activity_labeled_stmt*
+	'}'
+;
+
+// TODO: allow action array elements to be traversed
+activity_action_traversal_stmt:
+	{activity_action_traversal_stmt} (
+		(item=variable_ref_path inline_with=inline_with_constraint?
+		) |
+		('do' type=type_identifier inline_with=inline_with_constraint?
+		)
+	)
+	';'
+;
+
+inline_with_constraint:
+	{inline_with_constraint} (
+		('with' '{' constraints+=constraint_body_item* '}') | 
+		('with' constraints+=constant_expression)
+	)
+;
+
+
+activity_parallel_stmt:
+	{activity_parallel_stmt} 'parallel' '{'
+		productions+=activity_labeled_stmt*
+	'}' (';')?
+;
+
+activity_schedule_stmt:
+	{activity_schedule_stmt} 'schedule' '{'
+		productions+=activity_labeled_stmt*
+	'}' (';')?
+;
+
+//graph_select_production:
+//	(label=identifier /*(':=' weight=graph_select_weight)?*/ ':')? production=activity_stmt 
+//;
+//
+//graph_select_weight:
+//	value=number |
+//	id=identifier |
+//	'(' expr=expression ')'
+//;
+
+activity_labeled_stmt:
+	(label=identifier ':')? production=activity_stmt
+;
+
+activity_repeat_stmt:
+	{activity_repeat_stmt} (
+		('repeat' pre_cond?='while' '(' expr=expression ')' body=activity_sequence_block_stmt) |
+		('repeat' count?='(' (ivar=identifier ':')? expr=expression ')' body=activity_sequence_block_stmt) |
+		('repeat' body=activity_sequence_block_stmt (post_cond?='while' '(' expr=expression ')' ';')?)
+		)
+;
+
+activity_constraint_stmt:
+	{activity_constraint_stmt} (
+		('constraint' (block?='{' body+=constraint_body_item* '}' )) | 
+		('constraint' (body+=single_stmt_constraint))
+	)
+;
+
+activity_foreach_stmt:
+	'foreach' '(' expr=expression ')' body=activity_sequence_block_stmt
+;
+
+activity_sequence_block_stmt:
+	('sequence')? '{' {activity_sequence_block_stmt} stmt_list+=activity_stmt* '}'
+;
+
+symbol_declaration:
+	'symbol' name=identifier ('(' parameters=symbol_paramlist ')')? '='
+		rules+=activity_stmt 
+;
+
+symbol_param:
+	(type=data_type) name=identifier
+;
+
+symbol_paramlist:
+	{symbol_paramlist} (params+=symbol_param (',' params+=symbol_param)*)?
+;
+
+
+
+/********************************************************************
+ * H1: Overrides
+ ********************************************************************/
+overrides_declaration:
+	{overides_declaration} 'override' '{' overrides+=override_stmt* '}'
+;
+
+override_stmt:
+	type_override | instance_override
+;
+
+type_override:
+	'type' src=identifier 'with' dest=type_identifier ';'
+;
+
+instance_override:
+	'instance' src=hierarchical_id 'with' dest=identifier ';'
+;
+
+/********************************************************************
+ * H1: Data Declarations
+ ********************************************************************/
+data_declaration:
+	type=data_type instances+=data_instantiation (',' instances+=data_instantiation)* ';' 
+;
+
+action_data_declaration returns data_declaration:
+	type=action_data_type instances+=data_instantiation (',' instances+=data_instantiation)* ';' 
+;
+
+data_instantiation:
+	name=identifier ('(' portmap=coverspec_portmap_list ')')? dim=array_dim? ('=' init=constant_expression)?
+;
+
+array_dim:
+//	{array_dim} '[' (lhs=constant_expression (':' rhs=constant_expression)?)? ']'
+	{array_dim} '[' dim=constant_expression ']'
+;
+
+coverspec_portmap_list:
+	{coverspec_portmap_list} (
+		// Name-mapped port binding
+		(portmaps+=coverspec_portmap (',' portmaps+=coverspec_portmap)*) |
+		// Positional port binding
+		(ports+=hierarchical_id (',' ports+=hierarchical_id)*)
+	)?
+;
+
+coverspec_portmap:
+	'.' portname=identifier '(' connected_name=hierarchical_id ')'
+;
+
+/********************************************************************
+ * H1: Data Types
+ ********************************************************************/
+ 
+data_type:
+	scalar_data_type |
+	user_defined_datatype
+;
+
+/**
+ * BNF: action_data_type ::= scalar_data_type | user_defined_datatype | action_type
+ */
+action_data_type:
+	scalar_data_type |
+	user_defined_datatype
+;
+
+
+scalar_data_type:
+	chandle_type 	|
+	integer_type 	|
+	string_type  	|
+	bool_type
+;
+
+enum_declaration:
+  	'enum' name=enum_identifier '{' 
+  		(items+=enum_item (',' items+=enum_item)*)?
+  		'}' (';')?
+  ;
+  
+bool_type:
+	{bool_type} 'bool'
+;
+
+chandle_type:
+	{chandle_type} 'chandle'
+;
+
+enum_item:
+	name=identifier ('=' value=constant_expression)?
+;
+
+user_defined_datatype:
+	typename=type_identifier
+;
+
+typedef_declaration:
+ 	'typedef' type=data_type type_id=type_identifier ';' 
+;
+
+string_type: typename='string';  
+
+integer_type:
+	typename=integer_atom_type 
+		('[' lhs=expression (':' rhs=expression)? ']')? 
+		('in' '[' domain=open_range_list ']')?
+;
+
+integer_atom_type:
+	'int'|'bit'
+;
+
+open_range_list:
+	ranges+=open_range_value (',' ranges+=open_range_value)*
+;
+
+open_range_value:
+	('..' rhs=expression) |
+	lhs=expression ('..' (rhs=expression)?)?
+;
+
+/********************************************************************
+ * H1: Constraints
+ ********************************************************************/
+constraint_declaration:
+	{constraint_declaration} 
+	(
+		(dynamic?=('dynamic')? block?='constraint' name=identifier '{' body+=constraint_body_item* '}') |
+		(block?='constraint' '{' body+=constraint_body_item* '}') | 
+		('constraint' body+=single_stmt_constraint)
+	)
+;
+
+constraint_body_item:
+	expression_constraint_item |
+	foreach_constraint_item |
+	if_constraint_item		|
+	unique_constraint_item     //|
+//	forall_constraint_item
+;
+
+//forall_constraint_item:
+//	'forall' type_id=type_identifier ('in' c=type_identifier)? '{'
+//		(body += constraint_body_item)*
+//	'}'
+//;
+
+/**
+ * BNF: expression_constraint_item ::= 
+ 	expression implicand_constraint_item
+ 	| expression <kw>;</kw>
+ */
+expression_constraint_item:
+	expr=expression (impl_constraint=implicand_constraint_item|';')
+;
+
+implicand_constraint_item:
+	'->' constraint=constraint_set
+;
+
+single_stmt_constraint:
+	expression_constraint_item |
+	unique_constraint_item
+;
+
+if_constraint_item:
+	'if' '(' if_expr=expression ')' true_case=constraint_set (=> 'else' false_set=constraint_set )? 
+;
+
+foreach_constraint_item:
+	'foreach' '(' expr=expression ')' body=constraint_set
+;
+
+constraint_set:
+	item=constraint_body_item | 
+	block=constraint_block
+;
+
+constraint_block:
+	{constraint_block} '{' items+=constraint_body_item* '}'
+;
+
+unique_constraint_item:
+	'unique' '{' items+=hierarchical_id (',' items+=hierarchical_id)* '}' ';'
+;
+
+/********************************************************************
+ * //#coverspec_cleanup H1: Bins 
+ ********************************************************************/
+//#6429 bins_declaration:
+// 	'bins' name=identifier (item=variable_identifier)? bins=bin_specification ';'
+// ;
+ 
+// bin_specification:
+// 	items+=bin_specifier (items+=bin_specifier)* /*(bin_wildcard)? */
+// ;
+// 
+// bin_specifier:
+// 	explicit_bin_value |
+// 	explicit_bin_range |
+// 	bin_range_divide   |
+// 	bin_range_size
+// ;
+// 
+// explicit_bin_value:
+// 	'[' constant ']'
+// ;
+// 
+// explicit_bin_range: 
+// 	'[' range=open_range_list ']'
+// ;
+// 
+// bin_range_divide:
+// 	explicit_bin_range '/' div=constant
+// ;
+// 
+// bin_range_size:
+// 	explicit_bin_range ':' size=constant
+// ;
+ 
+// bin_wildcard:
+// 	'[' '*' ']'
+// ;
+ 
+/********************************************************************
+ * H1: Coverspec
+ ********************************************************************/
+
+coverspec_declaration:
+	'coverspec' name=identifier '(' ports+=coverspec_port (',' ports+=coverspec_port)* ')' (coverspec_sample_event)? '{'
+		body_items+=coverspec_body_item*
+	'}' (';')?
+;
+
+coverspec_sample_event:
+	'@' 'coverevent'
+;
+
+coverspec_port:
+	type=data_type name=identifier
+;
+
+coverspec_body_item:
+	coverspec_option		|
+	coverspec_coverpoint	|
+	coverspec_cross			|
+//	coverspec_paths			|
+	constraint_declaration
+;
+
+coverspec_option:
+	'option' '.' option=identifier '=' value=constant_expression ';'
+;
+
+// 6382 -- coverpoint on expression, not identifier
+// 6383 -- Support 'iff' clause on coverpoints
+coverspec_coverpoint: 
+		name=coverpoint_identifier ':' 'coverpoint' target=expression ('iff' '(' iff=expression ')')?
+			body=coverspec_coverpoint_body
+;
+
+coverspec_coverpoint_body:
+	{coverspec_coverpoint_body} (('{' body_items+=coverspec_coverpoint_body_item* '}' (';')?) | ';')
+;
+
+coverspec_coverpoint_body_item:
+	coverspec_option			|
+	coverspec_coverpoint_binspec
+;
+
+bins_keyword:
+	'bins' | 'illegal_bins' | 'ignore_bins'
+;
+
+// 6385 -- Support SV style of bins
+coverspec_coverpoint_binspec: (
+//		('pattern' type=bins_keyword name=identifier '=' bins=pattern_bin_specification 
+//			('with' '(' expr=coverspec_expression ')')? ';') | 
+		(type=bins_keyword name=identifier ('['(sz=constant_expression)?']')? '=' '[' bins=open_range_list  ']'
+			('with' '(' expr=coverspec_expression ')')? ';')
+	)
+;
+
+//pattern_bin_specification:
+//	items+=pattern_bin_specifier (items+=pattern_bin_specifier)*
+//;
+// 
+//pattern_bin_specifier:
+// 	'[' range=open_range_list ']' (div=pattern_bin_div_specifier|size=pattern_bin_size_specifier)?
+// 	;
+//
+//pattern_bin_div_specifier:
+//	'/' div=constant_expression
+//; 
+//
+//pattern_bin_size_specifier:
+//	':' size=constant_expression
+//;
+ 
+coverspec_expression : expression;
+
+
+// 6383 -- Support 'iff' clause on coverpoints
+coverspec_cross: 
+	name=ID ':' 'cross' targets+=coverpoint_identifier (',' targets+=coverpoint_identifier)*
+		('iff' '(' iff=expression ')')? body=coverspec_cross_body
+;
+
+coverspec_cross_body:
+	{coverspec_cross_body}(('{' body_items+=coverspec_cross_body_item* '}' (';')?) | ';')
+;
+
+coverspec_cross_body_item:
+	coverspec_option |
+	coverspec_cross_binspec
+;
+
+coverspec_cross_binspec:
+	type=bins_keyword name=identifier ('[' ']')? '=' 'with' '(' expr=coverspec_expression ')' ';'
+;
+
+//coverspec_paths_body_item:
+//	coverspec_option |
+//	coverspec_paths_include_exclude
+//;
+//
+//coverspec_paths:
+//	name=ID ':' 'paths' start=hierarchical_id ',' (stop+=hierarchical_id | '{' stop+=hierarchical_id (',' stop+=hierarchical_id)*)
+//		(
+//			( '{' body_items+=coverspec_paths_body_item* '}') | ';'
+//		)
+//;
+//
+//coverspec_paths_include_exclude:
+//	inc_excl=('include'|'exclude') paths_vals=('paths'|'values') ('{' list+=identifier (',' list+=identifier)* '}')? ';'
+//;
+
+ 
+/********************************************************************
+ * H1: Expressions
+ ********************************************************************/
+
+/** 
+ * Note: ANTLR doesn't support left-recursion in grammar productions.
+ * Consequently, we can't say something like: 
+ *   expression := expression '+' expression.
+ * 
+ * The expression grammar below is refactored to eliminate left 
+ * recursion and properly implement operator precedence
+ */
+// TODO: should make special-purpose declaration 
+constant_expression: expression;
+
+expression: 
+	condition_expr
+	;
+	
+condition_expr returns expression:
+	logical_or_expr ({condition_expr.left=current} '?' true_expr=logical_or_expr ':' false_expr=logical_or_expr)*
+	; 
+
+logical_or_expr returns expression:
+	logical_and_expr ({logical_or_expr.left=current} '||' right=logical_and_expr)*
+;
+
+logical_and_expr returns expression:
+	binary_or_expr ({logical_and_expr.left=current} '&&' right=binary_or_expr)*	
+;
+
+binary_or_expr returns expression:
+	binary_xor_expr ({binary_or_expr.left=current} '|' right=binary_xor_expr)*
+;
+
+binary_xor_expr returns expression:
+	binary_and_expr ({binary_xor_expr.left=current} '^' right=binary_and_expr)*
+;
+
+binary_and_expr returns expression:
+	logical_equality_expr ({binary_and_expr.left=current} '&' right=logical_equality_expr)*
+;
+
+logical_equality_expr returns expression:
+	logical_inequality_expr ({logical_equality_expr.left=current} op=eq_neq_op right=logical_inequality_expr)*
+;
+
+logical_inequality_expr returns expression: 
+		binary_shift_expr ({logical_inequality_expr.left=current} right=logical_inequality_rhs)*
+;
+
+logical_inequality_rhs returns expression:
+	inequality_expr_term | inside_expr_term
+;
+
+inequality_expr_term returns expression:
+	op=logical_inequality_op right=binary_shift_expr
+;
+
+inside_expr_term returns expression:
+	op='in' '[' right=open_range_list ']'
+;
+
+logical_inequality_op:
+	'<'|'<='|'>'|'>='
+;
+
+binary_shift_expr returns expression:
+	binary_add_sub_expr ({binary_shift_expr.left=current} op=shift_op right=binary_add_sub_expr)*
+;
+
+binary_add_sub_expr returns expression:
+	binary_mul_div_mod_expr ({binary_add_sub_expr.left=current} op=add_sub_op right=binary_mul_div_mod_expr)*
+;
+
+binary_mul_div_mod_expr returns expression:
+	binary_exp_expr ({binary_mul_div_mod_expr.left=current} op=mul_div_mod_op right=binary_exp_expr)*
+;
+
+binary_exp_expr returns expression:
+	unary_expr ({binary_exp_expr.left=current} '**' right=unary_expr)*
+;
+
+unary_op: '+' | '-' | '!' | '~' | '&' | '|' | '^';
+
+eq_neq_op: '==' | '!=';
+
+shift_op: '<<' | '>>';
+
+add_sub_op: '+' | '-';
+
+mul_div_mod_op: '*' | '/' | '%';
+
+unary_expr returns expression:
+	(unary_op)? primary
+;
+
+primary returns expression:
+	number 					
+	| bool_literal			
+	| paren_expr
+	| string_literal
+	| variable_ref_path
+	| method_function_call
+	;
+
+method_function_call:
+	method_call		|
+	function_call
+;
+
+method_call:
+	method=method_hierarchical_id parameters=method_parameter_list
+;
+
+method_hierarchical_id :
+	path+=identifier '.' path+=identifier ('.' path+=identifier)*
+;
+
+function_call:
+	function=function_id parameters=method_parameter_list	
+;
+
+function_id:
+// Namespace
+//	ID ('::' ID ('::' ID)?)?
+	type_identifier
+;
+
+paren_expr:
+	'(' expr=expression ')'
+;
+
+// TODO: Mantis
+variable_ref_path:
+	{variable_ref_path}
+	ref+=variable_ref ('.' ref+=variable_ref)*
+;
+
+variable_ref:
+	{variable_ref}
+	ref=identifier ( '[' left=expression (':' rhs=expression)? ']' )?
+;
+
+
+
+/********************************************************************
+ * H1: Identifiers and Literals
+ ********************************************************************/
+action_identifier: identifier;
+struct_identifier: identifier;
+component_identifier: identifier;
+component_action_identifier: identifier;
+coverpoint_identifier : identifier;
+enum_identifier: identifier;
+import_class_identifier: identifier;
+language_identifier: identifier;
+method_identifier: identifier;
+variable_identifier: identifier;
+constant: number | identifier;
+
+coverpoint_target_identifier : hierarchical_id;
+parameter_identifier : identifier;
+
+identifier: ID | ESCAPED_ID;
+
+filename_string: DOUBLE_QUOTED_STRING;
+
+// Namespace
+//package_identifier: hierarchical_id;
+package_identifier: 
+	elems+=ID ('::' elems+=ID)*
+;
+
+type_identifier :
+// Namespace
+//	elems+=ID ('::' elems+=ID ('::' elems+=ID)?)?
+	elems+=ID ('::' elems+=ID)*
+;
+
+action_type_identifier: type_identifier;
+
+hierarchical_id:
+	path+=identifier ('.' path+=identifier)*
+;
+
+bool_literal:
+	true?='true'|false?='false'
+;
+
+/********************************************************************
+ * H1: Numbers
+ ********************************************************************/
+number:
+	value=based_hex_number 		|
+	value=based_dec_number		|
+	value=based_bin_number		|
+	value=based_oct_number		|
+	value=dec_number			|
+	value=oct_number			|
+	value=hex_number
+;
+
+
+based_hex_number: size=DEC_LITERAL? value=BASED_HEX_LITERAL;
+terminal BASED_HEX_LITERAL: '\'' ('s'|'S')? ('h'|'H') ('0'..'9'|'a'..'f'|'A'..'F') ('0'..'9'|'a'..'f'|'A'..'F'|'_')*;
+
+based_dec_number: size=DEC_LITERAL? value=BASED_DEC_LITERAL;
+terminal BASED_DEC_LITERAL: '\'' ('s'|'S')? ('d'|'D') ('0'..'9') ('0'..'9'|'_')*;
+
+dec_number: value=DEC_LITERAL;
+terminal DEC_LITERAL: ('1'..'9') ('0'..'9'|'_')*;
+
+based_bin_number: size=DEC_LITERAL? value=BASED_BIN_LITERAL;
+terminal BASED_BIN_LITERAL: '\'' ('s'|'S')? ('b'|'B') (('0'..'1') ('0'..'1'|'_')*);
+
+based_oct_number: size=DEC_LITERAL? value=BASED_OCT_LITERAL;
+terminal BASED_OCT_LITERAL: '\'' ('s'|'S')? ('o'|'O') (('0'..'7') ('0'..'7'|'_')*);
+
+
+oct_number: value=OCT_LITERAL;
+terminal OCT_LITERAL: '0' ('0'..'7')*;
+
+hex_number: value=HEX_LITERAL;
+terminal HEX_LITERAL: '0x' ('0'..'9'|'a'..'f'|'A'..'F') ('0'..'9'|'a'..'f'|'A'..'F'|'_')*;
+
+
+/**
+ * Exclude:
+ */
+terminal WS			: (' '|'\t'|'\r'|'\n')+;
+
+/********************************************************************
+ * H1: Comments
+ ********************************************************************/
+ 
+/**
+ * BNF: SL_COMMENT ::= <kw>//</kw>{any_ASCII_character_except_newline}\n 
+ */
+terminal SL_COMMENT 	: '//' !('\n'|'\r')* ('\r'? '\n')?;
+
+/*
+ * BNF: ML_COMMENT ::= <kw>/*</kw>{any_ASCII_character}<kw>*\057</kw>
+ */
+terminal ML_COMMENT	: '/*' -> '*/';
+
+string: DOUBLE_QUOTED_STRING|TRIPLE_DOUBLE_QUOTED_STRING;
+
+string_literal: value=string;
+
+terminal DOUBLE_QUOTED_STRING	: 
+			'"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|'"') )* '"' 
+			;
+/**
+ * BNF: TRIPLE_DOUBLE_QUOTED_STRING ::= <kw>"""</kw>{any_ASCII_character}<kw>"""</kw>
+ */
+terminal TRIPLE_DOUBLE_QUOTED_STRING:
+			'"""' -> '"""'
+		; 
+
+terminal ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+
+/**
+ * BNF: ESCAPED_ID ::= <kw>\</kw>{any_ASCII_character_except_whitespace} whitespace
+ */
+terminal ESCAPED_ID: '\\' !(' '|'\t'|'\r'|'\n')+ ;
+

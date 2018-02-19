@@ -1,7 +1,7 @@
 
 <template 
 	name="package"
-	autoinsert="true" context="net.sf.psstools.lang.PSS.package_body_item"
+	autoinsert="true" context="org.psstools.psde.lang.PSS.package_body_item"
 	delete="false" description="Create a package" enabled="true">
 package ${name} {
 	${cursor}

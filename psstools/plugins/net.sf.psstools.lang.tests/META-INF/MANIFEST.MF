@@ -1,11 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: net.sf.psstools.lang.tests
+Bundle-Name: org.psstools.psde.lang.tests
 Bundle-Vendor: My Company
 Bundle-Version: 1.2.3
-Bundle-SymbolicName: net.sf.psstools.lang.tests; singleton:=true
+Bundle-SymbolicName: org.psstools.psde.lang.tests;singleton:=true
 Bundle-ActivationPolicy: lazy
-Require-Bundle: net.sf.psstools.lang,
+Require-Bundle: org.psstools.psde.lang,
  org.junit;bundle-version="4.7.0",
  org.eclipse.xtext.junit4,
  org.eclipse.xtext.xbase.junit,
@@ -13,7 +13,7 @@ Require-Bundle: net.sf.psstools.lang,
  org.eclipse.xtext.testing,
  org.eclipse.xtext.xbase.testing
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: net.sf.psstools.lang.tests;x-internal=true
+Export-Package: org.psstools.psde.lang.tests;x-internal=true
 Import-Package: org.hamcrest.core,
  org.junit;version="4.5.0",
  org.junit.runners.model;version="4.5.0",

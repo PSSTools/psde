@@ -4,7 +4,7 @@
 	<extension point="org.eclipse.emf.ecore.generated_package">
 		<package 
 			uri = "http://www.sf.net/psstools/lang/PSS"
-			class = "net.sf.psstools.lang.pSS.PSSPackage"
+			class = "org.psstools.psde.lang.pSS.PSSPackage"
 			genModel = "model/generated/PSS.genmodel" />
 	</extension>
  <extension
@@ -16,7 +16,7 @@
           thread="main"
           visible="true">
        <run
-             class="net.sf.psstools.lang.pssc.PSSCApp">
+             class="org.psstools.psde.lang.pssc.PSSCApp">
        </run>
     </application>
  </extension>
@@ -24,7 +24,7 @@
        id="pssc"
        point="org.eclipse.core.runtime.products">
     <product
-          application="net.sf.psstools.lang.pssc"
+          application="org.psstools.psde.lang.pssc"
           name="PSS Compiler/Checker">
        <property
              name="appName"
