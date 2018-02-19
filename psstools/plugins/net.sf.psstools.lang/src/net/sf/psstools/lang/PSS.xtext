@@ -448,10 +448,11 @@ activity_select_stmt:
 	'}'
 ;
 
+
 // TODO: allow action array elements to be traversed
 activity_action_traversal_stmt:
 	{activity_action_traversal_stmt} (
-		(item=variable_ref_path inline_with=inline_with_constraint?
+		(action=identifier ('.' dynamic_constraint=identifier)? inline_with=inline_with_constraint?
 		) |
 		(do?='do' type=[action_declaration|type_identifier] inline_with=inline_with_constraint?
 		)
