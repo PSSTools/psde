@@ -4,7 +4,6 @@
 package org.psstools.psde.lang.ui.tests;
 
 import com.google.inject.Injector;
-
 import org.eclipse.xtext.testing.IInjectorProvider;
 import org.psstools.psde.lang.ui.internal.LangActivator;
 
