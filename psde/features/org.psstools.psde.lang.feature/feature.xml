@@ -5,7 +5,7 @@
       version="1.2.3">
 
    <description>
-      PSSTools provide an editor for working with Accellera PSS filees
+      PSDE provide an editor for working with Accellera PSS filees
    </description>
 
    <copyright>
@@ -81,7 +81,7 @@ END OF TERMS AND CONDITIONS
    </license>
 
    <url>
-      <update label="PSS Tools" url="http://psstools.sourceforge.net/update-site"/>
+      <update label="PSS Tools" url="https://dl.bintray.com/mballance/psstools/psde"/>
    </url>
 
    <plugin

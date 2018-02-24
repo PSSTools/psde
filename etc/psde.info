@@ -1,14 +1,12 @@
 #****************************************************************************
-#* psstools.info
+#* psde.info
 #****************************************************************************
 
-version=0.0.7
+version=0.0.3
 
 version_type=release
 # version_type=testing
 
 upload_archive=0
 
-# Version for the IDE application
-psde_version=0.0.3
 

@@ -12,7 +12,7 @@
 	<property name="ws" value="gtk"/>
 	<property name="arch" value="x86_64"/>
 	<property name="feature.version" value="0.0.1"/>
-	<property name="feature.id" value="net.sf.psstools.lang.feature"/>
+	<property name="feature.id" value="org.psstools.psde.lang.feature"/>
 
         <path id="classpath">
                 <fileset dir="${eclipse.home}/plugins"
@@ -89,17 +89,17 @@
 			includes="org.eclipse.xtext.xbase_*.jar"/>
                 <fileset dir="${eclipse.home}/plugins"
 			includes="org.eclipse.xtext_*.jar"/>
-                <fileset dir="${buildDirectory}/plugins/net.sf.psstools.lang"
+                <fileset dir="${buildDirectory}/plugins/org.psstools.psde.lang"
                         includes=".antlr-generator-3.2.0-patch.jar"/>
 <!--
-		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang"/>
+		<pathelement location="${buildDirectory}/plugins/org.psstools.psde.lang"/>
   -->
-		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang/src"/>
-		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang/src-gen"/>
-		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang.ide/src"/>
-		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang.ide/src-gen"/>
-		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang.ui/src"/>
-		<pathelement location="${buildDirectory}/plugins/net.sf.psstools.lang.ui/src-gen"/>
+		<pathelement location="${buildDirectory}/plugins/org.psstools.psde.lang/src"/>
+		<pathelement location="${buildDirectory}/plugins/org.psstools.psde.lang/src-gen"/>
+		<pathelement location="${buildDirectory}/plugins/org.psstools.psde.lang.ide/src"/>
+		<pathelement location="${buildDirectory}/plugins/org.psstools.psde.lang.ide/src-gen"/>
+		<pathelement location="${buildDirectory}/plugins/org.psstools.psde.lang.ui/src"/>
+		<pathelement location="${buildDirectory}/plugins/org.psstools.psde.lang.ui/src-gen"/>
                 <fileset dir="${eclipse.home}/plugins"
 			includes="org.eclipse.core.runtime_*.jar"/>
                 <fileset dir="${eclipse.home}/plugins"
@@ -136,7 +136,7 @@
   -->
 	<target name="generate-xtext-artifacts">
         <eclipse.buildScript
-            elements="feature@net.sf.psstools.lang.feature"
+            elements="feature@org.psstools.psde.lang.feature"
 	    buildDirectory="${buildDirectory}"
             baseLocation="${eclipse.home}"
 	    forceContextQualifier="0"
@@ -147,8 +147,8 @@
 		<java fork="true" failonerror="true"
 			classpathref="classpath"
 			classname="org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher"
-			dir="${buildDirectory}/plugins/net.sf.psstools.lang">
-				<arg value="src/net/sf/psstools/lang/GeneratePSS.mwe2"/>
+			dir="${buildDirectory}/plugins/org.psstools.psde.lang">
+				<arg value="src/org/psstools/psde/lang/GeneratePSS.mwe2"/>
 		</java>
 	</target>
 
@@ -161,7 +161,7 @@
 		<java fork="true" failonerror="true"
 			classpathref="classpath"
 			classname="org.eclipse.xtend.core.compiler.batch.Main"
-			dir="${buildDirectory}/plugins/net.sf.psstools.lang">
+			dir="${buildDirectory}/plugins/org.psstools.psde.lang">
 			<arg value="-cp"/>
 			<arg value="${classpath-string}"/>
 			<arg value="-d"/>
@@ -171,7 +171,7 @@
 		<java fork="true" failonerror="true"
 			classpathref="classpath"
 			classname="org.eclipse.xtend.core.compiler.batch.Main"
-			dir="${buildDirectory}/plugins/net.sf.psstools.lang.ide">
+			dir="${buildDirectory}/plugins/org.psstools.psde.lang.ide">
 			<arg value="-cp"/>
 			<arg value="${classpath-string}"/>
 			<arg value="-d"/>
@@ -181,7 +181,7 @@
 		<java fork="true" failonerror="true"
 			classpathref="classpath"
 			classname="org.eclipse.xtend.core.compiler.batch.Main"
-			dir="${buildDirectory}/plugins/net.sf.psstools.lang.ui">
+			dir="${buildDirectory}/plugins/org.psstools.psde.lang.ui">
 			<arg value="-cp"/>
 			<arg value="${classpath-string}"/>
 			<arg value="-d"/>
@@ -192,16 +192,16 @@
 
 	<target name="compile-java">
 		<ant antfile="${buildDirectory}/features/${feature.id}/build.xml"
-            dir="${buildDirectory}/features/net.sf.psstools.lang.feature"
+            dir="${buildDirectory}/features/org.psstools.psde.lang.feature"
 	    target="build.jars"/>
-        <ant antfile="${buildDirectory}/assemble.net.sf.psstools.lang.feature.${os}.${ws}.${arch}.xml"
+        <ant antfile="${buildDirectory}/assemble.org.psstools.psde.lang.feature.${os}.${ws}.${arch}.xml"
 		dir="${buildDirectory}">
 		<property name="buildLabel" value="release"/>
 		<property name="buildId" value="release"/>
 		<property name="archivePrefix" value="psstools"/>
 	</ant>
-		<copy tofile="${buildDirectory}/psstools-feature-${feature.version}.zip"
-			file="${buildDirectory}/release/net.sf.psstools.lang.feature-release-${os}.${ws}.${arch}.zip"/>
+		<copy tofile="${buildDirectory}/psde-feature-${feature.version}.zip"
+			file="${buildDirectory}/release/org.psstools.psde.lang.feature-release-${os}.${ws}.${arch}.zip"/>
 
 	</target>
 
@@ -270,7 +270,7 @@
 		tofile="${buildDirectory}/archive_tmp/repository/content.xml"/>
 
 
-	<jar destfile="${buildDirectory}/../psstools-${feature.version}.jar"
+	<jar destfile="${buildDirectory}/../psde-${feature.version}.jar"
 		basedir="${buildDirectory}/archive_tmp/repository"
              includes="*.xml, features/**, plugins/**"/>
 
@@ -304,7 +304,7 @@
 		<fileset dir="${buildDirectory}/archive_tmp/repository" includes="*.xml"/>
         </delete>
 
-	<zip destfile="${buildDirectory}/../psstools-release-${feature.version}.zip">
+	<zip destfile="${buildDirectory}/../psde-release-${feature.version}.zip">
 		<fileset dir="${buildDirectory}/archive_tmp/repository">
                         <include name="*.jar"/>
                         <include name="features/**"/>
