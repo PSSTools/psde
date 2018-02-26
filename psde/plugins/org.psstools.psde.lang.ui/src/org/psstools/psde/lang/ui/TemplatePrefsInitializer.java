@@ -6,7 +6,6 @@ import java.net.URL;
 import java.util.Enumeration;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
-import org.osgi.framework.Version;
 import org.psstools.psde.lang.ui.internal.LangActivator;
 
 public class TemplatePrefsInitializer extends AbstractPreferenceInitializer {
@@ -21,17 +20,17 @@ public class TemplatePrefsInitializer extends AbstractPreferenceInitializer {
 		// Get the plugin version
 		String version = LangActivator.getInstance().getBundle().getVersion().toString();
 		String prefs_version = LangActivator.getInstance().getPreferenceStore().getString(PREFS_VERSION);
-		System.out.println("Version: " + version + " prefs_version: " + prefs_version);
+//		System.out.println("Version: " + version + " prefs_version: " + prefs_version);
 		
-		if (version.equals("1.2.3") || !version.equals(prefs_version)) {
-			update_templates();
-			
-			LangActivator.getInstance().getPreferenceStore().setValue(
-					PREFS_VERSION, version);
-		}
+		update_templates(
+				(/*version.equals("1.2.3") || */!version.equals(prefs_version))
+				);
+
+		LangActivator.getInstance().getPreferenceStore().setValue(
+				PREFS_VERSION, version);
 	}
 	
-	private void update_templates() {
+	private void update_templates(boolean update_value) {
 		// TODO: for now, we just force-update all templates. 
 		// Not the best approach, but ok for now
 		String default_templates = LangActivator.getInstance().getPreferenceStore().getDefaultString(
@@ -111,8 +110,10 @@ public class TemplatePrefsInitializer extends AbstractPreferenceInitializer {
 		
 		LangActivator.getInstance().getPreferenceStore().setDefault(
 				PREFS_TEMPLATES, prefs.toString());
-		LangActivator.getInstance().getPreferenceStore().setValue(
-				PREFS_TEMPLATES, prefs.toString());
+		if (update_value) {
+			LangActivator.getInstance().getPreferenceStore().setValue(
+					PREFS_TEMPLATES, prefs.toString());
+		}
 	}
 
 }
