@@ -1,5 +1,10 @@
 
 ------------------------------------------------------------------------------
+-- 0.0.4 Release --
+
+- Correct an issue with templates disappearing
+
+------------------------------------------------------------------------------
 -- 0.0.3 Release --
 
 - Incorporate Mantis #5838 -- changes to variable domain specification
