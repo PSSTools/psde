@@ -2,7 +2,7 @@
 // Example: 12.1.2
 buffer data_buff {
 	rand int size;
-	constraint size inside [1..1024];
+	constraint size in [1..1024];
 	constraint size_align { size%4 == 0; } // 4 byte aligned
 }
 	

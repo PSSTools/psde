@@ -1,8 +1,8 @@
 
 //Example: 12.2.11
 
-import bit[3:0] compute_val1(bit[3:0] v);
-import bit[3:0] compute_val2(bit[3:0] v);
+function bit[3:0] compute_val1(bit[3:0] v);
+function bit[3:0] compute_val2(bit[3:0] v);
 
 component pss_top {
 

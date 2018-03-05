@@ -6,11 +6,11 @@ component top {
 		action bit[31:0] addr;
 
 		dynamic constraint dyn_addr1_c {
-			addr inside [0x1000..0x1FFF];
+			addr in [0x1000..0x1FFF];
 		}
 
 		dynamic constraint dyn_addr2_c {
-			addr inside [0x2000..0x2FFF];
+			addr in [0x2000..0x2FFF];
 		}
 
 	}

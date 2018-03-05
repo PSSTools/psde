@@ -15,7 +15,7 @@ component codec_c {
 	action configure {
 		input configuration_s prev_conf;
 		output configuration_s next_conf;
-		constraint prev_conf.mode == UNKNOWN && next_conf.mode inside [A, B]; 
+		constraint prev_conf.mode == UNKNOWN && next_conf.mode in [A, B]; 
 	}
 }
 

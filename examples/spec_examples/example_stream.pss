@@ -1,7 +1,7 @@
 
 // Example 8.2.3
 struct mem_segment_s {
-	rand int[4..1024] size;
+	rand int in [4..1024] size;
 	rand bit[63:0] addr;
 }
 

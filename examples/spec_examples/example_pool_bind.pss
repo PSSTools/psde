@@ -1,7 +1,7 @@
 
 // Example: 10.7.4.3
 
-state power_state_s { int[0..4] val; };
+state power_state_s { int in [0..4] val; };
 
 resource channel_s {};
 

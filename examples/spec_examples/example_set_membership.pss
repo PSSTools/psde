@@ -4,6 +4,6 @@
 struct transaction {
 	rand bit[31:0] addr;
 	constraint addr_c {
- 		addr inside [0x0000..0xFFFF];
+ 		addr in [0x0000..0xFFFF];
  	}
 }

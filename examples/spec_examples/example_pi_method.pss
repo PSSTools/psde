@@ -2,7 +2,7 @@
 // Example: 16.2
 
 package generic_methods {
-	import int compute_value(
+	function int compute_value(
 		int val,
 		output int out_val);
 }

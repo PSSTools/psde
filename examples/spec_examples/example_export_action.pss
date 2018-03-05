@@ -9,9 +9,9 @@ component comp {
 
 		constraint {
 			if (mode) {
-				val inside [0..10];
+				val in [0..10];
 			} else {
-				val inside [10..100];
+				val in [10..100];
 			}
 		}
 	}

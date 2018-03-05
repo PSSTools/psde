@@ -1,4 +1,4 @@
-import chandle do_init();
+function chandle do_init();
 
 struct info_s {
 	chandle ptr;

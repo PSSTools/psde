@@ -3,9 +3,9 @@
 
 package external_functions_pkg {
 
-	import bit[31:0] alloc_addr(bit[31:0] size);
+	function bit[31:0] alloc_addr(bit[31:0] size);
 
-	import void transfer_mem(
+	function void transfer_mem(
 		bit[31:0] src, bit[31:0] dst, bit[31:0] size
 	);
 
@@ -13,7 +13,7 @@ package external_functions_pkg {
 		rand bit[31:0] size;
 		bit[31:0] addr;
 
-		constraint size inside [8..4096];
+		constraint size in [8..4096];
 
 		exec post_solve {
 			addr = alloc_addr(size);

@@ -3,7 +3,7 @@
 
 component top {
 	action my_test {
-		rand int[1..10] x;
+		rand int in [1..10] x;
 		A a;
 		B b;
 		activity {

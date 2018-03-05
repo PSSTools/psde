@@ -10,7 +10,7 @@ struct transaction {
 	coverspec trans_cov(transaction t) {
 		constraint burst_type_len_c {
 			if (burst_type == WRAP) {
-				burst_len inside [1,2,4];
+				burst_len in [1,2,4];
 			}
 		}
 		

@@ -19,11 +19,11 @@ component mem_ops_c {
 
 package soc_config_pkg {
 	extend action mem_ops_c::memcpy {
-		rand int[1, 2, 4, 8] ta_width; // introducing new attribute
+		rand int in [1, 2, 4, 8] ta_width; // introducing new attribute
 		
 		constraint { // layering additional constraint
-			src_buff.mem_block inside [SYS_MEM, A_MEM, DDR];
-			dst_buff.mem_block inside [SYS_MEM, A_MEM, DDR];
+			src_buff.mem_block in [SYS_MEM, A_MEM, DDR];
+			dst_buff.mem_block in [SYS_MEM, A_MEM, DDR];
 			ta_width < 4 -> dst_buff.mem_block != A_MEM;
 		}
 	}

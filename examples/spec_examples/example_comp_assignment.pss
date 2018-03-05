@@ -7,7 +7,7 @@ component vid_pipe_c {
 component codec_c {
 	vid_pipe_c pipe;
 	action multi_activate {
-		rand int[2..6] count;
+		rand int in [2..6] count;
 		
 		activity {
 			repeat (count) {
