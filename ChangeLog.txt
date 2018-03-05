@@ -1,5 +1,10 @@
 
 ------------------------------------------------------------------------------
+-- 0.0.5 Release --
+
+- Correct an issue with the update site
+
+------------------------------------------------------------------------------
 -- 0.0.4 Release --
 
 - Correct an issue with templates disappearing

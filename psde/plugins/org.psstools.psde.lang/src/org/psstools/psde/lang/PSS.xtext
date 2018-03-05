@@ -62,7 +62,7 @@ package_body_item:
 	import_method_qualifiers		|
 	export_action					|
 	typedef_declaration 			|
-//#6429	bins_declaration 				|
+	bins_declaration 				|
 	import_stmt 					|
 	extend_stmt						|
 	// Namespace
@@ -128,7 +128,7 @@ action_body_item:
 	overrides_declaration  		|	
 	constraint_declaration 		|
 	action_field_declaration	|
-//#6429	bins_declaration   		|
+	bins_declaration   			|
 	symbol_declaration			|
 	coverspec_declaration		|
 	exec_block_stmt				|
@@ -222,7 +222,7 @@ struct_body_item:
 	constraint_declaration		|
 	struct_field_declaration	|
 	typedef_declaration			|
-//#6429	bins_declaration			|
+	bins_declaration			|
 	coverspec_declaration		|
 	exec_block_stmt
 ;
@@ -723,53 +723,49 @@ unique_constraint_item:
 /********************************************************************
  * //#coverspec_cleanup H1: Bins 
  ********************************************************************/
-//#6429 bins_declaration:
-// 	'bins' name=identifier (item=variable_identifier)? bins=bin_specification ';'
-// ;
+bins_declaration:
+ 	'bins' name=identifier (item=variable_identifier)? bins=bin_specification ';'
+;
  
-// bin_specification:
-// 	items+=bin_specifier (items+=bin_specifier)* /*(bin_wildcard)? */
-// ;
-// 
-// bin_specifier:
-// 	explicit_bin_value |
-// 	explicit_bin_range |
-// 	bin_range_divide   |
-// 	bin_range_size
-// ;
-// 
-// explicit_bin_value:
-// 	'[' constant ']'
-// ;
-// 
-// explicit_bin_range: 
-// 	'[' range=open_range_list ']'
-// ;
-// 
-// bin_range_divide:
-// 	explicit_bin_range '/' div=constant
-// ;
-// 
-// bin_range_size:
-// 	explicit_bin_range ':' size=constant
-// ;
- 
-// bin_wildcard:
-// 	'[' '*' ']'
-// ;
+bin_specification:
+	items+=bin_specifier (items+=bin_specifier)* (bin_wildcard)?
+;
+
+bin_specifier:
+//	explicit_bin_value |
+//	explicit_bin_range |
+	bin_range_divide   //|
+//	bin_range_size
+;
+
+explicit_bin_value:
+	'[' constant ']'
+;
+
+explicit_bin_range: 
+	'[' range=open_range_list ']'
+;
+
+bin_range_divide:
+	explicit_bin_range (('/' div=constant) | (':' size=constant))?
+;
+
+bin_range_size:
+	explicit_bin_range ':' size=constant
+;
+
+bin_wildcard:
+	'[' '*' ']'
+;
  
 /********************************************************************
  * H1: Coverspec
  ********************************************************************/
 
 coverspec_declaration:
-	'coverspec' name=identifier '(' ports+=coverspec_port (',' ports+=coverspec_port)* ')' (coverspec_sample_event)? '{'
+	'coverspec' name=identifier '(' ports+=coverspec_port (',' ports+=coverspec_port)* ')' '{'
 		body_items+=coverspec_body_item*
 	'}' (';')?
-;
-
-coverspec_sample_event:
-	'@' 'coverevent'
 ;
 
 coverspec_port:
@@ -810,10 +806,12 @@ bins_keyword:
 
 // 6385 -- Support SV style of bins
 coverspec_coverpoint_binspec: (
+		(type=bins_keyword name=identifier bins+=bin_specifier (bins+=bin_specifier)* (bin_wildcard)? ';') |
+		(type=bins_keyword name=identifier path=hierarchical_id ';')
 //		('pattern' type=bins_keyword name=identifier '=' bins=pattern_bin_specification 
 //			('with' '(' expr=coverspec_expression ')')? ';') | 
-		(type=bins_keyword name=identifier ('['(sz=constant_expression)?']')? '=' '[' bins=open_range_list  ']'
-			('with' '(' expr=coverspec_expression ')')? ';')
+//		(type=bins_keyword name=identifier ('['(sz=constant_expression)?']')? '=' '[' bins=open_range_list  ']'
+//			('with' '(' expr=coverspec_expression ')')? ';')
 	)
 ;
 
