@@ -1,0 +1,7 @@
+instructions.configure=\
+  org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:0,name:PSDE Updates,location:http${#58}//dl.bintray.com/mballance/psstools/psde/,enabled:true);\
+  org.eclipse.equinox.p2.touchpoint.eclipse.addRepository(type:1,name:PSDE Updates,location:http${#58}//dl.bintray.com/mballance/psstools/psde/,enabled:true);
+
+properties.1.name=org.eclipse.equinox.p2.type.category
+properties.1.value=true
+
