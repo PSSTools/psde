@@ -1,5 +1,5 @@
 
-// Example: 13.2.3
+// Example: 17.2.2  #154
 
 enum burst_type_e { INCR, WRAP };
 

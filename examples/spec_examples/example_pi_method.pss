@@ -1,5 +1,5 @@
 
-// Example: 16.2
+// EAII: 20.2.7	#181
 
 package generic_methods {
 	function int compute_value(

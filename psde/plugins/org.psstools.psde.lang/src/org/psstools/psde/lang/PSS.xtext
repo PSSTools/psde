@@ -67,7 +67,14 @@ package_body_item:
 	extend_stmt						|
 	// Namespace
 	package_declaration				|
-	component_declaration
+	component_declaration			|
+	// #6362
+	const_data_declaration
+;
+
+// #6362
+const_data_declaration :
+	('static')? 'const' data_declaration
 ;
 
 extend_stmt:
@@ -132,7 +139,9 @@ action_body_item:
 	symbol_declaration			|
 	coverspec_declaration		|
 	exec_block_stmt				|
-	scheduling_constraint	
+	scheduling_constraint		|
+	// #6362
+	const_data_declaration
 ;
 
 activity_declaration:
@@ -224,7 +233,9 @@ struct_body_item:
 	typedef_declaration			|
 //#6429	bins_declaration			|
 	coverspec_declaration		|
-	exec_block_stmt
+	exec_block_stmt				|
+	// #6362
+	const_data_declaration
 ;
 
 struct_field_declaration:
@@ -275,7 +286,7 @@ import_method_phase_qualifiers:
 ;
 
 import_method_target_template:
-	'target' 'function' language=language_identifier prototype=method_prototype '=' string ';'
+	'target' language=language_identifier 'function' prototype=method_prototype '=' string ';'
 ;
 
 import_function_qualifiers:
@@ -343,7 +354,6 @@ component_body_item:
 	component_field_declaration		|
 	action_declaration 				|
 	object_bind_stmt				|
-	inline_type_object_declaration	|
 	exec_block						|
 	package_body_item
 ;
@@ -363,12 +373,6 @@ component_pool_declaration:
 
 component_field_modifier:
 	(pool?='pool')
-;
-
-inline_type_object_declaration:
-	'pool' qualifier=struct_qualifier 'struct' name=identifier (':' super=[struct_declaration|struct_identifier])? '{'
-		body+=struct_body_item*
-	'}' (';')?
 ;
 
 object_bind_stmt:
@@ -399,6 +403,7 @@ activity_stmt:
 	| activity_action_traversal_stmt
 	| activity_sequence_block_stmt
 	| activity_select_stmt				
+	| activity_case_stmt
 	| activity_parallel_stmt				
 	| activity_schedule_stmt				
 	| activity_bind_stmt					
@@ -442,10 +447,36 @@ activity_if_else_stmt:
 
 activity_select_stmt:
 	'select' '{'
-		stmts+=activity_labeled_stmt 
-		stmts+=activity_labeled_stmt
-		stmts+=activity_labeled_stmt*
+		branches+=select_branch 
+		branches+=select_branch
+		branches+=select_branch*
 	'}'
+;
+
+select_branch:
+	select_guard_weight stmts=activity_labeled_stmt
+	;
+	
+select_guard_weight:
+	(
+	('(' guard=expression ')' ('[' weight=expression ']')? ':') |
+	('[' weight=expression ']' ':') 
+	)
+;
+
+activity_case_stmt:
+	'case' '(' cond=expression ')' '{'
+		branches+=case_branch
+		branches+=case_branch
+		(branches+=case_branch)*
+	'}'
+;
+
+case_branch:
+	(
+		('[' open_range_list ']' ':' stmt=activity_labeled_stmt) |
+		('default' ':' stmt=activity_labeled_stmt)
+	)
 ;
 
 // TODO: allow action array elements to be traversed
@@ -462,7 +493,7 @@ activity_action_traversal_stmt:
 inline_with_constraint:
 	{inline_with_constraint} (
 		('with' '{' constraints+=constraint_body_item* '}') | 
-		('with' constraints+=constant_expression)
+		('with' constraints+=single_stmt_constraint)
 	)
 ;
 
@@ -517,8 +548,7 @@ activity_sequence_block_stmt:
 ;
 
 symbol_declaration:
-	'symbol' name=identifier ('(' parameters=symbol_paramlist ')')? '='
-		rules+=activity_stmt 
+	'symbol' name=identifier ('(' parameters=symbol_paramlist ')')? rules=activity_stmt 
 ;
 
 symbol_param:
@@ -639,11 +669,20 @@ string_type: typename='string';
 integer_type:
 	typename=integer_atom_type 
 		('[' lhs=expression (':' rhs=expression)? ']')? 
-		('in' '[' domain=open_range_list ']')?
+		('in' '[' domain=domain_open_range_list ']')?
 ;
 
 integer_atom_type:
 	'int'|'bit'
+;
+//#6562
+domain_open_range_list:
+	ranges+=domain_open_range_value (',' ranges+=domain_open_range_value)*
+;
+
+domain_open_range_value:
+	('..' rhs=expression) |
+	lhs=expression ('..' (rhs=expression)?)?
 ;
 
 open_range_list:
@@ -651,8 +690,7 @@ open_range_list:
 ;
 
 open_range_value:
-	('..' rhs=expression) |
-	lhs=expression ('..' (rhs=expression)?)?
+	lhs=expression ('..' (rhs=expression))?
 ;
 
 /********************************************************************
@@ -730,29 +768,29 @@ unique_constraint_item:
 // bin_specification:
 // 	items+=bin_specifier (items+=bin_specifier)* /*(bin_wildcard)? */
 // ;
-// 
+ 
 // bin_specifier:
 // 	explicit_bin_value |
 // 	explicit_bin_range |
 // 	bin_range_divide   |
 // 	bin_range_size
 // ;
-// 
-// explicit_bin_value:
-// 	'[' constant ']'
-// ;
-// 
-// explicit_bin_range: 
-// 	'[' range=open_range_list ']'
-// ;
-// 
-// bin_range_divide:
-// 	explicit_bin_range '/' div=constant
-// ;
-// 
-// bin_range_size:
-// 	explicit_bin_range ':' size=constant
-// ;
+ 
+ explicit_bin_value:
+ 	'[' constant ']'
+ ;
+ 
+ explicit_bin_range: 
+ 	'[' range=open_range_list ']'
+ ;
+ 
+ bin_range_divide:
+ 	explicit_bin_range '/' div=constant
+ ;
+ 
+ bin_range_size:
+ 	explicit_bin_range ':' size=constant
+ ;
  
 // bin_wildcard:
 // 	'[' '*' ']'
@@ -814,6 +852,7 @@ coverspec_coverpoint_binspec: (
 //			('with' '(' expr=coverspec_expression ')')? ';') | 
 		(type=bins_keyword name=identifier ('['(sz=constant_expression)?']')? '=' '[' bins=open_range_list  ']'
 			('with' '(' expr=coverspec_expression ')')? ';')
+//		type=bins_keyword name=identifier bins+=bin_specifier (bins+=bin_specifier)*
 	)
 ;
 
@@ -975,12 +1014,17 @@ primary returns expression:
 	| paren_expr
 	| string_literal
 	| variable_ref_path
-	| method_function_call
+	| method_function_symbol_call
+	| static_ref_path
 	;
+	
+static_ref_path :
+	path+=identifier '::' path+=identifier ('::' path+=identifier)*
+;
 
-method_function_call:
+method_function_symbol_call:
 	method_call		|
-	function_call
+	function_symbol_call
 ;
 
 method_call:
@@ -991,13 +1035,17 @@ method_hierarchical_id :
 	path+=identifier '.' path+=identifier ('.' path+=identifier)*
 ;
 
-function_call:
-	function=function_id parameters=method_parameter_list	
+function_symbol_call:
+	function=function_symbol_id parameters=method_parameter_list	
 ;
 
 function_id:
 // Namespace
 //	ID ('::' ID ('::' ID)?)?
+	type_identifier
+;
+
+function_symbol_id:
 	type_identifier
 ;
 
@@ -1030,6 +1078,7 @@ enum_identifier: identifier;
 import_class_identifier: identifier;
 language_identifier: identifier;
 method_identifier: identifier;
+symbol_identifier: identifier;
 variable_identifier: identifier;
 constant: number | identifier;
 

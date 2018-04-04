@@ -1,5 +1,5 @@
 
-// Example: 12.2.10.1
+// EAII: 15.4.10.1	#138
 
 function bit[5:0] get_init_val();
 function bit[5:0] get_exp_val(bit[5:0] stim_val);

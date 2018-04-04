@@ -1,5 +1,5 @@
 
-//Example: 12.2.11
+//EAII: 15.4.11	  #142
 
 function bit[3:0] compute_val1(bit[3:0] v);
 function bit[3:0] compute_val2(bit[3:0] v);

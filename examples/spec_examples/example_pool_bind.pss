@@ -1,7 +1,7 @@
 
-// Example: 10.7.4.3
+// EAII: 14.4.3	#88
 
-state power_state_s { int in [0..4] val; };
+state power_state_s { int in [0..4] level; };
 
 resource channel_s {};
 
@@ -10,8 +10,8 @@ component graphics_c {
 	bind power_state_var *; // accessible to all actions under this
 							// component (specifically power_transition's prev/next)
 	action power_transition {
-		input power_state_s prev;
-		output power_state_s next;
+		input power_state_s pwr;
+		output power_state_s next_pwr;
 		lock channel_s chan;
 	}
 }
@@ -27,11 +27,11 @@ component my_multimedia_ss_c {
 	action observe_same_power_state {
 		input power_state_s gfx0_state;
 		input power_state_s gfx1_state;
-		constraint gfx0_state.val == gfx1_state.val;
+		constraint gfx0_state.level == gfx1_state.level;
 	}
  
 	// explicit binding of the two power state variables to the
 	// respective inputs of action observe_same_power_state
-	bind gfx0.power_state_var observe_same_power_state.gfx0_state0;
-	bind gfx1.power_state_var observe_same_power_state.gfx1_state1;
+	bind gfx0.power_state_var observe_same_power_state.gfx0_state;
+	bind gfx1.power_state_var observe_same_power_state.gfx1_state;
 }

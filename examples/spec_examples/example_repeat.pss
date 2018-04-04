@@ -1,5 +1,5 @@
 
-// Example: 11.4.1.3
+// EAII: 11.4.1.3   #48
 
 component top {
 	action my_test {

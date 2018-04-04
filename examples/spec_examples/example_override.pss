@@ -1,11 +1,11 @@
 
 
-// Example: 14.2.3
+// EAII: 18.2.3	 #175
 
 component top {
 	action axi_write_action { /*...*/ };
 
-	action xlator {
+	action xlator_action {
 		axi_write_action axi_action;
 		axi_write_action other_axi_action;
 		
@@ -15,7 +15,7 @@ component top {
 		}
 	}
 
-	action axi_write_action_x : axi_write_action_x { /*...*/ };
+	action axi_write_action_x : axi_write_action { /*...*/ };
 	action axi_write_action_x2 : axi_write_action_x { /*...*/ };
 	action axi_write_action_x3 : axi_write_action_x { /*...*/ };
 

@@ -1,5 +1,5 @@
 
-// Example: 12.1.7.3
+// EAII: 15.1.7.3  #110
 
 struct foreach_s {
 	rand bit[9:0] fixed_arr[10];

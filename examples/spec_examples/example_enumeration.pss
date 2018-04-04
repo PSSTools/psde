@@ -1,5 +1,5 @@
 
-// Example from 6.3.3
+// EAII: 8.3.3  #3
 
 enum config_modes_e {UNKNOWN, MODE_A=10, MODE_B=20};
 

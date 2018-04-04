@@ -1,5 +1,5 @@
 
-// Example: 12.1.5.3
+// EAII: 15.1.5.3	106
 
 struct impl_s {
 	rand bit[7:0] a, b;

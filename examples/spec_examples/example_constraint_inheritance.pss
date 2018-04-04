@@ -1,5 +1,5 @@
 
-// Example: 12.1.2
+// Example: 15.1.2
 buffer data_buff {
 	rand int size;
 	constraint size in [1..1024];

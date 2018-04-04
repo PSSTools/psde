@@ -1,5 +1,5 @@
 
-// Example: 13.5
+// EAII: 17.5 #157
 
 coverspec trans_cov(transaction t) {
 	

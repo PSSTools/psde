@@ -1,5 +1,5 @@
 
-// Example: 10.7.6
+// EAII: 14.6	#92
 
 enum codec_config_mode_e {UNKNOWN, A, B}
 

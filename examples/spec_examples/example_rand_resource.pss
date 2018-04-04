@@ -1,5 +1,5 @@
 
-// Example: 12.2.3
+// EAII: 15.4.1.2	124
 
 component top {
 	enum rsrc_kind_e {A, B, C, D};

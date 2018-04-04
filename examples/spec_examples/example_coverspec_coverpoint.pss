@@ -1,5 +1,5 @@
 
-// Example: 13.3
+// EAII: 17.2.2 #154
 
 enum burst_type_e { INCR, WRAP };
 
@@ -13,4 +13,6 @@ struct transaction {
 			bins low_addrs [0x00000000..0x0000FFFF]/64;
 		}
 	}
+	// Coverspec instance
+	trans_cov tc(this);
 }

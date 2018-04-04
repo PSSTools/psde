@@ -1,5 +1,5 @@
 
-// Example: 14.1.5
+// EAII: 18.1.5  #173
 
 package mem_defs_pkg { // reusable definitions
 	enum mem_block_tag_e {}; // initially empty

@@ -1,17 +1,22 @@
 
-// Example: 10.6.2
+// Example: 9.6.2 #24
 component codec_c {
 	vid_pipe_c pipeA, pipeB;
-	
- 	action decode {
- 		constraint {
- 			mode == AX -> comp != pss_top.multimedia_ss.codecs[0];
+	bit mode1_enable;
+
+	action decode {
+		rand bit mode;
+		constraint set_mode {
+			comp.mode1_enable==0 -> mode == 0;
 		}
- 		
-		vid_pipe_c::program pipe_prog_a;
- 		
- 		activity {
-			pipe_prog_a with {comp == comp.pipeA;};
-		}
- 	}
-}
+	};
+};
+component multimedia_ss_c {
+	codec_c codecs[4];
+	exec init {
+		codecs[0].mode1_enable = 0;
+		codecs[1].mode1_enable = 1;
+		codecs[2].mode1_enable = 1;
+		codecs[3].mode1_enable = 1;
+	}
+};

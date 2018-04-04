@@ -1,5 +1,5 @@
 
-// Example: 13.6
+// EAII: 17.6 #158
 enum burst_type_e { INCR, WRAP };
 
 struct transaction {

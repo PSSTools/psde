@@ -1,5 +1,5 @@
 
-// Example: 12.2.7.1
+// EAII: 15.4.7.1	#130
 
 struct abc_s {
 	rand bit[4] in [0..15] a_val, b_val, c_val;

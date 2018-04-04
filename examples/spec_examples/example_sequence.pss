@@ -1,8 +1,13 @@
 
-// Example: 11.3.2.3
+// Example: 11.3.2.3  #36
 
 component top {
+	action A {/*... */}
+	action A {/*... */}
+	
 	action my_test {
+		A a;
+		B b;
 		activity {
 			do A;
 			do B;

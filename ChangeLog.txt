@@ -1,5 +1,12 @@
 
 ------------------------------------------------------------------------------
+-- 0.0.5 Release --
+
+- Correct syntax for 'target' <language> 'function'
+
+* Add support for 'constraint parallel' and 'constraint sequence' constraints
+
+------------------------------------------------------------------------------
 -- 0.0.4 Release --
 
 - Correct an issue with templates disappearing

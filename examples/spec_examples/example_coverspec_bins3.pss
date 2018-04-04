@@ -1,8 +1,9 @@
 
-// Example: 13.7.5
+// EAII: 17.7.4 #166
 
-coverspec size_cs (bit[12] size) {
+coverspec size_cs (bit[11:0] in [0..4095] size) {
 	size_cp : coverpoint size {
 		bins size_bins [0..1000]/4 [1001..4095]/8;
 	}
 }
+

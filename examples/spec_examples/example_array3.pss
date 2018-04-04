@@ -1,5 +1,5 @@
 
-// Example 2 from 6.8.3.3
+// Example 16 from 8.8.3.3
 
 struct s {
 	bit [7:0] data [4];

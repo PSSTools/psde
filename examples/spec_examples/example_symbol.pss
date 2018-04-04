@@ -1,5 +1,5 @@
 
-// Example: 11.2.3
+// EAII: 11.5.3   #60
 
 component entity {
 	action a { }

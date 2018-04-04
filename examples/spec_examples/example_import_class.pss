@@ -1,5 +1,5 @@
 
-// Example: 16.7.3
+// EAII: 20.7.3	#191
 
 import class base {
 	void base_method();

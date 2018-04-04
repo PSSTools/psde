@@ -1,5 +1,5 @@
 
-// Example: 16.6.3
+// EAII: 20.6.3	#189
 
 package thread_ops_pkg {
 	function void do_stw(bit[31:0] val, bit[31:0] vaddr);

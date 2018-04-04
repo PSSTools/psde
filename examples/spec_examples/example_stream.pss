@@ -1,5 +1,6 @@
 
-// Example 8.2.3
+// EAII: 12.2.3	#72
+
 struct mem_segment_s {
 	rand int in [4..1024] size;
 	rand bit[63:0] addr;

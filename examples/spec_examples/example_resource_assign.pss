@@ -17,7 +17,7 @@ component dma_c {
 component pss_top {
 	dma_c dma0,dma1;
 	pool[4] cpu_core_s cpu;
-	bind cpu {dma0, dma1};	// accessible to all actions
+	bind cpu {dma0.*, dma1.*};	// accessible to all actions
 							// under the two sub-components
 	action par_dma_xfers {
 		dma_c::transfer xfer_a;

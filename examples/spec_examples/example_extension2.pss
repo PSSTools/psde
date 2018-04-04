@@ -1,5 +1,5 @@
 
-// Example: 14.1.4
+// EAII: 18.1.4  #171
 
 component mem_ops_c {
 	enum mem_block_tag_e {SYS_MEM, A_MEM, B_MEM, DDR};

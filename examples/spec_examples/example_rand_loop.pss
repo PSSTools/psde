@@ -1,5 +1,5 @@
 
-// Example: 12.2.6
+// EAII: 15.4.6	#128
 
 component top {
 	action A {

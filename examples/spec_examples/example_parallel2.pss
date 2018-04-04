@@ -1,5 +1,5 @@
 
-// Example: 11.3.3.2
+// EAII: 11.3.3.3	#42
 
 component top {
 	resource R {};
