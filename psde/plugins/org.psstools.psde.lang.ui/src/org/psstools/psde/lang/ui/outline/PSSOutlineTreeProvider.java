@@ -7,13 +7,13 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.ui.editor.outline.IOutlineNode;
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider;
 import org.psstools.psde.lang.pSS.action_declaration;
-import org.psstools.psde.lang.pSS.action_field_declaration;
 import org.psstools.psde.lang.pSS.activity_action_traversal_stmt;
 import org.psstools.psde.lang.pSS.activity_declaration;
+import org.psstools.psde.lang.pSS.attr_field;
 import org.psstools.psde.lang.pSS.component_declaration;
 import org.psstools.psde.lang.pSS.component_field_declaration;
 import org.psstools.psde.lang.pSS.constraint_declaration;
-import org.psstools.psde.lang.pSS.coverspec_declaration;
+import org.psstools.psde.lang.pSS.covergroup_declaration;
 import org.psstools.psde.lang.pSS.data_declaration;
 import org.psstools.psde.lang.pSS.data_instantiation;
 import org.psstools.psde.lang.pSS.enum_declaration;
@@ -22,7 +22,7 @@ import org.psstools.psde.lang.pSS.function_decl;
 import org.psstools.psde.lang.pSS.object_bind_stmt;
 import org.psstools.psde.lang.pSS.overrides_declaration;
 import org.psstools.psde.lang.pSS.struct_field_declaration;
-import org.psstools.psde.lang.pSS.struct_type;
+import org.psstools.psde.lang.pSS.struct_kind;
 import org.psstools.psde.lang.pSS.typedef_declaration;
 
 /**
@@ -50,7 +50,7 @@ public class PSSOutlineTreeProvider extends DefaultOutlineTreeProvider {
 	public boolean _isLeaf(function_decl e) { return true; }
 	
 	
-	public void _createChildren(IOutlineNode parentNode, struct_type struct) {
+	public void _createChildren(IOutlineNode parentNode, struct_kind struct) {
 		for (EObject child : struct.getBody()) {
 			if (child instanceof struct_field_declaration) {
 				struct_field_declaration field = (struct_field_declaration)child;
@@ -69,8 +69,6 @@ public class PSSOutlineTreeProvider extends DefaultOutlineTreeProvider {
 				activity_action_traversal_stmt t = (activity_action_traversal_stmt)c;
 				if (t.getItem() != null) {
 					createNode(parentNode, t.getItem());
-				} else {
-					createNode(parentNode, t.getType());
 				}
 			}
 		}
@@ -78,8 +76,8 @@ public class PSSOutlineTreeProvider extends DefaultOutlineTreeProvider {
 
         public void _createChildren(IOutlineNode parentNode, action_declaration struct) {
                 for (EObject child : struct.getBody()) {
-                        if (child instanceof action_field_declaration) {
-                                action_field_declaration field = (action_field_declaration)child;
+                        if (child instanceof attr_field) {
+                                attr_field field = (attr_field)child;
                                 for (EObject value : field.getDeclaration().getInstances()) {
                                         createNode(parentNode, value);
                                 }
@@ -89,7 +87,7 @@ public class PSSOutlineTreeProvider extends DefaultOutlineTreeProvider {
                 }
         }
 
-        public void _createChildren(IOutlineNode parentNode, coverspec_declaration cs) {
+        public void _createChildren(IOutlineNode parentNode, covergroup_declaration cs) {
                 for (EObject child : cs.getBody_items()) {
                         createNode(parentNode, child);
                 }

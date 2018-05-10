@@ -27,72 +27,85 @@ Model:
 	root+=portable_stimulus_description*;
 
 portable_stimulus_description: 
-	package_body_item			//|
-	// Namespace
-//	package_declaration			|
-//	component_declaration
+	package_body_item
+	| package_declaration
+	| component_declaration
 ;
+
+null_stmt: {null_stmt} ';';
 
 /****************************************************************************
  * H1: Package Declarations
  ****************************************************************************/
 package_declaration:
-//	(attr=attributes)?
 	'package' name=package_identifier '{'
 		body+=package_body_item*
-	'}'	(';')?
+	'}'	
 ;
 
-//attributes:
-//	'(*' attrs+=attr (',' attrs+=attr)* '*)'
-//;
-//
-//attr:
-//	name=identifier ('=' value=DOUBLE_QUOTED_STRING)?
-//;
-
-
-package_body_item:
-	abstract_action_declaration 	|
-	struct_declaration 				|
-	enum_declaration 				|
-	coverspec_declaration 			|
-	function_decl					|
-	import_class_decl				|
-	import_method_qualifiers		|
-	export_action					|
-	typedef_declaration 			|
-	import_stmt 					|
-	extend_stmt						|
+package_action_component_body_item:
+	abstract_action_declaration
+	| struct_declaration
+	| enum_declaration
+	| covergroup_declaration
+	| function_decl
+	| import_class_decl
+	| import_method_qualifiers
+	| export_action
+	| typedef_declaration
+	| import_stmt
+	| extend_stmt
+	| static_const_field_declaration
+	| compile_assert_stmt
+	| null_stmt
+	;
 	// Namespace
-	package_declaration				|
-	component_declaration			|
+//	package_declaration				|
+//	component_declaration			|
 	// #6362
-	const_data_declaration
+	
+package_body_item:	
+	package_action_component_body_item
+	| const_field_declaration
+	| package_body_compile_if
 ;
 
 // #6362
-const_data_declaration :
-	('static')? 'const' data_declaration
+const_field_declaration :
+	'const' const_data_declaration
 ;
+
+static_const_field_declaration :
+	'static' 'const' const_data_declaration
+;
+
+
+const_data_declaration:
+	type=scalar_data_type instances+=const_data_instantiation (',' instances+=const_data_instantiation)* ';' 
+;
+
+const_data_instantiation:	
+	name=identifier '=' init=constant_expression
+;
+
 
 extend_stmt:
 		(
 			('extend' action?='action' name=type_identifier '{'
 				body+=action_body_item*
-				'}' (';')?
+				'}' 
 			) | 
-			('extend' struct?='struct' name=type_identifier '{'
+			('extend' struct?=struct_kind name=type_identifier '{'
 				body+=struct_body_item*
-				'}' (';')?
+				'}' 
 			) |
 			('extend' enum_e?='enum' name=type_identifier '{'
 				(body+=enum_item (',' body+=enum_item)*)?
-				'}' (';')?
+				'}' 
 			) |
 			('extend' component?='component' name=type_identifier '{'
 				body+=component_body_item*
-				'}' (';')?
+				'}' 
 			)
 		)
 ;
@@ -114,7 +127,7 @@ action_declaration:
 	'action' name=action_identifier (super_spec=action_super_spec)? 
 	'{'
 		body+=action_body_item*
-	'}' (';')?
+	'}' 
 ;
 
 
@@ -122,7 +135,7 @@ abstract_action_declaration returns action_declaration:
 	abstract?='abstract' 'action' name=action_identifier (super_spec=action_super_spec)?
 	'{'
 		body+=action_body_item*
-	'}' (';')?
+	'}' 
 ;
 
 action_super_spec:
@@ -135,35 +148,67 @@ action_body_item:
 	constraint_declaration 		|
 	action_field_declaration	|
 	symbol_declaration			|
-	coverspec_declaration		|
+	covergroup_declaration		|
+	inline_covergroup			|
 	exec_block_stmt				|
 	scheduling_constraint		|
 	// #6362
-	const_data_declaration
+	static_const_field_declaration	|
+	action_body_compile_if			|
+	compile_assert_stmt
+	| attr_field
+	| attr_group
+	| null_stmt
 ;
 
 activity_declaration:
 	{activity_declaration} 'activity' '{'
 		body+=activity_stmt*
-	'}' (';')?
+	'}' 
+;
+
+attr_field :
+	access=access_modifier? (rand?='rand')? declaration=data_declaration
+;
+
+attr_group :
+	access=access_modifier ':'
 ;
 
 action_field_declaration:
-	modifiers=action_field_modifier? declaration=action_data_declaration
+	object_ref_field
+//	| sub_action_field
+	| activity_data_field
 ;
 
-action_field_modifier:
-	rand?='rand'|io_direction|lock?='lock'|shared?='share'|action?='action'	
+sub_action_field:
+	type_identifier identifier (array_dim)? ';'
 ;
 
-io_direction:
-	input?='input' | output?='output'
+object_ref_field:
+	flow_ref_field
+	| resource_ref_field
+;
+
+flow_ref_field:
+	(input?='input'|output?='output') type=type_identifier id+=identifier (',' id+=identifier)*';'
+;
+
+resource_ref_field:
+	(lock?='lock'|share?='share') type=type_identifier id+=identifier (',' id+=identifier)* ';'
+;
+
+// sub_action_field
+
+activity_data_field:
+	'action' declaration=data_declaration
 ;
 
 scheduling_constraint:
 	'constraint' ('parallel'|'sequence') '{' 
-		items+=variable_ref_path ',' items+=variable_ref_path (',' items+=variable_ref_path)* '}' (';')?
+		items+=variable_ref_path ',' items+=variable_ref_path (',' items+=variable_ref_path)* '}' 
 ;
+
 
 
 /****************************************************************************
@@ -209,12 +254,12 @@ exec_body_stmt:
 /****************************************************************************
  * H1: Struct Declarations
  ****************************************************************************/
-struct_declaration: struct_type name=identifier (super=struct_super_spec)? '{'
+struct_declaration: struct_kind name=identifier (super=struct_super_spec)? '{'
 		body+=struct_body_item*
-	'}' (';')?
+	'}' 
 ;
 
-struct_type:
+struct_kind:
 	(type='struct' | type='buffer' | type='stream' | type='state' | (type='resource' ('[' n_resource=constant_expression ']')?))
 ;
 
@@ -226,22 +271,32 @@ struct_qualifier:
 ;
 
 struct_body_item:
-	constraint_declaration		|
-	struct_field_declaration	|
-	typedef_declaration			|
-	coverspec_declaration		|
-	exec_block_stmt				|
+	constraint_declaration
+	| attr_field
+	| attr_group
+	| typedef_declaration
+	| covergroup_declaration
+	| inline_covergroup
+	| exec_block_stmt
 	// #6362
-	const_data_declaration
+	| static_const_field_declaration
+	| struct_body_compile_if
+	| compile_assert_stmt
+	| null_stmt
+;
+
+access_modifier :
+	'public' | 'protected' | 'private'
 ;
 
 struct_field_declaration:
-	struct_field_modifier? declaration=data_declaration
+	access=access_modifier? modifier=struct_field_modifier? declaration=data_declaration
 ;
 
 struct_field_modifier:
 	rand?='rand'
 ;
+
 
 /****************************************************************************
  * H1: Procedural Interface
@@ -313,7 +368,7 @@ method_parameter_dir:
 import_class_decl:
 	'import' 'class' name=import_class_identifier (extends=import_class_extends)? '{'
 		methods+=import_class_method_decl*
-	'}' (';')?
+	'}' 
 	;
 	
 import_class_method_decl:
@@ -339,7 +394,7 @@ component_declaration:
 //	(attr=attributes)?
 	'component' name=component_identifier (super=component_super_spec)? '{'
 	body+=component_body_item*
-	'}' (';')?
+	'}' 
 ;
 
 component_super_spec :
@@ -347,12 +402,15 @@ component_super_spec :
 ;
 
 component_body_item:
-	overrides_declaration			|
-	component_field_declaration		|
-	action_declaration 				|
-	object_bind_stmt				|
-	exec_block						|
-	package_body_item
+	overrides_declaration
+	| attr_field
+	| attr_group
+	| component_pool_declaration
+	| action_declaration
+	| object_bind_stmt
+	| exec_block
+	| package_action_component_body_item
+	| component_body_compile_if
 ;
 
 component_field_declaration:
@@ -361,7 +419,7 @@ component_field_declaration:
 ;
 
 component_data_declaration:
-	declaration=data_declaration
+	access=access_modifier? declaration=data_declaration
 ;
 
 component_pool_declaration:
@@ -397,38 +455,24 @@ activity_stmt:
 	| activity_repeat_stmt 				
 	| activity_constraint_stmt			
 	| activity_foreach_stmt				
-	| activity_action_traversal_stmt
 	| activity_sequence_block_stmt
 	| activity_select_stmt				
-	| activity_case_stmt
+	| activity_match_stmt
 	| activity_parallel_stmt				
 	| activity_schedule_stmt				
 	| activity_bind_stmt					
-	| activity_expand_stmt
-	| activity_join_stmt
-//	| graph_method_call_stmt
+	| activity_action_traversal_stmt
+	| activity_super_stmt
+	| activity_data_field
+	| sub_action_field
+	| null_stmt
+	;
+	
+activity_super_stmt:
+	{activity_super_stmt}
+	'super' ';'
 ;
-
-activity_expand_stmt :
-	{activity_expand_stmt}
-	'expand' '(' (identifier ':')? count=expression ')' '{'
-		stmts += activity_stmt*
-	'}'
-;
-
-activity_join_stmt :
-	{activity_join_stmt}
-	'join' '{'
-		stmts += activity_stmt*
-	'}'
-;
-
-/*
-graph_method_call_stmt:
-	(lhs=variable_ref op=assign_op)? call=method_function_call ';'
-;
-*/
-
+	
 activity_bind_stmt:
 	'bind' lhs=hierarchical_id rhs=activity_bind_item_or_list ';'
 ;
@@ -451,7 +495,7 @@ activity_select_stmt:
 ;
 
 select_branch:
-	select_guard_weight stmts=activity_labeled_stmt
+	guard=select_guard_weight? stmts=activity_stmt
 	;
 	
 select_guard_weight:
@@ -461,30 +505,31 @@ select_guard_weight:
 	)
 ;
 
-activity_case_stmt:
-	'case' '(' cond=expression ')' '{'
-		branches+=case_branch
-		branches+=case_branch
-		(branches+=case_branch)*
+activity_match_stmt:
+	'match' '(' cond=expression ')' '{'
+		choices+=match_choice
+		choices+=match_choice
+		(choices+=match_choice)*
 	'}'
 ;
 
-case_branch:
+match_choice:
 	(
-		('[' open_range_list ']' ':' stmt=activity_labeled_stmt) |
-		('default' ':' stmt=activity_labeled_stmt)
+		('[' open_range_list ']' ':' stmt=activity_stmt) |
+		('default' ':' stmt=activity_stmt)
 	)
 ;
 
 // TODO: allow action array elements to be traversed
 activity_action_traversal_stmt:
-	{activity_action_traversal_stmt} (
-		(item=variable_ref_path inline_with=inline_with_constraint?
-		) |
-		('do' type=type_identifier inline_with=inline_with_constraint?
-		)
+	{activity_action_traversal_stmt} 
+	(
+		item=variable_ref_path inline_with=inline_with_constraint? ';'
+	) | (
+		'do' type=type_identifier inline_with=inline_with_constraint? ';'
+	) | (
+		call=function_symbol_call ';' 
 	)
-	';'
 ;
 
 inline_with_constraint:
@@ -496,36 +541,29 @@ inline_with_constraint:
 
 
 activity_parallel_stmt:
-	{activity_parallel_stmt} 'parallel' '{'
-		productions+=activity_labeled_stmt*
-	'}' (';')?
+	{activity_parallel_stmt} 
+	(label=identifier ':')? 'parallel' '{'
+		productions+=activity_stmt*
+	'}' 
 ;
 
 activity_schedule_stmt:
-	{activity_schedule_stmt} 'schedule' '{'
-		productions+=activity_labeled_stmt*
-	'}' (';')?
+	{activity_schedule_stmt} 
+	(label=identifier ':')? 'schedule' '{'
+		productions+=activity_stmt*
+	'}' 
 ;
-
-//graph_select_production:
-//	(label=identifier /*(':=' weight=graph_select_weight)?*/ ':')? production=activity_stmt 
-//;
-//
-//graph_select_weight:
-//	value=number |
-//	id=identifier |
-//	'(' expr=expression ')'
-//;
 
 activity_labeled_stmt:
 	(label=identifier ':')? production=activity_stmt
 ;
 
+
 activity_repeat_stmt:
 	{activity_repeat_stmt} (
-		('repeat' pre_cond?='while' '(' expr=expression ')' body=activity_sequence_block_stmt) |
-		('repeat' count?='(' (ivar=identifier ':')? expr=expression ')' body=activity_sequence_block_stmt) |
-		('repeat' body=activity_sequence_block_stmt (post_cond?='while' '(' expr=expression ')' ';')?)
+		((label=identifier ':')? 'while' '(' expr=expression ')' body=activity_stmt) |
+		((label=identifier ':')? 'repeat' count?='(' (ivar=identifier ':')? expr=expression ')' body=activity_stmt) |
+		((label=identifier ':')? 'repeat' body=activity_stmt 'while' '(' expr=expression ')' ';') 
 		)
 ;
 
@@ -537,11 +575,12 @@ activity_constraint_stmt:
 ;
 
 activity_foreach_stmt:
-	'foreach' '(' expr=expression ')' body=activity_sequence_block_stmt
+	(label=identifier ':')? 'foreach' '(' expr=expression ')' body=activity_sequence_block_stmt
 ;
 
 activity_sequence_block_stmt:
-	('sequence')? '{' {activity_sequence_block_stmt} stmt_list+=activity_stmt* '}'
+	{activity_sequence_block_stmt}
+	(label=identifier ':')? ('sequence')? '{' stmt_list+=activity_stmt* '}'
 ;
 
 symbol_declaration:
@@ -589,7 +628,26 @@ action_data_declaration returns data_declaration:
 ;
 
 data_instantiation:
-	name=identifier ('(' portmap=coverspec_portmap_list ')')? dim=array_dim? ('=' init=constant_expression)?
+	covergroup_port_or_with_instantiation 
+	| plain_data_instantiation
+	;
+
+covergroup_port_or_with_instantiation:
+	(
+		(name=identifier '(' portmap=covergroup_portmap_list ')' withclause=covergroup_instance_with_clause?)
+		| (name=identifier withclause=covergroup_instance_with_clause)
+	)
+;
+
+covergroup_instance_with_clause:
+	{covergroup_instance_with_clause}
+	'with' '{'
+	body+=covergroup_option*
+	'}'
+;
+	
+plain_data_instantiation:	
+	name=identifier dim=array_dim? ('=' init=constant_expression)?
 ;
 
 array_dim:
@@ -597,16 +655,16 @@ array_dim:
 	{array_dim} '[' dim=constant_expression ']'
 ;
 
-coverspec_portmap_list:
-	{coverspec_portmap_list} (
+covergroup_portmap_list:
+	{covergroup_portmap_list} (
 		// Name-mapped port binding
-		(portmaps+=coverspec_portmap (',' portmaps+=coverspec_portmap)*) |
+		(portmaps+=covergroup_portmap (',' portmaps+=covergroup_portmap)*) |
 		// Positional port binding
 		(ports+=hierarchical_id (',' ports+=hierarchical_id)*)
 	)?
 ;
 
-coverspec_portmap:
+covergroup_portmap:
 	'.' portname=identifier '(' connected_name=hierarchical_id ')'
 ;
 
@@ -638,7 +696,7 @@ scalar_data_type:
 enum_declaration:
   	'enum' name=enum_identifier '{' 
   		(items+=enum_item (',' items+=enum_item)*)?
-  		'}' (';')?
+  		'}' 
   ;
   
 bool_type:
@@ -703,10 +761,11 @@ constraint_declaration:
 ;
 
 constraint_body_item:
-	expression_constraint_item |
-	foreach_constraint_item |
-	if_constraint_item		|
-	unique_constraint_item     //|
+	expression_constraint_item 
+	| foreach_constraint_item
+	| if_constraint_item
+	| unique_constraint_item     //|
+	| null_stmt
 //	forall_constraint_item
 ;
 
@@ -752,160 +811,183 @@ constraint_block:
 ;
 
 unique_constraint_item:
-	'unique' '{' items+=hierarchical_id (',' items+=hierarchical_id)* '}' ';'
+	'unique' '{' target=open_range_list '}' ';'
 ;
 
 /********************************************************************
- * //#coverspec_cleanup H1: Bins 
- ********************************************************************/
-//bins_declaration:
-// 	'bins' name=identifier (item=variable_identifier)? bins=bin_specification ';'
-//;
- 
-// bin_specification:
-// 	items+=bin_specifier (items+=bin_specifier)* /*(bin_wildcard)? */
-// ;
- 
-// bin_specifier:
-// 	explicit_bin_value |
-// 	explicit_bin_range |
-// 	bin_range_divide   |
-// 	bin_range_size
-// ;
- 
- explicit_bin_value:
- 	'[' constant ']'
- ;
- 
- explicit_bin_range: 
- 	'[' range=open_range_list ']'
- ;
- 
- bin_range_divide:
- 	explicit_bin_range '/' div=constant
- ;
- 
- bin_range_size:
- 	explicit_bin_range ':' size=constant
- ;
- 
-// bin_wildcard:
-// 	'[' '*' ']'
-// ;
- 
-/********************************************************************
- * H1: Coverspec
+ * H1: covergroup
  ********************************************************************/
 
-coverspec_declaration:
-	'coverspec' name=identifier '(' ports+=coverspec_port (',' ports+=coverspec_port)* ')' '{'
-		body_items+=coverspec_body_item*
-	'}' (';')?
+covergroup_declaration:
+	'covergroup' name=identifier ('(' ports+=covergroup_port (',' ports+=covergroup_port)* ')')? '{'
+		body_items+=covergroup_body_item*
+	'}' 
 ;
 
-coverspec_port:
+inline_covergroup:
+	'covergroup' '{'
+		body_items+=covergroup_body_item*
+	'}' name=identifier ';'
+;
+
+covergroup_port:
 	type=data_type name=identifier
 ;
 
-coverspec_body_item:
-	coverspec_option		|
-	coverspec_coverpoint	|
-	coverspec_cross			|
-//	coverspec_paths			|
+covergroup_body_item:
+	covergroup_option		|
+	covergroup_coverpoint	|
+	covergroup_cross			|
 	constraint_declaration
 ;
 
-coverspec_option:
+covergroup_option:
 	'option' '.' option=identifier '=' value=constant_expression ';'
+;
+
+covergroup_type_option:
+	'type_option' '.' option=identifier '=' value=constant_expression ';'
 ;
 
 // 6382 -- coverpoint on expression, not identifier
 // 6383 -- Support 'iff' clause on coverpoints
-coverspec_coverpoint: 
-		name=coverpoint_identifier ':' 'coverpoint' target=expression ('iff' '(' iff=expression ')')?
-			body=coverspec_coverpoint_body
+covergroup_coverpoint: 
+		((type=data_type)? name=coverpoint_identifier ':')? 'coverpoint' target=expression ('iff' '(' iff=expression ')')?
+			body=covergroup_coverpoint_body
 ;
 
-coverspec_coverpoint_body:
-	{coverspec_coverpoint_body} (('{' body_items+=coverspec_coverpoint_body_item* '}' (';')?) | ';')
-;
-
-coverspec_coverpoint_body_item:
-	coverspec_option			|
-	coverspec_coverpoint_binspec
-;
-
-bins_keyword:
-	'bins' | 'illegal_bins' | 'ignore_bins'
-;
-
-// 6385 -- Support SV style of bins
-coverspec_coverpoint_binspec: (
-//		(type=bins_keyword name=identifier bins+=bin_specifier (bins+=bin_specifier)* (bin_wildcard)? ';') |
-		(type=bins_keyword name=identifier path=hierarchical_id ';')
-//		('pattern' type=bins_keyword name=identifier '=' bins=pattern_bin_specification 
-//			('with' '(' expr=coverspec_expression ')')? ';') | 
-		(type=bins_keyword name=identifier ('['(sz=constant_expression)?']')? '=' '[' bins=open_range_list  ']'
-			('with' '(' expr=coverspec_expression ')')? ';')
-//		type=bins_keyword name=identifier bins+=bin_specifier (bins+=bin_specifier)*
+covergroup_coverpoint_body:
+	{covergroup_coverpoint_body} (
+		('{' body_items+=covergroup_coverpoint_body_item* '}' ) 
+		| ';'
 	)
 ;
 
-//pattern_bin_specification:
-//	items+=pattern_bin_specifier (items+=pattern_bin_specifier)*
-//;
-// 
-//pattern_bin_specifier:
-// 	'[' range=open_range_list ']' (div=pattern_bin_div_specifier|size=pattern_bin_size_specifier)?
-// 	;
-//
-//pattern_bin_div_specifier:
-//	'/' div=constant_expression
-//; 
-//
-//pattern_bin_size_specifier:
-//	':' size=constant_expression
-//;
- 
-coverspec_expression : expression;
+covergroup_coverpoint_body_item:
+	covergroup_option			|
+	covergroup_coverpoint_binspec
+;
+
+bins_keyword:
+	'bins' | 'illegal_bins' | 'ignore_bins' 
+;
+
+// 6385 -- Support SV style of bins
+covergroup_coverpoint_binspec: (
+		(type=bins_keyword name=identifier ('['(sz=constant_expression)?']')? '=' bins=covergroup_coverpoint_explicit_bins)
+	)
+;
+
+covergroup_coverpoint_explicit_bins:
+	{covergroup_coverpoint_explicit_bins}
+	(
+		('[' bins=covergroup_open_range_list ']' ('with' '(' expr=covergroup_expression ')')? ';')
+		| (id=coverpoint_identifier 'with' '(' expr=covergroup_expression ')' ';')
+		| 'default' ';'
+	)
+;
+
+covergroup_open_range_list:
+	ranges+=covergroup_open_range_value (',' ranges+=covergroup_open_range_value)*
+;
+
+covergroup_open_range_value:
+	('..' rhs=expression) |
+	lhs=expression ('..' (rhs=expression)?)?
+;
+
+covergroup_expression : expression;
 
 
 // 6383 -- Support 'iff' clause on coverpoints
-coverspec_cross: 
-	name=ID ':' 'cross' targets+=coverpoint_identifier (',' targets+=coverpoint_identifier)*
-		('iff' '(' iff=expression ')')? body=coverspec_cross_body
+covergroup_cross: 
+	name=identifier ':' 'cross' targets+=covercross_identifier (',' targets+=coverpoint_identifier)*
+		('iff' '(' iff=expression ')')? body=covergroup_cross_body
 ;
 
-coverspec_cross_body:
-	{coverspec_cross_body}(('{' body_items+=coverspec_cross_body_item* '}' (';')?) | ';')
+covergroup_cross_body:
+	{covergroup_cross_body}(('{' body_items+=covergroup_cross_body_item* '}' ) | ';')
 ;
 
-coverspec_cross_body_item:
-	coverspec_option |
-	coverspec_cross_binspec
+covergroup_cross_body_item:
+	covergroup_option |
+	covergroup_cross_binspec
 ;
 
-coverspec_cross_binspec:
-	type=bins_keyword name=identifier ('[' ']')? '=' 'with' '(' expr=coverspec_expression ')' ';'
+covergroup_cross_binspec:
+	type=bins_keyword name=identifier  
+		'=' covercross_identifier 'with' '(' expr=covergroup_expression ')' ';'
 ;
 
-//coverspec_paths_body_item:
-//	coverspec_option |
-//	coverspec_paths_include_exclude
-//;
-//
-//coverspec_paths:
-//	name=ID ':' 'paths' start=hierarchical_id ',' (stop+=hierarchical_id | '{' stop+=hierarchical_id (',' stop+=hierarchical_id)*)
-//		(
-//			( '{' body_items+=coverspec_paths_body_item* '}') | ';'
-//		)
-//;
-//
-//coverspec_paths_include_exclude:
-//	inc_excl=('include'|'exclude') paths_vals=('paths'|'values') ('{' list+=identifier (',' list+=identifier)* '}')? ';'
-//;
+/********************************************************************
+ * Conditional Compile
+ ********************************************************************/
 
- 
+package_body_compile_if:
+	'compile' 'if' '(' cond=constant_expression ')' true_body=package_body_compile_if_body_stmt
+	(=> 'else' false_body=package_body_compile_if_body_stmt)?
+;
+
+package_body_compile_if_body_stmt:
+	package_body_item
+	| package_body_compile_if_block_stmt
+;
+
+package_body_compile_if_block_stmt:
+	{package_body_compile_if_block_stmt}
+	'{' items+=package_body_item* '}'
+;
+
+action_body_compile_if:
+	'compile' 'if' '(' cond=constant_expression ')' true_body=action_body_compile_if_body_stmt
+	(=> 'else' false_body=action_body_compile_if_body_stmt)?
+;
+
+action_body_compile_if_body_stmt:
+	action_body_item
+	| action_body_compile_if_block_stmt
+;
+
+action_body_compile_if_block_stmt:
+	{action_body_compile_if_block_stmt}
+	'{' items+=action_body_item* '}'
+;
+
+component_body_compile_if:
+	'compile' 'if' '(' cond=constant_expression ')' true_body=component_body_compile_if_body_stmt
+	(=> 'else' false_body=component_body_compile_if_body_stmt)?
+;
+
+component_body_compile_if_body_stmt:
+	component_body_item
+	| component_body_compile_if_block_stmt
+;
+
+component_body_compile_if_block_stmt:
+	{action_body_compile_if_block_stmt}
+	'{' items+=component_body_item* '}'
+;
+
+struct_body_compile_if:
+	'compile' 'if' '(' cond=constant_expression ')' true_body=struct_body_compile_if_body_stmt
+	(=> 'else' false_body=struct_body_compile_if_body_stmt)?
+;
+
+struct_body_compile_if_body_stmt:
+	struct_body_item
+	| struct_body_compile_if_block_stmt
+;
+
+struct_body_compile_if_block_stmt:
+	{struct_body_compile_if_block_stmt}
+	'{' items+=struct_body_item* '}'
+;
+
+compile_assert_stmt :
+	'compile' 'assert' '(' cond=constant_expression (',' msg=string_literal)? ')' ';'
+;
+
+
 /********************************************************************
  * H1: Expressions
  ********************************************************************/
@@ -1000,7 +1082,11 @@ add_sub_op: '+' | '-';
 mul_div_mod_op: '*' | '/' | '%';
 
 unary_expr returns expression:
-	(unary_op)? primary
+	(op=unary_op | cast=cast_expr)? p=primary
+;
+
+cast_expr:
+	'(' t=data_type ')'
 ;
 
 primary returns expression:
@@ -1011,10 +1097,20 @@ primary returns expression:
 	| variable_ref_path
 	| method_function_symbol_call
 	| static_ref_path
+	| compile_has_expr
+	| super_primary
 	;
 	
 static_ref_path :
 	path+=identifier '::' path+=identifier ('::' path+=identifier)*
+;
+
+compile_has_static_ref_path :
+	('::')? path+=identifier ('::' path+=identifier)*
+;
+
+compile_has_expr :
+	'compile' 'has' '(' ref=compile_has_static_ref_path ')'
 ;
 
 method_function_symbol_call:
@@ -1069,6 +1165,7 @@ struct_identifier: identifier;
 component_identifier: identifier;
 component_action_identifier: identifier;
 coverpoint_identifier : identifier;
+covercross_identifier : identifier;
 enum_identifier: identifier;
 import_class_identifier: identifier;
 language_identifier: identifier;
@@ -1091,9 +1188,11 @@ package_identifier:
 ;
 
 type_identifier :
-// Namespace
-//	elems+=ID ('::' elems+=ID ('::' elems+=ID)?)?
-	elems+=ID ('::' elems+=ID)*
+	('::')? elems+=ID (=> '::' elems+=ID)*
+;
+
+qualified_type_identifier :
+	('::')? elems+=ID ('::' elems+=ID)+
 ;
 
 action_type_identifier: type_identifier;
@@ -1104,6 +1203,11 @@ hierarchical_id:
 
 bool_literal:
 	true?='true'|false?='false'
+;
+
+super_primary:
+	{super_primary}
+	'super'
 ;
 
 /********************************************************************
