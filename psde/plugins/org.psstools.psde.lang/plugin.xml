@@ -32,4 +32,16 @@
        </property>
     </product>
  </extension>
+ <extension
+       id="keywords"
+       point="org.eclipse.core.runtime.applications">
+    <application
+          cardinality="singleton-global"
+          thread="main"
+          visible="true">
+       <run
+             class="org.psstools.psde.lang.apps.ExtractKeywordsApp">
+       </run>
+    </application>
+ </extension>
 </plugin>

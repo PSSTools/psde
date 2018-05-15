@@ -59,10 +59,6 @@ package_action_component_body_item:
 	| compile_assert_stmt
 	| null_stmt
 	;
-	// Namespace
-//	package_declaration				|
-//	component_declaration			|
-	// #6362
 	
 package_body_item:	
 	package_action_component_body_item
@@ -70,7 +66,6 @@ package_body_item:
 	| package_body_compile_if
 ;
 
-// #6362
 const_field_declaration :
 	'const' const_data_declaration
 ;
@@ -79,7 +74,6 @@ static_const_field_declaration :
 	'static' 'const' const_data_declaration
 ;
 
-
 const_data_declaration:
 	type=scalar_data_type instances+=const_data_instantiation (',' instances+=const_data_instantiation)* ';' 
 ;
@@ -87,7 +81,6 @@ const_data_declaration:
 const_data_instantiation:	
 	name=identifier '=' init=constant_expression
 ;
-
 
 extend_stmt:
 		(
@@ -143,19 +136,18 @@ action_super_spec:
 ;
 
 action_body_item:
-	activity_declaration		|
-	overrides_declaration  		|	
-	constraint_declaration 		|
-	action_field_declaration	|
-	symbol_declaration			|
-	covergroup_declaration		|
-	inline_covergroup			|
-	exec_block_stmt				|
-	scheduling_constraint		|
-	// #6362
-	static_const_field_declaration	|
-	action_body_compile_if			|
-	compile_assert_stmt
+	activity_declaration
+	| overrides_declaration
+	| constraint_declaration
+	| action_field_declaration
+	| symbol_declaration
+	| covergroup_declaration
+	| inline_covergroup
+	| exec_block_stmt
+	| scheduling_constraint
+	| static_const_field_declaration
+	| action_body_compile_if
+	| compile_assert_stmt
 	| attr_field
 	| attr_group
 	| null_stmt
@@ -198,8 +190,6 @@ resource_ref_field:
 	(lock?='lock'|share?='share') type=type_identifier id+=identifier (',' id+=identifier)* ';'
 ;
 
-// sub_action_field
-
 activity_data_field:
 	'action' declaration=data_declaration
 ;
@@ -208,8 +198,6 @@ scheduling_constraint:
 	'constraint' ('parallel'|'sequence') '{' 
 		items+=variable_ref_path ',' items+=variable_ref_path (',' items+=variable_ref_path)* '}' 
 ;
-
-
 
 /****************************************************************************
  * H2: Exec Blocks
@@ -249,6 +237,7 @@ assign_op:
 
 exec_body_stmt:
 	lhs=expression (op=assign_op rhs=expression)? ';'
+	| null_stmt
 ;
 
 /****************************************************************************
@@ -278,7 +267,6 @@ struct_body_item:
 	| covergroup_declaration
 	| inline_covergroup
 	| exec_block_stmt
-	// #6362
 	| static_const_field_declaration
 	| struct_body_compile_if
 	| compile_assert_stmt
@@ -287,14 +275,6 @@ struct_body_item:
 
 access_modifier :
 	'public' | 'protected' | 'private'
-;
-
-struct_field_declaration:
-	access=access_modifier? modifier=struct_field_modifier? declaration=data_declaration
-;
-
-struct_field_modifier:
-	rand?='rand'
 ;
 
 
@@ -411,6 +391,7 @@ component_body_item:
 	| exec_block
 	| package_action_component_body_item
 	| component_body_compile_if
+	| null_stmt
 ;
 
 component_field_declaration:
@@ -451,9 +432,16 @@ component_path_elem:
  * H1: Activity-Graph Statements
  ********************************************************************/
 activity_stmt: 
+	(label=identifier ':')? lstmt=labeled_activity_stmt
+	| activity_data_field
+	| sub_action_field
+	| activity_constraint_stmt			
+	| null_stmt
+	;
+	
+labeled_activity_stmt:
 	activity_if_else_stmt		
 	| activity_repeat_stmt 				
-	| activity_constraint_stmt			
 	| activity_foreach_stmt				
 	| activity_sequence_block_stmt
 	| activity_select_stmt				
@@ -463,10 +451,7 @@ activity_stmt:
 	| activity_bind_stmt					
 	| activity_action_traversal_stmt
 	| activity_super_stmt
-	| activity_data_field
-	| sub_action_field
-	| null_stmt
-	;
+;
 	
 activity_super_stmt:
 	{activity_super_stmt}
@@ -542,28 +527,24 @@ inline_with_constraint:
 
 activity_parallel_stmt:
 	{activity_parallel_stmt} 
-	(label=identifier ':')? 'parallel' '{'
+	'parallel' '{'
 		productions+=activity_stmt*
 	'}' 
 ;
 
 activity_schedule_stmt:
 	{activity_schedule_stmt} 
-	(label=identifier ':')? 'schedule' '{'
+	'schedule' '{'
 		productions+=activity_stmt*
 	'}' 
-;
-
-activity_labeled_stmt:
-	(label=identifier ':')? production=activity_stmt
 ;
 
 
 activity_repeat_stmt:
 	{activity_repeat_stmt} (
-		((label=identifier ':')? 'while' '(' expr=expression ')' body=activity_stmt) |
-		((label=identifier ':')? 'repeat' count?='(' (ivar=identifier ':')? expr=expression ')' body=activity_stmt) |
-		((label=identifier ':')? 'repeat' body=activity_stmt 'while' '(' expr=expression ')' ';') 
+		('while' '(' expr=expression ')' body=activity_stmt) |
+		('repeat' count?='(' (ivar=identifier ':')? expr=expression ')' body=activity_stmt) |
+		('repeat' body=activity_stmt 'while' '(' expr=expression ')' ';') 
 		)
 ;
 
@@ -575,12 +556,12 @@ activity_constraint_stmt:
 ;
 
 activity_foreach_stmt:
-	(label=identifier ':')? 'foreach' '(' expr=expression ')' body=activity_sequence_block_stmt
+	'foreach' '(' expr=expression ')' body=activity_sequence_block_stmt
 ;
 
 activity_sequence_block_stmt:
 	{activity_sequence_block_stmt}
-	(label=identifier ':')? ('sequence')? '{' stmt_list+=activity_stmt* '}'
+	('sequence')? '{' stmt_list+=activity_stmt* '}'
 ;
 
 symbol_declaration:
@@ -605,7 +586,9 @@ overrides_declaration:
 ;
 
 override_stmt:
-	type_override | instance_override
+	type_override 
+	| instance_override
+	| null_stmt
 ;
 
 type_override:
@@ -621,10 +604,6 @@ instance_override:
  ********************************************************************/
 data_declaration:
 	type=data_type instances+=data_instantiation (',' instances+=data_instantiation)* ';' 
-;
-
-action_data_declaration returns data_declaration:
-	type=action_data_type instances+=data_instantiation (',' instances+=data_instantiation)* ';' 
 ;
 
 data_instantiation:
@@ -764,7 +743,7 @@ constraint_body_item:
 	expression_constraint_item 
 	| foreach_constraint_item
 	| if_constraint_item
-	| unique_constraint_item     //|
+	| unique_constraint_item
 	| null_stmt
 //	forall_constraint_item
 ;
@@ -835,10 +814,11 @@ covergroup_port:
 ;
 
 covergroup_body_item:
-	covergroup_option		|
-	covergroup_coverpoint	|
-	covergroup_cross			|
-	constraint_declaration
+	covergroup_option
+	| covergroup_coverpoint
+	| covergroup_cross
+	| constraint_declaration
+	| null_stmt
 ;
 
 covergroup_option:
@@ -864,15 +844,15 @@ covergroup_coverpoint_body:
 ;
 
 covergroup_coverpoint_body_item:
-	covergroup_option			|
-	covergroup_coverpoint_binspec
+	covergroup_option
+	| covergroup_coverpoint_binspec
+	| null_stmt
 ;
 
 bins_keyword:
 	'bins' | 'illegal_bins' | 'ignore_bins' 
 ;
 
-// 6385 -- Support SV style of bins
 covergroup_coverpoint_binspec: (
 		(type=bins_keyword name=identifier ('['(sz=constant_expression)?']')? '=' bins=covergroup_coverpoint_explicit_bins)
 	)
@@ -910,8 +890,9 @@ covergroup_cross_body:
 ;
 
 covergroup_cross_body_item:
-	covergroup_option |
-	covergroup_cross_binspec
+	covergroup_option
+	| covergroup_cross_binspec
+	| null_stmt
 ;
 
 covergroup_cross_binspec:
