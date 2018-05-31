@@ -3,6 +3,7 @@
 
 coverspec size_cs (bit[11:0] in [0..4095] size) {
 	size_cp : coverpoint size {
-		bins size_bins [0..1000]:4 [1001..4095]:8;
+		bins size_bins_low[1001/4] = {0..1000};
+		bins size_bins_high[(4095-1001+1)/8] = {1001..4095};
 	}
 }

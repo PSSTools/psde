@@ -10,7 +10,7 @@ struct transaction {
  
 	coverspec trans_cov(transaction t) {
 		addr_ranges : coverpoint t.addr {
-			bins low_addrs [0x00000000..0x0000FFFF]/64;
+			bins low_addrs[64] = {0x00000000..0x0000FFFF};
 		}
 	}
 	// Coverspec instance

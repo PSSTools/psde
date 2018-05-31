@@ -8,12 +8,11 @@ struct transaction {
 	rand burst_type_e burst_type;
 	rand bit[4:0] burst_len;
 	
-	coverspec trans_cov(transaction t) {
-		addr_ranges : coverpoint t.addr {
-			bins low_addrs [0x00000000..0x0000FFFF]/64;
+	// Inline coverspec instance
+	coverspec {
+		addr_ranges : coverpoint addr {
+			bins low_addrs[64] = {0x00000000..0x0000FFFF};
 		}
-	}
+	} tc;
 	
-	// Coverspec instance
-	trans_cov tc(this);
 }

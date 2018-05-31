@@ -11,7 +11,7 @@ component entity {
 	 	b b1, b2, b3;
 	 	c c1, c2, c3;
  	
-	 	symbol a_or_b = {
+	 	symbol a_or_b {
 	 		select {a1; b1; }
 	 		select {a2; b2; }
 	 		select {a3; b3; }

@@ -1,7 +1,7 @@
 /****************************************************************************
  * PSS.xtext
  *
- * Copyright 2015 Mentor Graphics Corporation
+ * Copyright 2015-2018 Mentor Graphics Corporation
  * All Rights Reserved Worldwide
  *
  * Licensed under the Apache License, Version 2.0 (the
@@ -236,14 +236,18 @@ assign_op:
 ;
 
 exec_body_stmt:
-	lhs=expression (op=assign_op rhs=expression)? ';'
-	| null_stmt
+	{exec_body_stmt}
+	(
+	(lhs=expression (op=assign_op rhs=expression)? ';')
+	| (is_super='super' ';')
+	| is_null=null_stmt
+	)
 ;
 
 /****************************************************************************
  * H1: Struct Declarations
  ****************************************************************************/
-struct_declaration: struct_kind name=identifier (super=struct_super_spec)? '{'
+struct_declaration: kind=struct_kind name=identifier (super=struct_super_spec)? '{'
 		body+=struct_body_item*
 	'}' 
 ;
@@ -253,10 +257,6 @@ struct_kind:
 ;
 
 struct_super_spec : ':' super=type_identifier
-;
-
-struct_qualifier:
-	{struct_qualifier} (type='memory' | type='stream' | type='state' | (type='resource' ('[' n_resource=constant_expression ']')?))
 ;
 
 struct_body_item:
@@ -391,7 +391,6 @@ component_body_item:
 	| exec_block
 	| package_action_component_body_item
 	| component_body_compile_if
-	| null_stmt
 ;
 
 component_field_declaration:
@@ -1079,7 +1078,6 @@ primary returns expression:
 	| method_function_symbol_call
 	| static_ref_path
 	| compile_has_expr
-	| super_primary
 	;
 	
 static_ref_path :

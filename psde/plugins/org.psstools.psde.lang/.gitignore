@@ -1,3 +1,2 @@
-src-gen/
-xtend-gen/
+src-gen/org/psstools/psde/lang/pSS/
 plugin.xml_gen

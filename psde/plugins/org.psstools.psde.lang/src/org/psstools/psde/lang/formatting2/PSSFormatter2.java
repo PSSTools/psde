@@ -1,4 +1,4 @@
-package org.psstools.psde.lang.ui.wizards;
+package org.psstools.psde.lang.formatting2;
 
 /****************************************************************************
  * Copyright 2015-2018 Mentor Graphics Corporation
@@ -18,8 +18,29 @@ package org.psstools.psde.lang.ui.wizards;
  * the License for the specific language governing
  * permissions and limitations under the License.
  ****************************************************************************/
-import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
+import org.eclipse.xtext.formatting2.AbstractFormatter2;
+import org.eclipse.xtext.formatting2.IFormattableDocument;
+import org.psstools.psde.lang.pSS.action_declaration;
+import org.psstools.psde.lang.pSS.impl.action_declarationImpl;
 
-public class NewPackageFileWizard extends BasicNewFileResourceWizard {
+public class PSSFormatter2 extends AbstractFormatter2 {
+	
+
+	public void format(action_declaration action, IFormattableDocument document) {
+		System.out.println("format: action_declaration");
+	
+//		textRegionExtensions.regionFor(action).keyword("{").
+	}
+	
+	@Override
+	public void format(Object obj, IFormattableDocument document) {
+		System.out.println("format");
+		if (obj instanceof action_declaration) {
+			format((action_declaration)obj, document);
+		}
+		
+		// TODO Auto-generated method stub
+
+	}
 
 }
