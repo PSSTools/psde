@@ -93,7 +93,7 @@ public class PSSLabelProvider extends DefaultEObjectLabelProvider {
 	}
 	
 	public String text(package_declaration p) {
-		return hid2string((hierarchical_id)p.getName()) + " : package";
+		return p.getName() + " : package";
 	}
 	
 	
