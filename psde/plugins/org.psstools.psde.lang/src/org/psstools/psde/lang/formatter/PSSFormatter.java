@@ -34,16 +34,19 @@ public class PSSFormatter extends AbstractDeclarativeFormatter {
 
 	}
 
-	@Override
-	public ITokenStream createFormatterStream(String indent, ITokenStream out, boolean preserveWhitespaces) {
-		// TODO Auto-generated method stub
-		System.out.println("createFormatterStream");
-		return super.createFormatterStream(indent, out, preserveWhitespaces);
-	}
+//	@Override
+//	public ITokenStream createFormatterStream(String indent, ITokenStream out, boolean preserveWhitespaces) {
+//		// TODO Auto-generated method stub
+//		System.out.println("createFormatterStream");
+//		return super.createFormatterStream(indent, out, preserveWhitespaces);
+//	}
 
 	@Override
-	public ITokenStream createFormatterStream(EObject context, String indent, ITokenStream out,
-			boolean preserveWhitespaces) {
+	public ITokenStream createFormatterStream(
+			EObject 		context, 
+			String 			indent, 
+			ITokenStream 	out,
+			boolean 		preserveWhitespaces) {
 		System.out.println("createFormatterStream(2)");
 		// TODO Auto-generated method stub
 		return super.createFormatterStream(context, indent, out, preserveWhitespaces);

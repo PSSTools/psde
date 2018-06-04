@@ -140,7 +140,7 @@
 	    buildDirectory="${buildDirectory}"
             baseLocation="${eclipse.home}"
 	    forceContextQualifier="0"
-            configInfo="linux,gtk,x86_64"
+	    configInfo="${os},${ws},${arch}"
 	    generateFeatureVersionSuffix="true"
 	    outputUpdateJars="true"/>
 

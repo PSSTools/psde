@@ -24,20 +24,25 @@ import org.eclipse.xtext.ui.editor.outline.IOutlineNode;
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider;
 import org.psstools.psde.lang.pSS.action_declaration;
 import org.psstools.psde.lang.pSS.activity_action_traversal_stmt;
+import org.psstools.psde.lang.pSS.activity_data_field;
 import org.psstools.psde.lang.pSS.activity_declaration;
 import org.psstools.psde.lang.pSS.attr_field;
 import org.psstools.psde.lang.pSS.component_declaration;
+import org.psstools.psde.lang.pSS.component_pool_declaration;
 import org.psstools.psde.lang.pSS.constraint_declaration;
 import org.psstools.psde.lang.pSS.covergroup_declaration;
 import org.psstools.psde.lang.pSS.data_declaration;
 import org.psstools.psde.lang.pSS.data_instantiation;
 import org.psstools.psde.lang.pSS.enum_declaration;
 import org.psstools.psde.lang.pSS.exec_block_stmt;
+import org.psstools.psde.lang.pSS.extend_stmt;
+import org.psstools.psde.lang.pSS.flow_ref_field;
 import org.psstools.psde.lang.pSS.function_decl;
 import org.psstools.psde.lang.pSS.inline_covergroup;
 import org.psstools.psde.lang.pSS.object_bind_stmt;
 import org.psstools.psde.lang.pSS.overrides_declaration;
 import org.psstools.psde.lang.pSS.struct_declaration;
+import org.psstools.psde.lang.pSS.symbol_declaration;
 import org.psstools.psde.lang.pSS.typedef_declaration;
 
 /**
@@ -67,6 +72,10 @@ public class PSSOutlineTreeProvider extends DefaultOutlineTreeProvider {
 	public boolean _isLeaf(object_bind_stmt e) { return true; }
 	public boolean _isLeaf(exec_block_stmt e) { return true; }
 	public boolean _isLeaf(function_decl e) { return true; }
+	public boolean _isLeaf(activity_declaration e) { return true; }
+	public boolean _isLeaf(symbol_declaration e) { return true; }
+	
+	public boolean _isLeaf(extend_stmt e) { return true; }
 	
 	public void _createChildren(IOutlineNode parentNode, activity_declaration activity) {
 		for (EObject c : activity.getBody()) {
@@ -86,11 +95,22 @@ public class PSSOutlineTreeProvider extends DefaultOutlineTreeProvider {
                                 for (EObject value : field.getDeclaration().getInstances()) {
                                         createNode(parentNode, value);
                                 }
+                        } else if (child instanceof activity_data_field) {
+                                activity_data_field field = (activity_data_field)child;
+                                for (EObject value : field.getDeclaration().getInstances()) {
+                                        createNode(parentNode, value);
+                                }
                         } else {
                                 createNode(parentNode, child);
                         }
                 }
         }
+        
+//        public void _createChildren(IOutlineNode parentNode, flow_ref_field f) {
+//        	for (String child : f.getId()) {
+//        		createNode(parentNode, child);
+//        	}
+//        }
 
         public void _createChildren(IOutlineNode parentNode, covergroup_declaration cs) {
                 for (EObject child : cs.getBody_items()) {
@@ -102,6 +122,8 @@ public class PSSOutlineTreeProvider extends DefaultOutlineTreeProvider {
         	for (EObject child : component.getBody()) {
         		if (child instanceof attr_field) {
         			_createChildren(parentNode, ((attr_field)child).getDeclaration());
+        		} else if (child instanceof component_pool_declaration) {
+        			_createChildren(parentNode, ((component_pool_declaration)child).getDeclaration());
         		} else {
         			if (!(child instanceof object_bind_stmt)) {
         				createNode(parentNode, child);
@@ -125,7 +147,7 @@ public class PSSOutlineTreeProvider extends DefaultOutlineTreeProvider {
         		}
         	}
         }
-
+        
         public void _createChildren(IOutlineNode parentNode, data_declaration dd) {
                 for (data_instantiation child : dd.getInstances()) {
                         createNode(parentNode, child);

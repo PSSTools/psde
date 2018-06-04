@@ -26,6 +26,8 @@ import org.psstools.psde.lang.pSS.activity_declaration;
 import org.psstools.psde.lang.pSS.bool_type;
 import org.psstools.psde.lang.pSS.component_declaration;
 import org.psstools.psde.lang.pSS.component_field_declaration;
+import org.psstools.psde.lang.pSS.constraint_block;
+import org.psstools.psde.lang.pSS.constraint_declaration;
 import org.psstools.psde.lang.pSS.data_declaration;
 import org.psstools.psde.lang.pSS.data_instantiation;
 import org.psstools.psde.lang.pSS.enum_declaration;
@@ -93,7 +95,7 @@ public class PSSLabelProvider extends DefaultEObjectLabelProvider {
 	}
 	
 	public String text(package_declaration p) {
-		return p.getName() + " : package";
+		return p.getName().getElems().get(0) + " : package";
 	}
 	
 	
@@ -159,6 +161,11 @@ public class PSSLabelProvider extends DefaultEObjectLabelProvider {
 	public Object image(component_field_declaration f) { 
 		return "field_public_obj.gif"; 
 	}
+	
+	public Object image(constraint_declaration c) {
+		return "constraint_obj.gif";
+	}
+	
 	public Object image(data_instantiation f) { 
 		return "field_public_obj.gif"; 
 	}
@@ -174,6 +181,7 @@ public class PSSLabelProvider extends DefaultEObjectLabelProvider {
 	public Object image(package_declaration p) { 
 		return "package.gif"; 
 	}
+	
 //	public Object image(struct_field_declaration f) { 
 //		return "field_public_obj.gif"; 
 //	}

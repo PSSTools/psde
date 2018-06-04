@@ -20,9 +20,12 @@ package org.psstools.psde.lang.ui;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.xtext.ui.editor.folding.IFoldingRegionProvider;
+import org.eclipse.xtext.ui.editor.outline.impl.OutlinePage;
 import org.eclipse.xtext.ui.editor.outline.impl.OutlineFilterAndSorter.IComparator;
 import org.psstools.psde.lang.ui.labeling.PSSLabelProvider;
+import org.psstools.psde.lang.ui.outline.PSSOutlinePage;
 
 import com.google.inject.Binder;
 
@@ -48,6 +51,9 @@ public class PSSUiModule extends AbstractPSSUiModule {
 	public Class<? extends ILabelProvider> bindILabelProvider() {
 		return PSSLabelProvider.class;
 	}
-	
-	
+
+	@Override
+	public Class<? extends IContentOutlinePage> bindIContentOutlinePage() {
+		return PSSOutlinePage.class;
+	}
 }

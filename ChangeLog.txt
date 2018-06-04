@@ -1,5 +1,46 @@
 
 ------------------------------------------------------------------------------
+-- 0.0.8 Release --
+
+?- Correct display of input/output/lock/share fields in outline (030)
+
+?- Add an icon for input/output
+
+?- Add an icon for lock/share
+
+?- Add an icon for activity
+
+?- Add an icon for exec block
+
+?- Add an icon for symbol declaration
+
+- Up to #99
+
+------------------------------------------------------------------------------
+-- 0.0.7 Release --
+
+- Add an icon for constraints
+
+- Correct labeling for packages
+
+- Change the outline view to show the first level of content by default
+
+- Correct the outline display of action-type fields
+
+- Correct the outline display of pool-type fields
+
+- Correct display of symbols
+
+------------------------------------------------------------------------------
+-- 0.0.6 Release --
+
+- Update language grammar to the 1.0.0 spec
+
+- Update support for folding
+
+- Some improvements to the outline view
+
+------------------------------------------------------------------------------
 -- 0.0.5 Release --
 
 - Correct syntax for 'target' <language> 'function'
