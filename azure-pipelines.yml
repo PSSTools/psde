@@ -19,7 +19,7 @@ steps:
     export PATH=`pwd`/apache-maven-3.6.3/bin:$PATH
     cd scripts
     make release
-  displayName: 'Build Feature"
+  displayName: 'Build Feature'
 
 - script: |
      echo "upload release"
