@@ -11,24 +11,13 @@ pool:
 
 steps:
 - script: |
-  sudo apt-get install wget
-  wget http://apache.cs.utah.edu/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
-  tar xvzf apache-maven-3.6.3-bin.tar.gz
+    sudo apt-get install wget
+    wget http://apache.cs.utah.edu/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+    tar xvzf apache-maven-3.6.3-bin.tar.gz
   displayName: 'Configure Tools'
 - script: |
-  ./apache-maven-3.6.3/bin/mvn -e clean verify
+    ./apache-maven-3.6.3/bin/mvn -e clean verify
   displayName: 'Run Maven by hand'
-
-#- task: Maven@3
-#  inputs:
-#    mavenPomFile: 'pom.xml'
-#    mavenOptions: '-Xmx3072m -e -X'
-#    javaHomeOption: 'JDKVersion'
-#    jdkVersionOption: '1.8'
-#    jdkArchitectureOption: 'x64'
-#    publishJUnitResults: true
-#    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-#    goals: 'clean verify'
 
 - script: |
      echo "upload release"
