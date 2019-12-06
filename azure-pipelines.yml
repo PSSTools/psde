@@ -16,8 +16,10 @@ steps:
     tar xvzf apache-maven-3.6.3-bin.tar.gz
   displayName: 'Configure Tools'
 - script: |
-    ./apache-maven-3.6.3/bin/mvn -e clean verify
-  displayName: 'Run Maven by hand'
+    export PATH=`pwd`/apache-maven-3.6.3/bin:$PATH
+    cd scripts
+    make release
+  displayName: 'Build Feature"
 
 - script: |
      echo "upload release"
