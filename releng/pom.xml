@@ -1,0 +1,18 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.psstools.psde</groupId>
+    <artifactId>org.psstools.psde.releng</artifactId>
+    <version>1.2.3-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>org.psstools.psde</groupId>
+        <artifactId>org.psstools.psde.root</artifactId>
+        <version>1.2.3-SNAPSHOT</version>
+    </parent>
+
+    <modules>
+        <module>org.psstools.psde.update</module>
+    </modules>
+</project>
+

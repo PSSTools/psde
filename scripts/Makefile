@@ -11,7 +11,7 @@ BUILD_DIR := $(PSSTOOLS_DIR)/build
 PACKAGES_DIR := $(PSSTOOLS_DIR)/packages
 BUILD_TOOLS_DIR := $(BUILD_DIR)/tools
 
-MK_INCLUDES += $(PSSTOOLS_SCRIPTS_DIR)/org.psstools.psde.lang.feature.mk
+# MK_INCLUDES += $(PSSTOOLS_SCRIPTS_DIR)/org.psstools.psde.lang.feature.mk
 
 SF_FRS_URL=$(SF_USERNAME),psstools@frs.sourceforge.net
 SF_WEB_URL=$(SF_USERNAME),psstools@web.sourceforge.net
@@ -36,10 +36,8 @@ define bintray_upload_site
 curl -T $(1) $(BINTRAY_ID) $(BINTRAY_SITE_URL)/$(1)
 endef
 
-release : org.psstools.psde.lang.feature
-	cd $(PSSTOOLS_BUILD_DIR) ; \
-          perl $(PSSTOOLS_SCRIPTS_DIR)/mk_rn.pl $(FEATURE_VERSION) \
-            $(PSSTOOLS_DIR)/ChangeLog.txt > ChangeLog.txt
+release : 
+	cd $(PSSTOOLS_SCRIPTS_DIR)/.. ; mvn clean verify
 
 upload :
 	mkdir -p $(PSSTOOLS_BUILD_DIR)/update-site
@@ -84,6 +82,6 @@ upload :
 
 
 
-include $(PSSTOOLS_DIR)/eclipsescripts/mkfiles/eclipsescripts.mk
+# include $(PSSTOOLS_DIR)/eclipsescripts/mkfiles/eclipsescripts.mk
 
 

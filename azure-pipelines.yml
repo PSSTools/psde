@@ -17,6 +17,12 @@ steps:
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.8'
     jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'package'
+#    publishJUnitResults: true
+#    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'clean verify'
+
+- script: |
+     echo "upload release"
+#    make -C scripts upload -DBINTRAY_USERNAME=$(BINTRAY_USERNAME) -DBINTRAY_API_KEY=$(BINTRAY_API_KEY)
+  displayName: 'Upload release'
+

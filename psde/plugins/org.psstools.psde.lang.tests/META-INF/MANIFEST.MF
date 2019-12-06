@@ -2,14 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.psstools.psde.lang.tests
 Bundle-Vendor: My Company
-Bundle-Version: 1.2.3
+Bundle-Version: 1.2.3.qualifier
 Bundle-SymbolicName: org.psstools.psde.lang.tests;singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.psstools.psde.lang,
  org.junit;bundle-version="4.7.0",
  org.eclipse.xtext.junit4,
  org.eclipse.xtext.xbase.junit,
- org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
  org.eclipse.xtext.testing,
  org.eclipse.xtext.xbase.testing
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

@@ -6,3 +6,5 @@ generated/
 packages
 build/
 psstools.sav/
+*.xml_gen
+src-gen/
