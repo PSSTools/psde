@@ -2,14 +2,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.psstools.psde</groupId>
     <artifactId>org.psstools.psde.features</artifactId>
-    <version>1.2.3-SNAPSHOT</version>
+    <version>0.0.8-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
         <relativePath>../../pom.xml</relativePath>
         <groupId>org.psstools.psde</groupId>
         <artifactId>org.psstools.psde.root</artifactId>
-        <version>1.2.3-SNAPSHOT</version>
+        <version>0.0.8-SNAPSHOT</version>
     </parent>
 
     <modules>

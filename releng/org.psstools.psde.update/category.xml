@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.psstools.psde.lang.feature_1.2.3.qualifer.jar" id="org.psstools.psde.lang.feature" version="1.2.3.qualifier">
+   <feature url="features/org.psstools.psde.lang.feature_1.2.3.qualifer.jar" id="org.psstools.psde.lang.feature" version="0.0.8.qualifier">
       <category name="psde"/>
    </feature>
    <category-def name="psde" label="PSS Development Environment"/>

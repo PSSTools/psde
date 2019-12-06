@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.psstools.psde.lang.ui
 Bundle-Vendor: My Company
-Bundle-Version: 1.2.3.qualifier
+Bundle-Version: 0.0.8.qualifier
 Bundle-SymbolicName: org.psstools.psde.lang.ui;singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.psstools.psde.lang,

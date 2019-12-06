@@ -2,7 +2,7 @@
 <feature
       id="org.psstools.psde.lang.feature"
       label="PSDE Feature"
-      version="1.2.3.qualifier">
+      version="0.0.8.qualifier">
 
    <description>
       PSDE provide an editor for working with Accellera PSS filees

@@ -7,7 +7,7 @@
         <relativePath>../../../pom.xml</relativePath>
         <groupId>org.psstools.psde</groupId>
         <artifactId>org.psstools.psde.root</artifactId>
-        <version>1.2.3-SNAPSHOT</version>
+        <version>0.0.8-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.psstools.psde.lang</artifactId>
