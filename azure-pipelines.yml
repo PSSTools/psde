@@ -29,11 +29,11 @@ steps:
        if test $? -ne 0; then
          echo "Snapshot release"
          cd scripts
-         make upload-testing -DBINTRAY_USERNAME=$(BINTRAY_USERNAME) -DBINTRAY_API_KEY=$(BINTRAY_API_KEY)
+         make upload-testing
        else
          echo "Full release"
          cd scripts
-         make upload-release -DBINTRAY_USERNAME=$(BINTRAY_USERNAME) -DBINTRAY_API_KEY=$(BINTRAY_API_KEY)
+         make upload-release
        fi
      else
        echo "Note: not releasing from non-master branch"
