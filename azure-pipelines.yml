@@ -25,7 +25,7 @@ steps:
      # Determine if this is a tagged release
      echo "upload release"
      current_branch=`git branch | grep '\*' | cut -d ' ' -f2`
-     echo "Active branch: ${current_branch"
+     echo "Active branch: ${current_branch}"
      if test "${current_branch}" = "master"; then
        git describe --exact-match `git rev-parse HEAD`
        if test $? -ne 0; then
