@@ -24,15 +24,21 @@ steps:
 - script: |
      # Determine if this is a tagged release
      echo "upload release"
-     git describe --exact-match `git rev-parse HEAD`
-     if test $? -ne 0; then
-       echo "Snapshot release"
-       cd scripts
-       make upload-testing -DBINTRAY_USERNAME=$(BINTRAY_USERNAME) -DBINTRAY_API_KEY=$(BINTRAY_API_KEY)
+     current_branch=`git symbolic-ref --short HEAD`
+     echo "Active branch: ${current_branch"
+     if test "${current_branch}" = "master"; then
+       git describe --exact-match `git rev-parse HEAD`
+       if test $? -ne 0; then
+         echo "Snapshot release"
+         cd scripts
+         make upload-testing -DBINTRAY_USERNAME=$(BINTRAY_USERNAME) -DBINTRAY_API_KEY=$(BINTRAY_API_KEY)
+       else
+         echo "Full release"
+         cd scripts
+         make upload-release -DBINTRAY_USERNAME=$(BINTRAY_USERNAME) -DBINTRAY_API_KEY=$(BINTRAY_API_KEY)
+       fi
      else
-       echo "Full release"
-       cd scripts
-       make upload-release -DBINTRAY_USERNAME=$(BINTRAY_USERNAME) -DBINTRAY_API_KEY=$(BINTRAY_API_KEY)
+       echo "Note: not releasing from non-master branch"
      fi
   displayName: 'Upload release'
 
