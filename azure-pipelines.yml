@@ -38,5 +38,8 @@ steps:
      else
        echo "Note: not releasing from non-master branch"
      fi
+  env:
+    BINTRAY_USERNAME: $(BINTRAY_USERNAME)
+    BINTRAY_API_KEY: $(BINTRAY_API_KEY)
   displayName: 'Upload release'
 
