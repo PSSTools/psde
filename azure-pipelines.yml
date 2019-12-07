@@ -22,7 +22,17 @@ steps:
   displayName: 'Build Feature'
 
 - script: |
+     # Determine if this is a tagged release
      echo "upload release"
-#    make -C scripts upload -DBINTRAY_USERNAME=$(BINTRAY_USERNAME) -DBINTRAY_API_KEY=$(BINTRAY_API_KEY)
+     git describe --exact-match `git rev-parse HEAD`
+     if test $? -ne 0; then
+       echo "Snapshot release"
+       cd scripts
+       make upload-testing -DBINTRAY_USERNAME=$(BINTRAY_USERNAME) -DBINTRAY_API_KEY=$(BINTRAY_API_KEY)
+     else
+       echo "Full release"
+       cd scripts
+       make upload-release -DBINTRAY_USERNAME=$(BINTRAY_USERNAME) -DBINTRAY_API_KEY=$(BINTRAY_API_KEY)
+     fi
   displayName: 'Upload release'
 
