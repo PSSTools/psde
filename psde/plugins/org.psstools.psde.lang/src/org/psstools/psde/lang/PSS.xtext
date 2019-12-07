@@ -247,7 +247,7 @@ exec_body_stmt:
 /****************************************************************************
  * H1: Struct Declarations
  ****************************************************************************/
-struct_declaration: kind=struct_kind name=identifier (super=struct_super_spec)? '{'
+struct_declaration: kind=struct_kind name=identifier (template=paramlist_decl)? (super=struct_super_spec)? '{'
 		body+=struct_body_item*
 	'}' 
 ;
@@ -257,6 +257,48 @@ struct_kind:
 ;
 
 struct_super_spec : ':' super=type_identifier
+;
+
+paramlist_decl : {paramlist_decl}
+	'<' (params+=param_decl (',' params+=param_decl)*)? '>'
+;
+
+param_decl :
+	type_parameter 
+	| value_parameter
+;
+
+type_parameter :
+  generic_type_parameter
+  | category_type_parameter
+  ;
+  
+
+generic_type_parameter :
+	'type' name=identifier ('=' init=type_identifier)?
+	;
+	
+category_type_parameter : 
+	type=type_category name=identifier (restriction=type_restriction)? ('=' init=type_identifier)?
+	;
+	
+type_restriction : 
+	':' type=type_identifier
+	;
+	
+type_category :
+  'action'
+  | 'component'
+  | 'struct'
+  | 'stream'
+  | 'state'
+  | 'resource'
+  | 'buffer'
+;
+
+
+value_parameter :
+	type=data_type name=identifier ('=' init=constant_expression)?
 ;
 
 struct_body_item:
@@ -1167,8 +1209,32 @@ package_identifier:
 ;
 
 type_identifier :
+	// TODO: still have conflicts
 	('::')? elems+=ID (=> '::' elems+=ID)*
+//	('::')? elems+=ID (specialization+=template_specialization)? (=> '::' elems+=ID (specialization+=template_specialization)?)*
+//	('::')? elems+=type_identifier_elem (=> '::' elems+=type_identifier_elem)*
 ;
+
+type_identifier_elem : {type_identifier_elem}
+	ID (template_specialization)?
+;
+
+// type_identifier ::= [::] ID [ template_specialization ] { :: ID [ template_specialization ] }
+template_specialization : {template_specialization}
+	'<' (paramslist=paramval_list)? '>'
+	;
+	
+paramval_list : 
+	params+=param_val (',' params+=param_val )*
+	;
+	
+param_val : 
+	// TODO: restructure to avoid ambiguity between '>'
+/*	constant_expression TODO: must avoid '>'
+	|*/ type_identifier
+	;
+
+
 
 qualified_type_identifier :
 	('::')? elems+=ID ('::' elems+=ID)+
